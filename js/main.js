@@ -1,3 +1,5 @@
+// Created with love 🩶 by Denvil 🧑‍💻
+
 import { config } from './config.js';
 import { MultiAIService } from './services/ai/multiAIService.js';
 import { HistoryService } from './services/historyService.js';

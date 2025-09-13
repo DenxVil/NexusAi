@@ -1,3 +1,5 @@
+// Created with love 🩶 by Denvil 🧑‍💻
+
 export class AIService {
     constructor() {
         // Initialize with environment variables
@@ -28,7 +30,7 @@ export class AIService {
             throw new Error('Gemini API key not configured');
         }
 
-        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
         
         // Build context from chat history
         const context = chatHistory
