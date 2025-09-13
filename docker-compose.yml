@@ -18,6 +18,7 @@ services:
       - RATE_LIMIT_WINDOW_MS=${RATE_LIMIT_WINDOW_MS:-900000}
       - RATE_LIMIT_MAX_REQUESTS=${RATE_LIMIT_MAX_REQUESTS:-100}
       - MAX_FILE_SIZE=${MAX_FILE_SIZE:-5242880}
+      - REACT_APP_API_URL=${REACT_APP_API_URL:-http://localhost:5000/api}
     depends_on:
       - mongo
     restart: unless-stopped
