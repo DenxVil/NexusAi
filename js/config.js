@@ -1,4 +1,4 @@
-// Centralized configuration for ShanxAi
+// Centralized configuration for Nexus Ai
 export const config = {
     // AI Service Configuration
     ai: {
@@ -45,6 +45,6 @@ export const config = {
     history: {
         maxItems: 50,
         persistToLocalStorage: true,
-        storageKey: 'shanxai_chat_history'
+        storageKey: 'nexus_ai_chat_history'
     }
 };

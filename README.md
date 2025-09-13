@@ -1,154 +1,215 @@
-# ShanxAi - AI Application Platform
+# Nexus Ai - Advanced AI Application Platform
 
-A modern AI-powered application platform inspired by ayesoul.com, providing intelligent conversation and AI services.
+*Created by ◉Ɗєиνιℓ*
+
+A cutting-edge AI-powered application platform featuring multi-model support, Telegram bot integration, and modern 3D-enhanced user interface.
 
 ## 🚀 Features
 
-- **AI Chat Interface** - Interactive chat with AI models
-- **User Authentication** - Secure user registration and login
-- **Real-time Communication** - WebSocket-based real-time messaging
-- **Responsive Design** - Mobile-first responsive UI
-- **API Integration** - RESTful API for AI services
-- **User Profiles** - Personalized user experiences
-- **Chat History** - Persistent conversation storage
-- **Multi-model Support** - Integration with various AI models
+- **🤖 Multi-AI Integration** - Support for Gemini, Perplexity, and HuggingFace models
+- **💬 Telegram Bot** - Seamless interaction through Telegram messenger
+- **🎨 Modern 3D UI** - Engaging interface with 3D elements and animations
+- **🌐 Multi-language Support** - English and Hindi language support
+- **🎤 Voice Input** - Voice-to-text capability for hands-free interaction
+- **📱 Responsive Design** - Mobile-first responsive UI that works on all devices
+- **💾 Chat History** - Persistent conversation storage and export/import
+- **🔐 Secure API Management** - Safe storage and management of API keys
+- **⚡ Real-time Processing** - Fast response times with multiple AI backends
 
-## 🏗️ Project Structure
+## 🏗️ Architecture
 
 ```
-shanx-ai/
-├── client/                 # React frontend application
-│   ├── public/            # Static assets
-│   ├── src/               # Source code
-│   │   ├── components/    # Reusable UI components
-│   │   ├── pages/         # Page components
-│   │   ├── hooks/         # Custom React hooks
-│   │   ├── services/      # API service functions
-│   │   ├── utils/         # Utility functions
-│   │   └── styles/        # CSS and styling
-│   └── package.json       # Frontend dependencies
-├── server/                # Node.js backend application
-│   ├── controllers/       # Request handlers
-│   ├── models/           # Database models
-│   ├── routes/           # API routes
-│   ├── middleware/       # Custom middleware
-│   ├── services/         # Business logic
-│   ├── config/           # Configuration files
-│   └── package.json      # Backend dependencies
-├── docs/                 # Documentation
-├── tests/                # Test files
-└── package.json          # Root package.json
+nexus-ai/
+├── 📱 Frontend (Vanilla JS + React)
+│   ├── index.html          # Main web interface
+│   ├── js/                 # Core application logic
+│   ├── styles.css          # Modern styling with 3D effects
+│   └── client/             # React-based admin interface
+├── 🔧 Backend (Node.js + TypeScript)
+│   ├── server/             # Express.js API server
+│   ├── bot/                # Telegram bot integration
+│   └── services/           # AI service integrations
+└── 📋 Deployment
+    ├── Procfile            # Heroku deployment configuration
+    └── package.json        # Production-ready scripts
 ```
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **React** - UI library
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Utility-first CSS framework
-- **React Router** - Client-side routing
-- **Axios** - HTTP client
-- **Socket.io Client** - Real-time communication
+- **Vanilla JavaScript** - Core application with ES6 modules
+- **React** - Admin interface and advanced components
+- **CSS3** - Modern styling with 3D transforms and animations
+- **Web APIs** - Speech Recognition, Local Storage, File API
 
 ### Backend
 - **Node.js** - Runtime environment
-- **Express** - Web framework
-- **TypeScript** - Type safety
-- **MongoDB** - Database
+- **Express.js** - Web framework
+- **TypeScript** - Type safety and modern JavaScript
 - **Socket.io** - Real-time communication
-- **JWT** - Authentication
-- **bcrypt** - Password hashing
+- **Telegram Bot API** - Bot integration
 
-## 🚀 Getting Started
+### AI Services
+- **Google Gemini** - Advanced language model
+- **Perplexity AI** - Research-focused AI
+- **HuggingFace** - Open-source AI models
+
+## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js (v18 or higher)
-- MongoDB
-- npm or yarn
+- Node.js 18.x or higher
+- npm or yarn package manager
 
 ### Installation
 
-1. Clone the repository:
+1. **Clone the repository:**
 ```bash
 git clone https://github.com/DenxVil/ShanxAi.git
 cd ShanxAi
 ```
 
-2. Install dependencies:
+2. **Install dependencies:**
 ```bash
 npm run install-all
 ```
 
-3. Set up environment variables:
+3. **Configure environment variables:**
 ```bash
+# Copy example environment file
 cp server/.env.example server/.env
-# Edit server/.env with your configuration
+
+# Edit with your configuration
+nano server/.env
 ```
 
-4. Start the development servers:
+Add your API keys and configuration:
+```env
+# AI Service API Keys
+GEMINI_API_KEY=your_gemini_key_here
+PERPLEXITY_API_KEY=your_perplexity_key_here
+HUGGINGFACE_API_KEY=your_huggingface_key_here
+
+# Telegram Bot Configuration
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
+
+# Server Configuration
+PORT=5000
+NODE_ENV=development
+```
+
+4. **Start the development environment:**
 ```bash
 npm run dev
 ```
 
 The application will be available at:
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:5000
+- **Web Interface:** http://localhost:3000
+- **API Server:** http://localhost:5000
 
-## 📖 API Documentation
+## 🤖 Telegram Bot Setup
 
-### Authentication Endpoints
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-- `POST /api/auth/logout` - User logout
-- `GET /api/auth/me` - Get current user
+1. **Create a Telegram bot:**
+   - Message [@BotFather](https://t.me/botfather) on Telegram
+   - Use `/newbot` command to create your bot
+   - Save the bot token
 
-### Chat Endpoints
-- `GET /api/chats` - Get user's chat history
-- `POST /api/chats` - Create new chat
-- `GET /api/chats/:id` - Get specific chat
-- `POST /api/chats/:id/messages` - Send message to chat
+2. **Configure the bot:**
+   - Add your bot token to the `.env` file
+   - Start the server: `npm run server`
+   - Your bot will automatically be available for interactions
 
-### AI Service Endpoints
-- `POST /api/ai/chat` - Send message to AI
-- `GET /api/ai/models` - Get available AI models
-- `POST /api/ai/generate` - Generate AI content
+3. **Bot Commands:**
+   - `/start` - Initialize the bot
+   - `/help` - Show available commands
+   - `/clear` - Clear chat history
+   - Simply send a message to chat with AI
+
+## 🎨 UI Features
+
+### 3D Elements
+- **Floating animations** for interactive elements
+- **Depth effects** on cards and panels
+- **Smooth transitions** between states
+- **Parallax effects** for engaging user experience
+
+### Modern Design
+- **Dark/Light themes** with smooth transitions
+- **Glassmorphism effects** for modern look
+- **Gradient backgrounds** with animated elements
+- **Responsive grid layouts** for all screen sizes
+
+## 📱 Usage
+
+### Web Interface
+1. Open the application in your browser
+2. Configure your AI service API keys in Settings ⚙️
+3. Select your preferred AI service from the dropdown
+4. Start chatting with the AI assistant
+5. Use voice input 🎤 for hands-free interaction
+
+### Telegram Bot
+1. Find your bot on Telegram using the username you created
+2. Send `/start` to begin
+3. Chat naturally - the bot will respond using your configured AI services
+4. Use `/help` for additional commands
 
 ## 🔧 Configuration
 
-### Environment Variables
+### AI Services Setup
 
-#### Server (.env)
-```
-NODE_ENV=development
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/shanxai
-JWT_SECRET=your_jwt_secret_here
-JWT_EXPIRES_IN=7d
-OPENAI_API_KEY=your_openai_api_key
-CORS_ORIGIN=http://localhost:3000
-```
+#### Google Gemini
+1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Create a new API key
+3. Add to your environment variables or settings panel
 
-## 🧪 Testing
+#### Perplexity AI
+1. Go to [Perplexity Settings](https://www.perplexity.ai/settings/api)
+2. Generate an API key
+3. Add to your configuration
 
-Run tests for both client and server:
+#### HuggingFace
+1. Visit [HuggingFace Tokens](https://huggingface.co/settings/tokens)
+2. Create a new token with read permissions
+3. Configure in your application
+
+## 🚀 Deployment
+
+### Heroku Deployment
+1. **Prepare for deployment:**
 ```bash
-npm test
+# Heroku CLI required
+heroku create your-nexus-ai-app
 ```
 
-## 📦 Deployment
-
-### Build for production:
+2. **Set environment variables:**
 ```bash
-npm run build
+heroku config:set TELEGRAM_BOT_TOKEN=your_token_here
+heroku config:set GEMINI_API_KEY=your_key_here
+# Add other environment variables as needed
 ```
 
-### Deploy to various platforms:
-- **Vercel** - Frontend deployment
-- **Railway/Heroku** - Backend deployment
-- **MongoDB Atlas** - Database hosting
+3. **Deploy:**
+```bash
+git push heroku main
+```
+
+### Other Platforms
+- **Vercel** - Perfect for frontend deployment
+- **Railway** - Excellent for full-stack deployment
+- **DigitalOcean App Platform** - Scalable container deployment
+
+## 📞 Support
+
+Need help? Reach out through our support channels:
+
+- **Telegram:** [@xDenvil_bot](https://t.me/xDenvil_bot)
+- **Email:** [NexusAisupport@gmail.com](mailto:NexusAisupport@gmail.com)
 
 ## 🤝 Contributing
 
+We welcome contributions! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+### Development Guidelines
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
@@ -161,6 +222,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- Inspired by ayesoul.com
-- Built with modern web technologies
-- Powered by AI/ML services
+- **AI Service Providers** - Google, Perplexity, HuggingFace for powerful AI capabilities
+- **Open Source Community** - For the amazing libraries and tools
+- **Telegram** - For providing an excellent bot platform
+- **Contributors** - Everyone who helps make Nexus Ai better
+
+---
+
+**Made with ❤️ by ◉Ɗєиνιℓ**
+
+*Nexus Ai - Where artificial intelligence meets exceptional user experience*

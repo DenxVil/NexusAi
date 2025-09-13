@@ -11,6 +11,10 @@ import { connectDatabase } from './config/database';
 import { errorHandler } from './middleware/errorHandler';
 import { notFoundHandler } from './middleware/notFoundHandler';
 
+// Import services
+import { AIService } from './services/aiService';
+import { TelegramBotService } from './services/telegramBot';
+
 // Import routes
 import authRoutes from './routes/auth';
 import chatRoutes from './routes/chat';
@@ -28,6 +32,10 @@ const io = new Server(server, {
     methods: ["GET", "POST"]
   }
 });
+
+// Initialize services
+const aiService = new AIService();
+let telegramBot: TelegramBotService | null = null;
 
 const PORT = process.env.PORT || 5000;
 
@@ -55,7 +63,11 @@ app.get('/health', (req: Request, res: Response) => {
     status: 'OK',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    environment: process.env.NODE_ENV
+    environment: process.env.NODE_ENV,
+    services: {
+      telegramBot: telegramBot?.isActive() || false,
+      activeUsers: telegramBot?.getActiveUsers() || 0
+    }
   });
 });
 
@@ -99,10 +111,19 @@ const startServer = async () => {
     // Connect to database
     await connectDatabase();
     
+    // Initialize Telegram bot
+    if (process.env.TELEGRAM_BOT_TOKEN) {
+      telegramBot = new TelegramBotService(aiService);
+      console.log('🤖 Telegram bot service initialized');
+    } else {
+      console.log('⚠️ Telegram bot disabled - TELEGRAM_BOT_TOKEN not provided');
+    }
+    
     server.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`🚀 Nexus Ai Server running on port ${PORT}`);
       console.log(`📊 Health check: http://localhost:${PORT}/health`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
+      console.log(`🔮 Created by ◉Ɗєиνιℓ`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);

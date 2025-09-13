@@ -362,11 +362,11 @@ export class UIManager {
         }
 
         // Save theme preference
-        localStorage.setItem('shanxai_theme', theme);
+        localStorage.setItem('nexus_ai_theme', theme);
     }
 
     loadTheme() {
-        const savedTheme = localStorage.getItem('shanxai_theme');
+        const savedTheme = localStorage.getItem('nexus_ai_theme');
         if (savedTheme) {
             this.currentTheme = savedTheme;
             this.applyTheme(this.currentTheme);
