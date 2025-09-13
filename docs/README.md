@@ -1,6 +1,6 @@
 # Documentation
 
-This directory contains documentation for the ShanxAi application.
+This directory contains documentation for the Nexus Ai application.
 
 ## API Documentation
 

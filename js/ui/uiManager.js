@@ -422,6 +422,6 @@ export class UIManager {
     // Initialize the UI after page load
     init() {
         this.loadTheme();
-        this.updateStatus('ShanxAi loaded successfully', 'success');
+        this.updateStatus('Nexus Ai loaded successfully', 'success');
     }
 }
