@@ -7,6 +7,7 @@ export class UIManager {
         this.onVoiceToggle = null;
         this.onServiceChange = null;
         this.onSettingsToggle = null;
+        this.onLanguageChange = null;
         
         this.initializeElements();
         this.setupEventListeners();
@@ -30,6 +31,7 @@ export class UIManager {
             exportHistoryButton: document.getElementById('export-history'),
             importHistoryButton: document.getElementById('import-history'),
             fileInput: document.getElementById('file-input'),
+            languageSelector: document.getElementById('language-selector'),
             statusIndicator: document.getElementById('status-indicator'),
             typingIndicator: document.getElementById('typing-indicator'),
             voiceStatus: document.getElementById('voice-status')
@@ -140,6 +142,16 @@ export class UIManager {
                 }
             });
         });
+
+        // Language selector
+        if (this.elements.languageSelector) {
+            this.elements.languageSelector.addEventListener('change', (e) => {
+                const language = e.target.value;
+                if (this.onLanguageChange) {
+                    this.onLanguageChange(language);
+                }
+            });
+        }
     }
 
     sendMessage() {
@@ -383,6 +395,10 @@ export class UIManager {
 
     setOnImportHistory(callback) {
         this.onImportHistory = callback;
+    }
+
+    setOnLanguageChange(callback) {
+        this.onLanguageChange = callback;
     }
 
     // Initialize the UI after page load

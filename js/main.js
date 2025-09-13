@@ -2,6 +2,7 @@ import { config } from './config.js';
 import { MultiAIService } from './services/ai/multiAIService.js';
 import { HistoryService } from './services/historyService.js';
 import { VoiceInputService } from './services/voiceInputService.js';
+import { LanguageService } from './services/languageService.js';
 import { UIManager } from './ui/uiManager.js';
 
 class ShanxAiApp {
@@ -10,6 +11,7 @@ class ShanxAiApp {
         this.aiService = null;
         this.historyService = null;
         this.voiceService = null;
+        this.languageService = null;
         this.uiManager = null;
         this.currentMessageElement = null;
         
@@ -19,6 +21,7 @@ class ShanxAiApp {
     async init() {
         try {
             // Initialize services
+            this.languageService = new LanguageService();
             this.aiService = new MultiAIService(this.config);
             this.historyService = new HistoryService(this.config);
             this.voiceService = new VoiceInputService(this.config);
@@ -59,6 +62,7 @@ class ShanxAiApp {
         this.uiManager.setOnClearHistory(() => this.handleClearHistory());
         this.uiManager.setOnExportHistory(() => this.handleExportHistory());
         this.uiManager.setOnImportHistory((file) => this.handleImportHistory(file));
+        this.uiManager.setOnLanguageChange((language) => this.handleLanguageChange(language));
     }
 
     setupVoiceCallbacks() {
@@ -96,12 +100,17 @@ class ShanxAiApp {
             this.uiManager.showTypingIndicator();
 
             // Update status
-            this.uiManager.updateStatus('Generating response...', 'info');
+            this.uiManager.updateStatus(this.languageService.translate('generating'), 'info');
 
-            // Get AI response
-            const response = await this.aiService.generateResponse(message, {
-                enableFallback: true
-            });
+            // Get AI response with personality
+            let response;
+            if (Math.random() < 0.7) { // 70% chance to use emotional response
+                response = this.languageService.getRandomAIResponse();
+            } else {
+                response = await this.aiService.generateResponse(message, {
+                    enableFallback: true
+                });
+            }
 
             // Hide typing indicator
             this.uiManager.hideTypingIndicator();
@@ -182,7 +191,12 @@ class ShanxAiApp {
     handleClearHistory() {
         this.historyService.clearHistory();
         this.uiManager.clearMessages();
-        this.uiManager.updateStatus('Chat history cleared', 'success');
+        this.uiManager.updateStatus(this.languageService.translate('historyCleared'), 'success');
+    }
+
+    handleLanguageChange(language) {
+        this.languageService.setLanguage(language);
+        this.uiManager.updateStatus(this.languageService.translate('loaded'), 'success');
     }
 
     handleExportHistory() {

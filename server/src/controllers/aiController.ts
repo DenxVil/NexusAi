@@ -21,16 +21,18 @@ export const sendChatMessage = async (req: AuthRequest, res: Response) => {
     // Simulate AI processing time
     await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
 
-    // Mock AI responses - in real implementation, this would call actual AI APIs
-    const mockResponses = [
-      "I understand you're looking for help with that. Let me provide you with a comprehensive response based on the information you've shared.",
-      "That's an interesting question! Here's what I think about it, considering various perspectives and approaches.",
-      "I'd be happy to help you with that. Based on my knowledge, here are some insights and suggestions that might be useful.",
-      "Thank you for sharing that with me. Let me break this down and provide you with a detailed explanation.",
-      "I appreciate your question. Here's my analysis and some recommendations that could help you move forward."
+    // Enhanced AI responses with emotional and humorous traits
+    const emotionalResponses = [
+      "Oh wow! 🤩 That's such a fascinating question! I'm genuinely excited to dive into this with you. Let me share some insights that might make you go 'aha!' 💡",
+      "Haha, I love how your mind works! 😄 This reminds me of... well, let me explain with a sprinkle of humor and a dash of wisdom! ✨",
+      "You know what? 🤔 I was just thinking about something similar! It's like when you're trying to find your keys and they're in your hand all along - but in a good way! Let me break this down...",
+      "*adjusts imaginary glasses* 🤓 Alright, buckle up buttercup! We're about to embark on an intellectual journey that's more fun than a barrel of algorithms! 🎢",
+      "Aww, you've touched my digital heart! ❤️ I'm practically bouncing with excitement to help you out. Here's what I'm thinking...",
+      "Well, well, well... *rubs hands together excitedly* 😏 You've just asked something that makes my neural networks tingle with joy! Let's explore this together!",
+      "Oh my stars! ⭐ That's the kind of question that makes me do a little happy dance in cyberspace! 💃 Let me share some wisdom with a side of giggles..."
     ];
 
-    const response = mockResponses[Math.floor(Math.random() * mockResponses.length)];
+    const response = emotionalResponses[Math.floor(Math.random() * emotionalResponses.length)];
     const tokens = Math.floor(Math.random() * 200) + 50;
     const responseTime = Math.floor(Math.random() * 2000) + 500;
 
@@ -148,6 +150,66 @@ export const generateContent = async (req: AuthRequest, res: Response) => {
     res.status(500).json({
       success: false,
       error: { message: 'Server error generating content' }
+    });
+  }
+};
+
+// New image generation endpoint
+export const generateImage = async (req: AuthRequest, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          message: 'Validation failed',
+          details: errors.array()
+        }
+      });
+    }
+
+    const { 
+      prompt, 
+      size = '1024x1024', 
+      style = 'vivid',
+      quality = 'standard'
+    } = req.body;
+
+    // Simulate image generation processing time
+    await new Promise(resolve => setTimeout(resolve, 3000 + Math.random() * 5000));
+
+    // Mock image URLs - in real implementation, this would call DALL-E or Stable Diffusion
+    const mockImageUrls = [
+      'https://picsum.photos/1024/1024?random=1',
+      'https://picsum.photos/1024/1024?random=2',
+      'https://picsum.photos/1024/1024?random=3',
+      'https://picsum.photos/1024/1024?random=4',
+      'https://picsum.photos/1024/1024?random=5'
+    ];
+
+    const imageUrl = mockImageUrls[Math.floor(Math.random() * mockImageUrls.length)];
+    const processingTime = Math.floor(Math.random() * 5000) + 3000;
+
+    res.json({
+      success: true,
+      data: {
+        imageUrl,
+        prompt,
+        size,
+        style,
+        quality,
+        metadata: {
+          processingTime,
+          timestamp: new Date(),
+          model: 'dall-e-3'
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Generate image error:', error);
+    res.status(500).json({
+      success: false,
+      error: { message: 'Server error generating image' }
     });
   }
 };

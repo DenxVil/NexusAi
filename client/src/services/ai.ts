@@ -42,4 +42,25 @@ export const aiService = {
     const response = await api.post('/ai/generate', data);
     return response.data;
   },
+
+  generateImage: async (data: {
+    prompt: string;
+    size?: '256x256' | '512x512' | '1024x1024' | '1792x1024' | '1024x1792';
+    style?: 'vivid' | 'natural';
+    quality?: 'standard' | 'hd';
+  }): Promise<ApiResponse<{
+    imageUrl: string;
+    prompt: string;
+    size: string;
+    style: string;
+    quality: string;
+    metadata: {
+      processingTime: number;
+      timestamp: string;
+      model: string;
+    };
+  }>> => {
+    const response = await api.post('/ai/generate-image', data);
+    return response.data;
+  },
 };
