@@ -18,7 +18,7 @@
                 <h1 class="app-title">
                     <span class="app-icon">🔮</span>
                     <span class="app-name">ShanxAi</span>
-                    <span class="app-tagline">Created with love 🩶 by Denvil 🧑‍💻</span>
+                    <span class="app-tagline">Phoenix Intelligence Platform</span>
                 </h1>
                 <div class="service-selector-container">
                     <label for="service-selector" data-translate="aiService">AI Service:</label>
@@ -39,7 +39,6 @@
                 </div>
                 <div id="status-indicator" class="status"></div>
                 <button id="theme-toggle" class="icon-button" title="Toggle theme">🌙</button>
-                <button id="settings-button" class="icon-button" title="Settings">⚙️</button>
             </div>
         </header>
 
@@ -109,119 +108,6 @@ Ready to explore the future of AI? Let's chat! ✨</p>
                 <div id="voice-status" class="voice-status"></div>
             </div>
         </main>
-
-        <!-- Settings Panel -->
-        <div id="settings-panel" class="settings-panel">
-            <div class="settings-content">
-                <div class="settings-header">
-                    <h2>Settings</h2>
-                    <button class="close-settings" onclick="document.getElementById('settings-panel').classList.remove('open')">×</button>
-                </div>
-
-                <div class="settings-section">
-                    <h3>API Keys</h3>
-                    <p class="settings-description">Configure your API keys for different AI services:</p>
-                    
-                    <div class="api-key-group">
-                        <label for="gemini-api-key">
-                            <span class="service-icon">🤖</span>
-                            Gemini API Key
-                        </label>
-                        <input 
-                            type="password" 
-                            id="gemini-api-key" 
-                            data-api-key="gemini"
-                            placeholder="Enter your Gemini API key"
-                            class="api-key-input"
-                        >
-                        <small>Get your key from <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a></small>
-                    </div>
-
-                    <div class="api-key-group">
-                        <label for="perplexity-api-key">
-                            <span class="service-icon">🔍</span>
-                            Perplexity API Key
-                        </label>
-                        <input 
-                            type="password" 
-                            id="perplexity-api-key" 
-                            data-api-key="perplexity"
-                            placeholder="Enter your Perplexity API key"
-                            class="api-key-input"
-                        >
-                        <small>Get your key from <a href="https://www.perplexity.ai/settings/api" target="_blank">Perplexity Settings</a></small>
-                    </div>
-
-                    <div class="api-key-group">
-                        <label for="huggingface-api-key">
-                            <span class="service-icon">🤗</span>
-                            HuggingFace API Key
-                        </label>
-                        <input 
-                            type="password" 
-                            id="huggingface-api-key" 
-                            data-api-key="huggingface"
-                            placeholder="Enter your HuggingFace API key"
-                            class="api-key-input"
-                        >
-                        <small>Get your key from <a href="https://huggingface.co/settings/tokens" target="_blank">HuggingFace Tokens</a></small>
-                    </div>
-                </div>
-
-                <div class="settings-section">
-                    <h3>Chat History</h3>
-                    <div class="settings-actions">
-                        <button id="export-history" class="settings-button">
-                            📥 Export History
-                        </button>
-                        <button id="import-history" class="settings-button">
-                            📤 Import History
-                        </button>
-                        <button id="clear-history" class="settings-button danger">
-                            🗑️ Clear All History
-                        </button>
-                    </div>
-                    <input type="file" id="file-input" accept=".json" style="display: none;">
-                </div>
-
-                <div class="settings-section">
-                    <h3>About</h3>
-                    <p class="about-text">
-                        ShanxAi is a modular AI chat interface that supports multiple AI services.
-                        Built with modern JavaScript modules for scalability and maintainability.
-                    </p>
-                    <div class="version-info">
-                        <small>Version 1.0.0</small>
-                    </div>
-                </div>
-
-                <div class="settings-section">
-                    <h3>Support & Contact</h3>
-                    <div class="support-channels">
-                        <div class="support-item">
-                            <span class="support-icon">📱</span>
-                            <div class="support-info">
-                                <strong>Telegram</strong>
-                                <a href="https://t.me/xDenvil_bot" target="_blank" rel="noopener">@xDenvil_bot</a>
-                            </div>
-                        </div>
-                        <div class="support-item">
-                            <span class="support-icon">📧</span>
-                            <div class="support-info">
-                                <strong>Email</strong>
-                                <a href="mailto:NexusAisupport@gmail.com">NexusAisupport@gmail.com</a>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="support-note">
-                        <em>Created by ◉Ɗєиνιℓ</em>
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Settings Panel Overlay -->
-        <div class="settings-overlay" onclick="document.getElementById('settings-panel').classList.remove('open')"></div>
     </div>
 
     <!-- Scripts -->

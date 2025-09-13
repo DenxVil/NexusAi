@@ -7,7 +7,6 @@ export class UIManager {
         this.onVoiceToggle = null;
         this.onImageGenerate = null;
         this.onServiceChange = null;
-        this.onSettingsToggle = null;
         this.onLanguageChange = null;
         
         this.initializeElements();
@@ -24,15 +23,8 @@ export class UIManager {
             sendButton: document.getElementById('send-button'),
             voiceButton: document.getElementById('voice-button'),
             imageButton: document.getElementById('image-button'),
-            settingsButton: document.getElementById('settings-button'),
             serviceSelector: document.getElementById('service-selector'),
-            settingsPanel: document.getElementById('settings-panel'),
-            apiKeyInputs: document.querySelectorAll('[data-api-key]'),
             themeToggle: document.getElementById('theme-toggle'),
-            clearHistoryButton: document.getElementById('clear-history'),
-            exportHistoryButton: document.getElementById('export-history'),
-            importHistoryButton: document.getElementById('import-history'),
-            fileInput: document.getElementById('file-input'),
             languageSelector: document.getElementById('language-selector'),
             statusIndicator: document.getElementById('status-indicator'),
             typingIndicator: document.getElementById('typing-indicator'),
@@ -79,13 +71,6 @@ export class UIManager {
                     this.elements.messageInput.value = '';
                     this.autoResizeTextarea(this.elements.messageInput);
                 }
-            });
-        }
-
-        // Settings panel toggle
-        if (this.elements.settingsButton) {
-            this.elements.settingsButton.addEventListener('click', () => {
-                this.toggleSettingsPanel();
             });
         }
 
@@ -291,12 +276,6 @@ export class UIManager {
     autoResizeTextarea(textarea) {
         textarea.style.height = 'auto';
         textarea.style.height = textarea.scrollHeight + 'px';
-    }
-
-    toggleSettingsPanel() {
-        if (this.elements.settingsPanel) {
-            this.elements.settingsPanel.classList.toggle('open');
-        }
     }
 
     updateServiceSelector(services, currentService) {

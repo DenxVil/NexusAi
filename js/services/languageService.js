@@ -7,15 +7,14 @@ export class LanguageService {
                 'language': 'Language',
                 'aiService': 'AI Service',
                 'toggleTheme': 'Toggle theme',
-                'settings': 'Settings',
                 
                 // Welcome messages
                 'welcomeTitle': 'Welcome to ShanxAi! 👋',
                 'welcomeMessage': `I'm your AI assistant powered by multiple AI services. To get started:
 
-1. Configure your API keys in the settings panel ⚙️
-2. Select your preferred AI service from the dropdown
-3. Start chatting!`,
+1. Select your preferred AI service from the dropdown
+2. Start chatting and explore Phoenix Intelligence features!
+3. Try our Telegram bot for the full experience`,
                 
                 // Chat interface
                 'typeMessage': 'Type your message...',
@@ -32,12 +31,6 @@ export class LanguageService {
                 'processingVoice': 'Processing voice...',
                 'historyCleared': 'Chat history cleared',
                 'historyExported': 'History exported successfully',
-                
-                // Settings
-                'apiKeys': 'API Keys',
-                'theme': 'Theme',
-                'voiceSettings': 'Voice Settings',
-                'modelSettings': 'Model Settings',
                 
                 // AI Personality responses (emotional/humorous)
                 'aiResponses': [
@@ -61,9 +54,9 @@ export class LanguageService {
                 'welcomeTitle': 'ShanxAi में आपका स्वागत है! 👋',
                 'welcomeMessage': `मैं आपका एआई सहायक हूं जो कई एआई सेवाओं द्वारा संचालित है। शुरू करने के लिए:
 
-1. सेटिंग्स पैनल में अपनी API कुंजियां कॉन्फ़िगर करें ⚙️
-2. ड्रॉपडाउन से अपनी पसंदीदा एआई सेवा चुनें
-3. चैट करना शुरू करें!`,
+1. ड्रॉपडाउन से अपनी पसंदीदा एआई सेवा चुनें
+2. चैट करना शुरू करें और Phoenix Intelligence सुविधाओं का अन्वेषण करें!
+3. पूरे अनुभव के लिए हमारे Telegram बॉट को आज़माएं`,
                 
                 // Chat interface
                 'typeMessage': 'अपना संदेश टाइप करें...',
@@ -80,12 +73,6 @@ export class LanguageService {
                 'processingVoice': 'आवाज़ प्रोसेस कर रहे हैं...',
                 'historyCleared': 'चैट इतिहास साफ़ कर दिया गया',
                 'historyExported': 'इतिहास सफलतापूर्वक निर्यात किया गया',
-                
-                // Settings
-                'apiKeys': 'API कुंजियां',
-                'theme': 'थीम',
-                'voiceSettings': 'आवाज़ सेटिंग्स',
-                'modelSettings': 'मॉडल सेटिंग्स',
                 
                 // AI Personality responses (emotional/humorous in Hindi)
                 'aiResponses': [
