@@ -1,4 +1,5 @@
-// Centralized configuration for Nexus Ai
+// Created with love 🩶 by Denvil 🧑‍💻
+// Centralized configuration for ShanxAi
 export const config = {
     // AI Service Configuration
     ai: {

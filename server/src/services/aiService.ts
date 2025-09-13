@@ -1,3 +1,5 @@
+// Created with love 🩶 by Denvil 🧑‍💻
+
 export class AIService {
     constructor() {
         // Initialize with environment variables
@@ -28,7 +30,7 @@ export class AIService {
             throw new Error('Gemini API key not configured');
         }
 
-        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
         
         // Build context from chat history
         const context = chatHistory
@@ -69,7 +71,7 @@ export class AIService {
 
         // Convert chat history to Perplexity format
         const messages = [
-            { role: 'system', content: 'You are Nexus Ai, a helpful AI assistant created by ◉Ɗєиνιℓ. Provide informative and engaging responses.' }
+            { role: 'system', content: 'You are ShanxAi, a helpful AI assistant created by Denvil 🧑‍💻. Provide informative and engaging responses.' }
         ];
 
         // Add recent chat history
@@ -119,8 +121,8 @@ export class AIService {
             .join('\n');
 
         const prompt = context 
-            ? `You are Nexus Ai, a helpful assistant. Continue this conversation:\n\n${context}\nUser: ${message}\nAssistant:`
-            : `You are Nexus Ai, a helpful assistant. User: ${message}\nAssistant:`;
+            ? `You are ShanxAi, a helpful assistant. Continue this conversation:\n\n${context}\nUser: ${message}\nAssistant:`
+            : `You are ShanxAi, a helpful assistant. User: ${message}\nAssistant:`;
 
         const response = await fetch('https://api-inference.huggingface.co/models/microsoft/DialoGPT-large', {
             method: 'POST',

@@ -1,3 +1,5 @@
+// Created with love 🩶 by Denvil 🧑‍💻
+
 import { config } from './config.js';
 import { MultiAIService } from './services/ai/multiAIService.js';
 import { HistoryService } from './services/historyService.js';
@@ -45,9 +47,9 @@ class NexusAiApp {
             // Load chat history
             this.loadChatHistory();
 
-            console.log('Nexus Ai initialized successfully');
+            console.log('ShanxAi initialized successfully');
         } catch (error) {
-            console.error('Failed to initialize Nexus Ai:', error);
+            console.error('Failed to initialize ShanxAi:', error);
             if (this.uiManager) {
                 this.uiManager.showError(`Initialization failed: ${error.message}`);
             }

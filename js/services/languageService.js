@@ -10,7 +10,7 @@ export class LanguageService {
                 'settings': 'Settings',
                 
                 // Welcome messages
-                'welcomeTitle': 'Welcome to Nexus Ai! 👋',
+                'welcomeTitle': 'Welcome to ShanxAi! 👋',
                 'welcomeMessage': `I'm your AI assistant powered by multiple AI services. To get started:
 
 1. Configure your API keys in the settings panel ⚙️
@@ -26,7 +26,7 @@ export class LanguageService {
                 'importHistory': 'Import History',
                 
                 // Status messages
-                'loaded': 'Nexus Ai loaded successfully',
+                'loaded': 'ShanxAi loaded successfully',
                 'generating': 'Generating response...',
                 'listening': 'Listening...',
                 'processingVoice': 'Processing voice...',
@@ -58,7 +58,7 @@ export class LanguageService {
                 'settings': 'सेटिंग्स',
                 
                 // Welcome messages
-                'welcomeTitle': 'Nexus Ai में आपका स्वागत है! 👋',
+                'welcomeTitle': 'ShanxAi में आपका स्वागत है! 👋',
                 'welcomeMessage': `मैं आपका एआई सहायक हूं जो कई एआई सेवाओं द्वारा संचालित है। शुरू करने के लिए:
 
 1. सेटिंग्स पैनल में अपनी API कुंजियां कॉन्फ़िगर करें ⚙️
@@ -74,7 +74,7 @@ export class LanguageService {
                 'importHistory': 'इतिहास आयात करें',
                 
                 // Status messages
-                'loaded': 'Nexus Ai सफलतापूर्वक लोड हुआ',
+                'loaded': 'ShanxAi सफलतापूर्वक लोड हुआ',
                 'generating': 'उत्तर तैयार कर रहे हैं...',
                 'listening': 'सुन रहे हैं...',
                 'processingVoice': 'आवाज़ प्रोसेस कर रहे हैं...',
