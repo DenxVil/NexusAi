@@ -56,7 +56,7 @@ export class AIService {
             throw new Error(`Gemini API error: ${response.status}`);
         }
 
-        const data = await response.json();
+        const data = await response.json() as any;
         return data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sorry, I could not generate a response.';
     }
 
@@ -101,7 +101,7 @@ export class AIService {
             throw new Error(`Perplexity API error: ${response.status}`);
         }
 
-        const data = await response.json();
+        const data = await response.json() as any;
         return data.choices?.[0]?.message?.content || 'Sorry, I could not generate a response.';
     }
 
@@ -142,7 +142,7 @@ export class AIService {
             throw new Error(`HuggingFace API error: ${response.status}`);
         }
 
-        const data = await response.json();
+        const data = await response.json() as any;
         
         if (Array.isArray(data) && data[0]?.generated_text) {
             // Extract only the assistant's response
