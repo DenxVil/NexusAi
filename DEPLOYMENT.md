@@ -39,6 +39,7 @@ This guide will help you deploy Nexus Ai on DigitalOcean using Docker containers
    HUGGINGFACE_API_KEY=your_huggingface_api_key
    TELEGRAM_BOT_TOKEN=your_telegram_bot_token
    CORS_ORIGIN=https://your-app-name.ondigitalocean.app
+   REACT_APP_API_URL=https://your-app-name.ondigitalocean.app/api
    ```
 
 5. **Deploy:**
@@ -88,6 +89,7 @@ This guide will help you deploy Nexus Ai on DigitalOcean using Docker containers
    HUGGINGFACE_API_KEY=your_huggingface_api_key
    TELEGRAM_BOT_TOKEN=your_telegram_bot_token
    CORS_ORIGIN=http://your_droplet_ip:5000
+   REACT_APP_API_URL=http://your_droplet_ip:5000/api
    MONGO_ROOT_USERNAME=admin
    MONGO_ROOT_PASSWORD=secure_password
    ```

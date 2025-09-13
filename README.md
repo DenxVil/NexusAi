@@ -95,6 +95,9 @@ TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
 # Server Configuration
 PORT=5000
 NODE_ENV=development
+
+# Frontend API Configuration (for production deployment)
+REACT_APP_API_URL=http://localhost:5000/api
 ```
 
 4. **Start the development environment:**
@@ -185,6 +188,7 @@ heroku create your-nexus-ai-app
 ```bash
 heroku config:set TELEGRAM_BOT_TOKEN=your_token_here
 heroku config:set GEMINI_API_KEY=your_key_here
+heroku config:set REACT_APP_API_URL=https://your-nexus-ai-app.herokuapp.com/api
 # Add other environment variables as needed
 ```
 
@@ -195,8 +199,11 @@ git push heroku main
 
 ### Other Platforms
 - **Vercel** - Perfect for frontend deployment
-- **Railway** - Excellent for full-stack deployment
+- **Railway** - Excellent for full-stack deployment  
 - **DigitalOcean App Platform** - Scalable container deployment
+- **Render** - Full-stack deployment (see `render.yaml` configuration)
+
+**Important:** For all deployment platforms, make sure to set the `REACT_APP_API_URL` environment variable to point to your deployed backend API URL (e.g., `https://your-app.onrender.com/api`).
 
 ## 📞 Support
 

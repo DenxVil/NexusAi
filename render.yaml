@@ -20,6 +20,8 @@ services:
         value: production
       - key: TELEGRAM_BOT_TOKEN
         sync: false # Set this securely in the Render dashboard
+      - key: REACT_APP_API_URL
+        sync: false # Set this to your deployed backend URL (e.g., https://your-app.onrender.com/api)
 
 # Note: This setup assumes your Express server in 'server/index.js' is configured
 # to serve the static files from the 'client/build' directory.
