@@ -1,16 +1,25 @@
-# Blueprint for deploying Nexus Ai on Render
+# Blueprint for deploying the Nexus Ai monorepo on Render
 services:
   - type: web
     name: nexus-ai
     env: node
-    plan: free # Can be upgraded to a paid plan if needed
-    buildCommand: 'npm install'
+    plan: free
+    # Specifies the root directory of the backend service
+    rootDir: ./server
+    # Commands to build both the client and server
+    buildCommand: |
+      npm install && \
+      npm run build && \
+      cd ../client && \
+      npm install && \
+      npm run build
+    # Command to start the production server
     startCommand: 'npm start'
     envVars:
-      - key: TELEGRAM_BOT_TOKEN
-        sync: false # Set this in the Render dashboard
       - key: NODE_ENV
         value: production
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false # Set this securely in the Render dashboard
 
-# Auto-deploy on pushes to the main branch
-previews: false
+# Note: This setup assumes your Express server in 'server/index.js' is configured
+# to serve the static files from the 'client/build' directory.
