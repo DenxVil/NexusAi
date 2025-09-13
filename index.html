@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShanxAi - AI Chat Assistant</title>
+    <title>ⵢɧαɳ Aⵊ - AI Chat Assistant</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,11 +15,12 @@
         <header class="app-header">
             <div class="header-left">
                 <h1 class="app-title">
-                    <span class="app-icon">🤖</span>
-                    ShanxAi
+                    <span class="app-icon">ⵢ</span>
+                    <span class="app-name">ⵢɧαɳ Aⵊ</span>
+                    <span class="app-tagline">Created by ◉Ɗєиνιℓ</span>
                 </h1>
                 <div class="service-selector-container">
-                    <label for="service-selector">AI Service:</label>
+                    <label for="service-selector" data-translate="aiService">AI Service:</label>
                     <select id="service-selector" class="service-selector">
                         <option value="gemini">Gemini</option>
                         <option value="perplexity">Perplexity</option>
@@ -28,6 +29,13 @@
                 </div>
             </div>
             <div class="header-right">
+                <div class="language-selector-container">
+                    <label for="language-selector" data-translate="language">Language:</label>
+                    <select id="language-selector" class="language-selector">
+                        <option value="en">English</option>
+                        <option value="hi">हिंदी</option>
+                    </select>
+                </div>
                 <div id="status-indicator" class="status"></div>
                 <button id="theme-toggle" class="icon-button" title="Toggle theme">🌙</button>
                 <button id="settings-button" class="icon-button" title="Settings">⚙️</button>
@@ -42,14 +50,13 @@
                     <div class="message assistant-message welcome-message">
                         <div class="message-content">
                             <div class="message-text">
-                                Welcome to ShanxAi! 👋<br>
-                                I'm your AI assistant powered by multiple AI services. To get started:
-                                <br><br>
-                                1. Configure your API keys in the settings panel ⚙️<br>
-                                2. Select your preferred AI service from the dropdown<br>
-                                3. Start chatting!<br>
-                                <br>
-                                You can also use voice input 🎤 if your browser supports it.
+                                <h3 data-translate="welcomeTitle">Welcome to ⵢɧαɳ Aⵊ! 👋</h3>
+                                <p data-translate="welcomeMessage">I'm your AI assistant powered by multiple AI services. To get started:
+
+1. Configure your API keys in the settings panel ⚙️
+2. Select your preferred AI service from the dropdown
+3. Start chatting!</p>
+                            </div>
                             </div>
                             <div class="message-meta">
                                 <span class="message-time">Welcome</span>
@@ -77,9 +84,11 @@
                         id="message-input" 
                         class="message-input" 
                         placeholder="Type your message here... (Enter to send, Shift+Enter for new line)"
+                        data-translate="typeMessage"
                         rows="1"
                     ></textarea>
                     <div class="input-actions">
+                        <button id="image-button" class="image-button" title="Generate image">🎨</button>
                         <button id="voice-button" class="voice-button" title="Voice input">🎤</button>
                         <button id="send-button" class="send-button" title="Send message">
                             <span class="send-icon">➤</span>

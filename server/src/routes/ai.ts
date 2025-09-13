@@ -3,7 +3,8 @@ import { body } from 'express-validator';
 import { 
   sendChatMessage, 
   getAvailableModels, 
-  generateContent 
+  generateContent,
+  generateImage
 } from '../controllers/aiController';
 import { protect } from '../middleware/auth';
 
@@ -45,9 +46,28 @@ const generateContentValidation = [
     .withMessage('Invalid model selection')
 ];
 
+const generateImageValidation = [
+  body('prompt')
+    .isLength({ min: 1, max: 1000 })
+    .withMessage('Image prompt must be between 1 and 1000 characters'),
+  body('size')
+    .optional()
+    .isIn(['256x256', '512x512', '1024x1024', '1792x1024', '1024x1792'])
+    .withMessage('Invalid image size'),
+  body('style')
+    .optional()
+    .isIn(['vivid', 'natural'])
+    .withMessage('Invalid style selection'),
+  body('quality')
+    .optional()
+    .isIn(['standard', 'hd'])
+    .withMessage('Invalid quality selection')
+];
+
 // Routes
 router.post('/chat', chatMessageValidation, sendChatMessage);
 router.get('/models', getAvailableModels);
 router.post('/generate', generateContentValidation, generateContent);
+router.post('/generate-image', generateImageValidation, generateImage);
 
 export default router;

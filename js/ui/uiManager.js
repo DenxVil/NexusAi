@@ -5,8 +5,10 @@ export class UIManager {
         this.currentTheme = 'dark';
         this.onSendMessage = null;
         this.onVoiceToggle = null;
+        this.onImageGenerate = null;
         this.onServiceChange = null;
         this.onSettingsToggle = null;
+        this.onLanguageChange = null;
         
         this.initializeElements();
         this.setupEventListeners();
@@ -21,6 +23,7 @@ export class UIManager {
             messageInput: document.getElementById('message-input'),
             sendButton: document.getElementById('send-button'),
             voiceButton: document.getElementById('voice-button'),
+            imageButton: document.getElementById('image-button'),
             settingsButton: document.getElementById('settings-button'),
             serviceSelector: document.getElementById('service-selector'),
             settingsPanel: document.getElementById('settings-panel'),
@@ -30,6 +33,7 @@ export class UIManager {
             exportHistoryButton: document.getElementById('export-history'),
             importHistoryButton: document.getElementById('import-history'),
             fileInput: document.getElementById('file-input'),
+            languageSelector: document.getElementById('language-selector'),
             statusIndicator: document.getElementById('status-indicator'),
             typingIndicator: document.getElementById('typing-indicator'),
             voiceStatus: document.getElementById('voice-status')
@@ -62,6 +66,18 @@ export class UIManager {
             this.elements.voiceButton.addEventListener('click', () => {
                 if (this.onVoiceToggle) {
                     this.onVoiceToggle();
+                }
+            });
+        }
+
+        // Image generation button
+        if (this.elements.imageButton) {
+            this.elements.imageButton.addEventListener('click', () => {
+                const prompt = this.elements.messageInput.value.trim();
+                if (prompt && this.onImageGenerate) {
+                    this.onImageGenerate(prompt);
+                    this.elements.messageInput.value = '';
+                    this.autoResizeTextarea(this.elements.messageInput);
                 }
             });
         }
@@ -140,6 +156,16 @@ export class UIManager {
                 }
             });
         });
+
+        // Language selector
+        if (this.elements.languageSelector) {
+            this.elements.languageSelector.addEventListener('change', (e) => {
+                const language = e.target.value;
+                if (this.onLanguageChange) {
+                    this.onLanguageChange(language);
+                }
+            });
+        }
     }
 
     sendMessage() {
@@ -165,7 +191,7 @@ export class UIManager {
         
         let messageHTML = `
             <div class="message-content">
-                <div class="message-text">${this.formatMessage(content)}</div>
+                <div class="message-text">${options.isHtml ? content : this.formatMessage(content)}</div>
                 <div class="message-meta">
                     <span class="message-time">${timestamp}</span>
         `;
@@ -365,6 +391,10 @@ export class UIManager {
         this.onVoiceToggle = callback;
     }
 
+    setOnImageGenerate(callback) {
+        this.onImageGenerate = callback;
+    }
+
     setOnServiceChange(callback) {
         this.onServiceChange = callback;
     }
@@ -383,6 +413,10 @@ export class UIManager {
 
     setOnImportHistory(callback) {
         this.onImportHistory = callback;
+    }
+
+    setOnLanguageChange(callback) {
+        this.onLanguageChange = callback;
     }
 
     // Initialize the UI after page load

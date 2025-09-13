@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useLanguage } from '../../hooks/useLanguage';
 
 export const Navbar: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
+  const { currentLanguage, setLanguage, t } = useLanguage();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -17,32 +19,49 @@ export const Navbar: React.FC = () => {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">S</span>
+              <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center transform hover:scale-110 transition-transform duration-300">
+                <span className="text-white font-bold text-lg">ⵢ</span>
               </div>
-              <span className="text-xl font-bold text-gray-900">ShanxAi</span>
+              <div className="flex flex-col">
+                <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">{t('appName')}</span>
+                <span className="text-xs text-gray-500 font-medium">{t('tagline')}</span>
+              </div>
             </Link>
           </div>
 
-          {isAuthenticated ? (
+          <div className="flex items-center space-x-4">
+            {/* Language Selector */}
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-gray-700">{t('language')}:</span>
+              <select
+                value={currentLanguage}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="en">English</option>
+                <option value="hi">हिंदी</option>
+              </select>
+            </div>
+
+            {isAuthenticated ? (
             <div className="flex items-center space-x-4">
               <Link
                 to="/dashboard"
                 className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium"
               >
-                Dashboard
+                {t('dashboard')}
               </Link>
               <Link
                 to="/chat"
                 className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium"
               >
-                Chat
+                {t('chat')}
               </Link>
               <Link
                 to="/profile"
                 className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium"
               >
-                Profile
+                {t('profile')}
               </Link>
               
               <div className="flex items-center space-x-2">
@@ -66,7 +85,7 @@ export const Navbar: React.FC = () => {
                 onClick={handleLogout}
                 className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
               >
-                Logout
+                {t('logout')}
               </button>
             </div>
           ) : (
@@ -75,16 +94,17 @@ export const Navbar: React.FC = () => {
                 to="/login"
                 className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium"
               >
-                Login
+                {t('login')}
               </Link>
               <Link
                 to="/register"
                 className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium"
               >
-                Sign Up
+                {t('register')}
               </Link>
             </div>
           )}
+          </div>
         </div>
       </div>
     </nav>
