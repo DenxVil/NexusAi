@@ -10,7 +10,7 @@ export class LanguageService {
                 'settings': 'Settings',
                 
                 // Welcome messages
-                'welcomeTitle': 'Welcome to ⵢɧαɳ Aⵊ! 👋',
+                'welcomeTitle': 'Welcome to Nexus Ai! 👋',
                 'welcomeMessage': `I'm your AI assistant powered by multiple AI services. To get started:
 
 1. Configure your API keys in the settings panel ⚙️
@@ -26,7 +26,7 @@ export class LanguageService {
                 'importHistory': 'Import History',
                 
                 // Status messages
-                'loaded': 'ⵢɧαɳ Aⵊ loaded successfully',
+                'loaded': 'Nexus Ai loaded successfully',
                 'generating': 'Generating response...',
                 'listening': 'Listening...',
                 'processingVoice': 'Processing voice...',
@@ -58,7 +58,7 @@ export class LanguageService {
                 'settings': 'सेटिंग्स',
                 
                 // Welcome messages
-                'welcomeTitle': 'ⵢɧαɳ Aⵊ में आपका स्वागत है! 👋',
+                'welcomeTitle': 'Nexus Ai में आपका स्वागत है! 👋',
                 'welcomeMessage': `मैं आपका एआई सहायक हूं जो कई एआई सेवाओं द्वारा संचालित है। शुरू करने के लिए:
 
 1. सेटिंग्स पैनल में अपनी API कुंजियां कॉन्फ़िगर करें ⚙️
@@ -74,7 +74,7 @@ export class LanguageService {
                 'importHistory': 'इतिहास आयात करें',
                 
                 // Status messages
-                'loaded': 'ⵢɧαɳ Aⵊ सफलतापूर्वक लोड हुआ',
+                'loaded': 'Nexus Ai सफलतापूर्वक लोड हुआ',
                 'generating': 'उत्तर तैयार कर रहे हैं...',
                 'listening': 'सुन रहे हैं...',
                 'processingVoice': 'आवाज़ प्रोसेस कर रहे हैं...',
@@ -105,7 +105,7 @@ export class LanguageService {
     
     initializeLanguage() {
         // Load saved language preference
-        const savedLanguage = localStorage.getItem('shanxai_language');
+        const savedLanguage = localStorage.getItem('nexus_ai_language');
         if (savedLanguage && this.translations[savedLanguage]) {
             this.currentLanguage = savedLanguage;
         }
@@ -117,7 +117,7 @@ export class LanguageService {
     setLanguage(language) {
         if (this.translations[language]) {
             this.currentLanguage = language;
-            localStorage.setItem('shanxai_language', language);
+            localStorage.setItem('nexus_ai_language', language);
             this.updateLanguage();
         }
     }
@@ -157,9 +157,9 @@ export class LanguageService {
         }
         
         // Update voice input language if available
-        if (window.shanxAiApp?.voiceService) {
+        if (window.nexusAiApp?.voiceService) {
             const voiceLangCode = this.currentLanguage === 'hi' ? 'hi-IN' : 'en-US';
-            window.shanxAiApp.voiceService.setLanguage(voiceLangCode);
+            window.nexusAiApp.voiceService.setLanguage(voiceLangCode);
         }
     }
     

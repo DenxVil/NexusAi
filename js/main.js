@@ -5,7 +5,7 @@ import { VoiceInputService } from './services/voiceInputService.js';
 import { LanguageService } from './services/languageService.js';
 import { UIManager } from './ui/uiManager.js';
 
-class ShanxAiApp {
+class NexusAiApp {
     constructor() {
         this.config = config;
         this.aiService = null;
@@ -45,9 +45,9 @@ class ShanxAiApp {
             // Load chat history
             this.loadChatHistory();
 
-            console.log('ShanxAi initialized successfully');
+            console.log('Nexus Ai initialized successfully');
         } catch (error) {
-            console.error('Failed to initialize ShanxAi:', error);
+            console.error('Failed to initialize Nexus Ai:', error);
             if (this.uiManager) {
                 this.uiManager.showError(`Initialization failed: ${error.message}`);
             }
@@ -168,7 +168,7 @@ class ShanxAiApp {
             this.uiManager.updateStatus(`Switched to ${serviceName}`, 'success');
             
             // Save current service preference
-            localStorage.setItem('shanxai_current_service', serviceName);
+            localStorage.setItem('nexus_ai_current_service', serviceName);
         } catch (error) {
             this.uiManager.showError(`Failed to switch service: ${error.message}`);
         }
@@ -180,7 +180,7 @@ class ShanxAiApp {
             this.uiManager.updateStatus(`API key updated for ${serviceName}`, 'success');
             
             // Save API key (encrypted in a real implementation)
-            localStorage.setItem(`shanxai_api_key_${serviceName}`, apiKey);
+            localStorage.setItem(`nexus_ai_api_key_${serviceName}`, apiKey);
             
             // Update service selector to reflect availability
             this.updateServiceSelector();
@@ -260,7 +260,7 @@ class ShanxAiApp {
             
             const a = document.createElement('a');
             a.href = url;
-            a.download = `shanxai_history_${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `nexus_ai_history_${new Date().toISOString().split('T')[0]}.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -290,7 +290,7 @@ class ShanxAiApp {
         const services = this.aiService.getAvailableServices();
         
         services.forEach(serviceName => {
-            const savedKey = localStorage.getItem(`shanxai_api_key_${serviceName}`);
+            const savedKey = localStorage.getItem(`nexus_ai_api_key_${serviceName}`);
             if (savedKey) {
                 try {
                     this.aiService.setApiKey(serviceName, savedKey);
@@ -307,7 +307,7 @@ class ShanxAiApp {
         });
 
         // Load current service preference
-        const savedService = localStorage.getItem('shanxai_current_service');
+        const savedService = localStorage.getItem('nexus_ai_current_service');
         if (savedService && this.aiService.getAvailableServices().includes(savedService)) {
             try {
                 this.aiService.setCurrentService(savedService);
@@ -388,8 +388,8 @@ class ShanxAiApp {
 
 // Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    window.shanxAi = new ShanxAiApp();
+    window.nexusAiApp = new NexusAiApp();
 });
 
 // Export for module usage
-export default ShanxAiApp;
+export default NexusAiApp;

@@ -1,7 +1,7 @@
 {
-  "name": "shanx-ai-server",
+  "name": "nexus-ai-server",
   "version": "1.0.0",
-  "description": "Backend API server for ShanxAi application",
+  "description": "Backend API server for Nexus Ai application with Telegram bot integration",
   "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon src/index.ts",
@@ -22,6 +22,7 @@
     "mongoose": "^8.0.3",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
+    "node-telegram-bot-api": "^0.66.0",
     "socket.io": "^4.7.4",
     "uuid": "^13.0.0"
   },
@@ -34,6 +35,7 @@
     "@types/morgan": "^1.9.9",
     "@types/multer": "^1.4.11",
     "@types/node": "^20.10.4",
+    "@types/node-telegram-bot-api": "^0.64.7",
     "@types/uuid": "^10.0.0",
     "jest": "^29.7.0",
     "nodemon": "^3.0.2",

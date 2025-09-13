@@ -1,9 +1,10 @@
 {
-  "name": "shanx-ai",
+  "name": "nexus-ai",
   "version": "1.0.0",
-  "description": "AI-powered application similar to ayesoul.com",
+  "description": "AI-powered application with multi-model support and Telegram integration",
   "main": "server/index.js",
   "scripts": {
+    "start": "cd server && npm start",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "cd server && npm run dev",
     "client": "cd client && npm start",
@@ -11,8 +12,11 @@
     "install-all": "npm install && cd client && npm install && cd ../server && npm install",
     "test": "cd client && npm test && cd ../server && npm test"
   },
-  "keywords": ["ai", "machine-learning", "chat", "soul", "artificial-intelligence"],
-  "author": "ShanxAi Team",
+  "engines": {
+    "node": "18.x"
+  },
+  "keywords": ["ai", "machine-learning", "chat", "nexus", "artificial-intelligence", "telegram-bot"],
+  "author": "◉Ɗєиνιℓ",
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^8.2.2"
