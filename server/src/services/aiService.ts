@@ -28,7 +28,7 @@ export class AIService {
             throw new Error('Gemini API key not configured');
         }
 
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`;
         
         // Build context from chat history
         const context = chatHistory
