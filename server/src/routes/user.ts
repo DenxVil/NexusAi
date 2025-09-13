@@ -1,24 +1,30 @@
-import { Router } from 'express';
-import { protect } from '../middleware/auth';
+import { Router, Request, Response } from 'express';
+import { body } from 'express-validator';
+import { registerUser, loginUser } from '../controllers/userController';
+import { validateRequest } from '../middleware/validateRequest';
 
 const router = Router();
 
-// Apply authentication to all routes
-router.use(protect);
+// Route for user registration
+router.post(
+  '/register',
+  [
+    body('username').isString().notEmpty().withMessage('Username is required'),
+    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
+  ],
+  validateRequest,
+  (req: Request, res: Response) => registerUser(req, res)
+);
 
-// Placeholder for user routes - these would be implemented as needed
-router.get('/profile', (req, res) => {
-  res.json({
-    success: true,
-    data: { message: 'User profile endpoint - to be implemented' }
-  });
-});
-
-router.put('/profile', (req, res) => {
-  res.json({
-    success: true,
-    data: { message: 'Update user profile endpoint - to be implemented' }
-  });
-});
+// Route for user login
+router.post(
+  '/login',
+  [
+    body('username').notEmpty().withMessage('Username is required'),
+    body('password').notEmpty().withMessage('Password is required'),
+  ],
+  validateRequest,
+  (req: Request, res: Response) => loginUser(req, res)
+);
 
 export default router;
