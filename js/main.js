@@ -57,6 +57,7 @@ class ShanxAiApp {
     setupUICallbacks() {
         this.uiManager.setOnSendMessage((message) => this.handleSendMessage(message));
         this.uiManager.setOnVoiceToggle(() => this.handleVoiceToggle());
+        this.uiManager.setOnImageGenerate((prompt) => this.handleImageGenerate(prompt));
         this.uiManager.setOnServiceChange((service) => this.handleServiceChange(service));
         this.uiManager.setOnApiKeyChange((service, apiKey) => this.handleApiKeyChange(service, apiKey));
         this.uiManager.setOnClearHistory(() => this.handleClearHistory());
@@ -197,6 +198,58 @@ class ShanxAiApp {
     handleLanguageChange(language) {
         this.languageService.setLanguage(language);
         this.uiManager.updateStatus(this.languageService.translate('loaded'), 'success');
+    }
+
+    async handleImageGenerate(prompt) {
+        try {
+            // Add user prompt to UI
+            const userMessageElement = this.uiManager.addMessage(`🎨 ${prompt}`, 'user', {
+                timestamp: new Date().toLocaleTimeString()
+            });
+
+            // Show image generation status
+            this.uiManager.updateStatus('Generating image...', 'info');
+            
+            // Add generating indicator
+            const generatingElement = this.uiManager.addMessage('🎨 Generating image, please wait...', 'assistant', {
+                timestamp: new Date().toLocaleTimeString(),
+                service: 'image-generator'
+            });
+
+            // Simulate image generation (in real implementation, call actual API)
+            await new Promise(resolve => setTimeout(resolve, 3000 + Math.random() * 2000));
+
+            // Mock image URLs - in real implementation, this would call the backend API
+            const mockImageUrls = [
+                'https://picsum.photos/512/512?random=' + Math.floor(Math.random() * 1000),
+                'https://picsum.photos/512/512?random=' + Math.floor(Math.random() * 1000),
+            ];
+
+            const imageUrl = mockImageUrls[Math.floor(Math.random() * mockImageUrls.length)];
+
+            // Remove generating message
+            generatingElement.remove();
+
+            // Add generated image
+            const imageContent = `
+                <div class="generated-image">
+                    <img src="${imageUrl}" alt="Generated image: ${prompt}" style="max-width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <p style="margin-top: 8px; font-size: 0.9em; color: var(--text-secondary);">Generated image for: "${prompt}"</p>
+                </div>
+            `;
+
+            this.uiManager.addMessage(imageContent, 'assistant', {
+                timestamp: new Date().toLocaleTimeString(),
+                service: 'image-generator',
+                isHtml: true
+            });
+
+            this.uiManager.updateStatus('Image generated successfully!', 'success');
+
+        } catch (error) {
+            console.error('Image generation error:', error);
+            this.uiManager.showError(`Failed to generate image: ${error.message}`);
+        }
     }
 
     handleExportHistory() {

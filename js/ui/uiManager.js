@@ -5,6 +5,7 @@ export class UIManager {
         this.currentTheme = 'dark';
         this.onSendMessage = null;
         this.onVoiceToggle = null;
+        this.onImageGenerate = null;
         this.onServiceChange = null;
         this.onSettingsToggle = null;
         this.onLanguageChange = null;
@@ -22,6 +23,7 @@ export class UIManager {
             messageInput: document.getElementById('message-input'),
             sendButton: document.getElementById('send-button'),
             voiceButton: document.getElementById('voice-button'),
+            imageButton: document.getElementById('image-button'),
             settingsButton: document.getElementById('settings-button'),
             serviceSelector: document.getElementById('service-selector'),
             settingsPanel: document.getElementById('settings-panel'),
@@ -64,6 +66,18 @@ export class UIManager {
             this.elements.voiceButton.addEventListener('click', () => {
                 if (this.onVoiceToggle) {
                     this.onVoiceToggle();
+                }
+            });
+        }
+
+        // Image generation button
+        if (this.elements.imageButton) {
+            this.elements.imageButton.addEventListener('click', () => {
+                const prompt = this.elements.messageInput.value.trim();
+                if (prompt && this.onImageGenerate) {
+                    this.onImageGenerate(prompt);
+                    this.elements.messageInput.value = '';
+                    this.autoResizeTextarea(this.elements.messageInput);
                 }
             });
         }
@@ -177,7 +191,7 @@ export class UIManager {
         
         let messageHTML = `
             <div class="message-content">
-                <div class="message-text">${this.formatMessage(content)}</div>
+                <div class="message-text">${options.isHtml ? content : this.formatMessage(content)}</div>
                 <div class="message-meta">
                     <span class="message-time">${timestamp}</span>
         `;
@@ -375,6 +389,10 @@ export class UIManager {
 
     setOnVoiceToggle(callback) {
         this.onVoiceToggle = callback;
+    }
+
+    setOnImageGenerate(callback) {
+        this.onImageGenerate = callback;
     }
 
     setOnServiceChange(callback) {

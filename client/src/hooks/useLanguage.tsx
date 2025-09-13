@@ -114,8 +114,25 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   };
 
   const t = (key: string): string => {
-    const translation = translations[currentLanguage as keyof typeof translations]?.[key as keyof typeof translations['en']];
-    return translation || translations['en'][key as keyof typeof translations['en']] || key;
+    const currentTranslations = translations[currentLanguage as keyof typeof translations];
+    const fallbackTranslations = translations['en'];
+    
+    // Special handling for arrays (like aiResponses)
+    if (key === 'aiResponses') {
+      return ''; // This should be handled by getRandomAIResponse instead
+    }
+    
+    const translation = currentTranslations?.[key as keyof typeof translations['en']];
+    const fallback = fallbackTranslations[key as keyof typeof translations['en']];
+    
+    // Ensure we always return a string
+    if (typeof translation === 'string') {
+      return translation;
+    } else if (typeof fallback === 'string') {
+      return fallback;
+    } else {
+      return key;
+    }
   };
 
   const getRandomAIResponse = (): string => {

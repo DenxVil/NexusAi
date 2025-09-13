@@ -44,7 +44,6 @@ export const Navbar: React.FC = () => {
             </div>
 
             {isAuthenticated ? (
-            {isAuthenticated ? (
             <div className="flex items-center space-x-4">
               <Link
                 to="/dashboard"
@@ -106,6 +105,7 @@ export const Navbar: React.FC = () => {
             </div>
           )}
           </div>
+        </div>
       </div>
     </nav>
   );
