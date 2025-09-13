@@ -64,8 +64,8 @@ nexus-ai/
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/DenxVil/ShanxAi.git
-cd ShanxAi
+git clone https://github.com/DenxVil/NexusAi.git
+cd NexusAi
 ```
 
 2. **Install dependencies:**
