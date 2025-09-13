@@ -1,0 +1,16 @@
+# Blueprint for deploying Nexus Ai on Render
+services:
+  - type: web
+    name: nexus-ai
+    env: node
+    plan: free # Can be upgraded to a paid plan if needed
+    buildCommand: 'npm install'
+    startCommand: 'npm start'
+    envVars:
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false # Set this in the Render dashboard
+      - key: NODE_ENV
+        value: production
+
+# Auto-deploy on pushes to the main branch
+previews: false
