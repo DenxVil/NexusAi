@@ -1,0 +1,393 @@
+export class UIManager {
+    constructor() {
+        this.elements = {};
+        this.isTyping = false;
+        this.currentTheme = 'dark';
+        this.onSendMessage = null;
+        this.onVoiceToggle = null;
+        this.onServiceChange = null;
+        this.onSettingsToggle = null;
+        
+        this.initializeElements();
+        this.setupEventListeners();
+        this.applyTheme(this.currentTheme);
+    }
+
+    initializeElements() {
+        // Get references to DOM elements
+        this.elements = {
+            chatContainer: document.getElementById('chat-container'),
+            messagesContainer: document.getElementById('messages-container'),
+            messageInput: document.getElementById('message-input'),
+            sendButton: document.getElementById('send-button'),
+            voiceButton: document.getElementById('voice-button'),
+            settingsButton: document.getElementById('settings-button'),
+            serviceSelector: document.getElementById('service-selector'),
+            settingsPanel: document.getElementById('settings-panel'),
+            apiKeyInputs: document.querySelectorAll('[data-api-key]'),
+            themeToggle: document.getElementById('theme-toggle'),
+            clearHistoryButton: document.getElementById('clear-history'),
+            exportHistoryButton: document.getElementById('export-history'),
+            importHistoryButton: document.getElementById('import-history'),
+            fileInput: document.getElementById('file-input'),
+            statusIndicator: document.getElementById('status-indicator'),
+            typingIndicator: document.getElementById('typing-indicator'),
+            voiceStatus: document.getElementById('voice-status')
+        };
+    }
+
+    setupEventListeners() {
+        // Send message on button click
+        if (this.elements.sendButton) {
+            this.elements.sendButton.addEventListener('click', () => this.sendMessage());
+        }
+
+        // Send message on Enter key (but not Shift+Enter)
+        if (this.elements.messageInput) {
+            this.elements.messageInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.sendMessage();
+                }
+            });
+
+            // Auto-resize textarea
+            this.elements.messageInput.addEventListener('input', () => {
+                this.autoResizeTextarea(this.elements.messageInput);
+            });
+        }
+
+        // Voice button toggle
+        if (this.elements.voiceButton) {
+            this.elements.voiceButton.addEventListener('click', () => {
+                if (this.onVoiceToggle) {
+                    this.onVoiceToggle();
+                }
+            });
+        }
+
+        // Settings panel toggle
+        if (this.elements.settingsButton) {
+            this.elements.settingsButton.addEventListener('click', () => {
+                this.toggleSettingsPanel();
+            });
+        }
+
+        // Service selector change
+        if (this.elements.serviceSelector) {
+            this.elements.serviceSelector.addEventListener('change', (e) => {
+                if (this.onServiceChange) {
+                    this.onServiceChange(e.target.value);
+                }
+            });
+        }
+
+        // Theme toggle
+        if (this.elements.themeToggle) {
+            this.elements.themeToggle.addEventListener('click', () => {
+                this.toggleTheme();
+            });
+        }
+
+        // Clear history
+        if (this.elements.clearHistoryButton) {
+            this.elements.clearHistoryButton.addEventListener('click', () => {
+                if (confirm('Are you sure you want to clear all chat history?')) {
+                    this.clearMessages();
+                    if (this.onClearHistory) {
+                        this.onClearHistory();
+                    }
+                }
+            });
+        }
+
+        // Export history
+        if (this.elements.exportHistoryButton) {
+            this.elements.exportHistoryButton.addEventListener('click', () => {
+                if (this.onExportHistory) {
+                    this.onExportHistory();
+                }
+            });
+        }
+
+        // Import history
+        if (this.elements.importHistoryButton) {
+            this.elements.importHistoryButton.addEventListener('click', () => {
+                if (this.elements.fileInput) {
+                    this.elements.fileInput.click();
+                }
+            });
+        }
+
+        // File input for history import
+        if (this.elements.fileInput) {
+            this.elements.fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file && this.onImportHistory) {
+                    this.onImportHistory(file);
+                }
+                e.target.value = ''; // Reset file input
+            });
+        }
+
+        // API key inputs
+        this.elements.apiKeyInputs.forEach(input => {
+            input.addEventListener('change', (e) => {
+                const service = e.target.dataset.apiKey;
+                const apiKey = e.target.value;
+                if (this.onApiKeyChange) {
+                    this.onApiKeyChange(service, apiKey);
+                }
+            });
+        });
+    }
+
+    sendMessage() {
+        const message = this.elements.messageInput.value.trim();
+        if (message && this.onSendMessage) {
+            this.onSendMessage(message);
+            this.elements.messageInput.value = '';
+            this.autoResizeTextarea(this.elements.messageInput);
+        }
+    }
+
+    addMessage(content, type = 'user', options = {}) {
+        if (!this.elements.messagesContainer) return;
+
+        const messageElement = document.createElement('div');
+        messageElement.className = `message ${type}-message`;
+        
+        if (options.id) {
+            messageElement.setAttribute('data-message-id', options.id);
+        }
+
+        const timestamp = options.timestamp || new Date().toLocaleTimeString();
+        
+        let messageHTML = `
+            <div class="message-content">
+                <div class="message-text">${this.formatMessage(content)}</div>
+                <div class="message-meta">
+                    <span class="message-time">${timestamp}</span>
+        `;
+
+        if (options.service) {
+            messageHTML += `<span class="message-service">${options.service}</span>`;
+        }
+
+        messageHTML += `
+                </div>
+            </div>
+        `;
+
+        messageElement.innerHTML = messageHTML;
+
+        // Add animation class for new messages
+        if (options.animate !== false) {
+            messageElement.classList.add('message-entering');
+            setTimeout(() => {
+                messageElement.classList.remove('message-entering');
+            }, 300);
+        }
+
+        this.elements.messagesContainer.appendChild(messageElement);
+        this.scrollToBottom();
+
+        return messageElement;
+    }
+
+    updateMessage(messageElement, content, options = {}) {
+        if (!messageElement) return;
+
+        const textElement = messageElement.querySelector('.message-text');
+        if (textElement) {
+            if (options.typewriter && !this.isTyping) {
+                this.typewriterEffect(textElement, content);
+            } else {
+                textElement.innerHTML = this.formatMessage(content);
+            }
+        }
+    }
+
+    formatMessage(content) {
+        // Basic message formatting
+        return content
+            .replace(/\n/g, '<br>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/`(.*?)`/g, '<code>$1</code>');
+    }
+
+    typewriterEffect(element, text, speed = 30) {
+        if (this.isTyping) return;
+
+        this.isTyping = true;
+        element.innerHTML = '';
+        let i = 0;
+
+        const typeInterval = setInterval(() => {
+            if (i < text.length) {
+                element.innerHTML += text.charAt(i);
+                i++;
+                this.scrollToBottom();
+            } else {
+                clearInterval(typeInterval);
+                this.isTyping = false;
+                element.innerHTML = this.formatMessage(text);
+            }
+        }, speed);
+    }
+
+    showTypingIndicator() {
+        if (this.elements.typingIndicator) {
+            this.elements.typingIndicator.style.display = 'flex';
+            this.scrollToBottom();
+        }
+    }
+
+    hideTypingIndicator() {
+        if (this.elements.typingIndicator) {
+            this.elements.typingIndicator.style.display = 'none';
+        }
+    }
+
+    scrollToBottom() {
+        if (this.elements.messagesContainer) {
+            this.elements.messagesContainer.scrollTop = this.elements.messagesContainer.scrollHeight;
+        }
+    }
+
+    clearMessages() {
+        if (this.elements.messagesContainer) {
+            this.elements.messagesContainer.innerHTML = '';
+        }
+    }
+
+    autoResizeTextarea(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+    }
+
+    toggleSettingsPanel() {
+        if (this.elements.settingsPanel) {
+            this.elements.settingsPanel.classList.toggle('open');
+        }
+    }
+
+    updateServiceSelector(services, currentService) {
+        if (!this.elements.serviceSelector) return;
+
+        this.elements.serviceSelector.innerHTML = '';
+        
+        services.forEach(service => {
+            const option = document.createElement('option');
+            option.value = service.id;
+            option.textContent = service.name;
+            option.selected = service.id === currentService;
+            this.elements.serviceSelector.appendChild(option);
+        });
+    }
+
+    updateVoiceStatus(status) {
+        if (this.elements.voiceButton) {
+            this.elements.voiceButton.classList.toggle('active', status.isListening);
+            this.elements.voiceButton.classList.toggle('disabled', !status.isSupported);
+        }
+
+        if (this.elements.voiceStatus) {
+            let statusText = '';
+            if (!status.isSupported) {
+                statusText = 'Voice not supported';
+            } else if (status.isListening) {
+                statusText = 'Listening...';
+            } else {
+                statusText = 'Voice ready';
+            }
+            this.elements.voiceStatus.textContent = statusText;
+        }
+    }
+
+    updateStatus(message, type = 'info') {
+        if (this.elements.statusIndicator) {
+            this.elements.statusIndicator.textContent = message;
+            this.elements.statusIndicator.className = `status ${type}`;
+            
+            // Auto-hide status after 3 seconds for non-error messages
+            if (type !== 'error') {
+                setTimeout(() => {
+                    if (this.elements.statusIndicator.textContent === message) {
+                        this.elements.statusIndicator.textContent = '';
+                        this.elements.statusIndicator.className = 'status';
+                    }
+                }, 3000);
+            }
+        }
+    }
+
+    toggleTheme() {
+        this.currentTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+        this.applyTheme(this.currentTheme);
+    }
+
+    applyTheme(theme) {
+        document.body.setAttribute('data-theme', theme);
+        
+        if (this.elements.themeToggle) {
+            this.elements.themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+
+        // Save theme preference
+        localStorage.setItem('shanxai_theme', theme);
+    }
+
+    loadTheme() {
+        const savedTheme = localStorage.getItem('shanxai_theme');
+        if (savedTheme) {
+            this.currentTheme = savedTheme;
+            this.applyTheme(this.currentTheme);
+        }
+    }
+
+    showError(message) {
+        this.updateStatus(message, 'error');
+        console.error('UI Error:', message);
+    }
+
+    showSuccess(message) {
+        this.updateStatus(message, 'success');
+    }
+
+    // Set callback functions
+    setOnSendMessage(callback) {
+        this.onSendMessage = callback;
+    }
+
+    setOnVoiceToggle(callback) {
+        this.onVoiceToggle = callback;
+    }
+
+    setOnServiceChange(callback) {
+        this.onServiceChange = callback;
+    }
+
+    setOnApiKeyChange(callback) {
+        this.onApiKeyChange = callback;
+    }
+
+    setOnClearHistory(callback) {
+        this.onClearHistory = callback;
+    }
+
+    setOnExportHistory(callback) {
+        this.onExportHistory = callback;
+    }
+
+    setOnImportHistory(callback) {
+        this.onImportHistory = callback;
+    }
+
+    // Initialize the UI after page load
+    init() {
+        this.loadTheme();
+        this.updateStatus('ShanxAi loaded successfully', 'success');
+    }
+}
