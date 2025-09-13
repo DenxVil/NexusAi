@@ -122,7 +122,7 @@ const startServer = async () => {
     }
     
     server.listen(PORT, () => {
-      console.log(`🚀 Nexus Ai Server running on port ${PORT}`);
+      console.log(`🚀 ShanxAi Server running on port ${PORT}`);
       console.log(`📊 Health check: http://localhost:${PORT}/health`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
       console.log(`🔮 Created by ◉Ɗєиνιℓ`);
