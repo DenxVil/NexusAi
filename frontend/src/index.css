@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  body {
+    @apply bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white antialiased;
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .nexus-gradient {
+    @apply bg-gradient-to-r from-nexus-400 via-purple-500 to-pink-500;
+  }
+  
+  .nexus-text-gradient {
+    @apply bg-gradient-to-r from-nexus-400 via-purple-400 to-pink-400 bg-clip-text text-transparent;
+  }
+  
+  .chat-bubble-user {
+    @apply bg-gradient-to-r from-nexus-500 to-purple-600 text-white rounded-2xl rounded-br-sm;
+  }
+  
+  .chat-bubble-ai {
+    @apply bg-slate-800/90 backdrop-blur-sm text-gray-100 rounded-2xl rounded-bl-sm border border-slate-700/50;
+  }
+  
+  .nexus-button {
+    @apply bg-gradient-to-r from-nexus-500 to-purple-600 hover:from-nexus-600 hover:to-purple-700 
+           text-white font-medium py-2 px-4 rounded-xl transition-all duration-200 
+           shadow-lg hover:shadow-xl transform hover:scale-105;
+  }
+}
+
+@layer utilities {
+  .typing-dots::after {
+    content: '';
+    animation: typing 1.5s infinite;
+  }
+  
+  @keyframes typing {
+    0% { content: ''; }
+    25% { content: '.'; }
+    50% { content: '..'; }
+    75% { content: '...'; }
+    100% { content: ''; }
+  }
+}

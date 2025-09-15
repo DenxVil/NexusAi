@@ -31,6 +31,15 @@ A cutting-edge AI-powered Telegram bot platform featuring **sequential AI provid
 
 ```
 nexus-ai/
+├── 🌐 Frontend (React + TypeScript)
+│   ├── frontend/           # React web application
+│   │   ├── src/
+│   │   │   ├── components/   # React components
+│   │   │   ├── context/      # React context providers
+│   │   │   ├── services/     # API services
+│   │   │   ├── types/        # TypeScript types
+│   │   │   └── utils/        # Utility functions
+│   │   └── dist/            # Built frontend assets
 ├── 🔧 Backend (Node.js + TypeScript)
 │   ├── server/             # Express.js API server
 │   │   ├── src/
@@ -47,6 +56,15 @@ nexus-ai/
 ```
 
 ## 🛠️ Tech Stack
+
+### Frontend
+- **React 19** - Modern React with latest features
+- **TypeScript** - Type-safe development
+- **Vite** - Fast build tool and dev server
+- **Tailwind CSS** - Utility-first CSS framework
+- **React Markdown** - Markdown rendering
+- **Lucide React** - Beautiful icon library
+- **Axios** - HTTP client for API communication
 
 ### Backend
 - **Node.js** - Runtime environment
@@ -76,12 +94,14 @@ git clone https://github.com/DenxVil/NexusAi.git
 cd NexusAi
 ```
 
-2. **Install dependencies:**
+2. **Install all dependencies:**
 ```bash
-cd server && npm install
+npm run install-all
 ```
 
 3. **Configure environment variables:**
+
+**Backend Configuration:**
 ```bash
 # Copy example environment file
 cp server/.env.example server/.env
@@ -90,7 +110,18 @@ cp server/.env.example server/.env
 nano server/.env
 ```
 
+**Frontend Configuration:**
+```bash
+# Copy example environment file
+cp frontend/.env.example frontend/.env.local
+
+# Edit with your configuration
+nano frontend/.env.local
+```
+
 Add your API keys and configuration:
+
+**Backend (.env):**
 ```env
 # Database Configuration
 MONGODB_URI=mongodb://localhost:27017/nexus-ai
@@ -108,12 +139,31 @@ PORT=5000
 NODE_ENV=development
 ```
 
-4. **Start the development server:**
-```bash
-cd server && npm run dev
+**Frontend (.env.local):**
+```env
+VITE_API_BASE_URL=http://localhost:5000
+VITE_AI_API_KEY=your_api_key_here
+VITE_APP_NAME=NEXUS AI
 ```
 
-The API server will be available at:
+4. **Start the development servers:**
+
+**Start both frontend and backend:**
+```bash
+npm run dev:all
+```
+
+**Or start individually:**
+```bash
+# Start backend only
+npm run dev
+
+# Start frontend only (in another terminal)
+npm run dev:frontend
+```
+
+The services will be available at:
+- **Web Interface:** http://localhost:3000/NexusAi/
 - **API Server:** http://localhost:5000
 
 ## 🤖 Telegram Bot Setup
@@ -135,6 +185,12 @@ The API server will be available at:
    - Simply send a message to chat with AI
 
 ## 📱 Usage
+
+### Web Interface
+1. Open your browser and navigate to http://localhost:3000/NexusAi/
+2. Start chatting with the AI assistant
+3. Use the suggestion buttons for quick prompts
+4. View real-time AI responses with markdown formatting
 
 ### Telegram Bot
 1. Find your bot on Telegram using the username you created
@@ -163,7 +219,16 @@ The API server will be available at:
 
 ## 🚀 Deployment
 
-### Heroku Deployment
+### GitHub Pages (Frontend)
+The frontend is automatically deployed to GitHub Pages:
+1. **Configure GitHub repository secrets:**
+   - `AI_API_KEY` - Your AI service API key
+2. **Push changes to main branch:**
+   - Frontend deployment triggers automatically
+3. **Access your deployed app:**
+   - URL: `https://yourusername.github.io/NexusAi/`
+
+### Heroku Deployment (Backend)
 1. **Prepare for deployment:**
 ```bash
 # Heroku CLI required
