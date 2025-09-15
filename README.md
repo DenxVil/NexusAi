@@ -8,7 +8,7 @@
 
 A cutting-edge AI-powered application platform featuring **sequential AI provider chain**, Telegram bot integration, and stunning 3D-enhanced user interface with iask.ai-inspired design.
 
-🌐 **Website**: [https://denx.me/NexusAi](https://denx.me/NexusAi)  
+🌐 **Website**: [https://denx.me/Nexusai](https://denx.me/Nexusai)  
 📱 **Telegram Bot**: [@NexusAiProbot](https://t.me/NexusAiProbot)
 
 ## ⚡ Key Innovations

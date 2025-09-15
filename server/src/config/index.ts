@@ -41,7 +41,7 @@ export const config = {
   requestTimeoutMs: parseInt(process.env.REQUEST_TIMEOUT_MS || '30000'),
 
   // Website Configuration
-  websiteUrl: process.env.WEBSITE_URL || 'https://denx.me/NexusAi',
+  websiteUrl: process.env.WEBSITE_URL || 'https://denx.me/Nexusai',
   telegramBotUrl: process.env.TELEGRAM_BOT_URL || 'https://t.me/NexusAiProbot',
 
   // Security Configuration
