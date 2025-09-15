@@ -1,5 +1,5 @@
 // Created with love 🩶 by Denvil 🧑‍💻
-// Centralized configuration for ShanxAi
+// Centralized configuration for NEXUS AI
 export const config = {
     // AI Service Configuration
     ai: {

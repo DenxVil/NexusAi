@@ -4,7 +4,7 @@ export class HistoryService {
         this.history = [];
         this.maxItems = config.history.maxItems || 50;
         this.persistToLocalStorage = config.history.persistToLocalStorage || true;
-        this.storageKey = config.history.storageKey || 'shanxai_chat_history';
+        this.storageKey = config.history.storageKey || 'nexus_ai_chat_history';
         
         this.loadHistoryFromStorage();
     }
