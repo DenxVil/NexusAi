@@ -9,7 +9,7 @@ export class LanguageService {
                 'toggleTheme': 'Toggle theme',
                 
                 // Welcome messages
-                'welcomeTitle': 'Welcome to ShanxAi! 👋',
+                'welcomeTitle': 'Welcome to NEXUS AI! 👋',
                 'welcomeMessage': `I'm your AI assistant powered by multiple AI services. To get started:
 
 1. Select your preferred AI service from the dropdown
@@ -25,7 +25,7 @@ export class LanguageService {
                 'importHistory': 'Import History',
                 
                 // Status messages
-                'loaded': 'ShanxAi loaded successfully',
+                'loaded': 'NEXUS AI loaded successfully',
                 'generating': 'Generating response...',
                 'listening': 'Listening...',
                 'processingVoice': 'Processing voice...',
@@ -51,7 +51,7 @@ export class LanguageService {
                 'settings': 'सेटिंग्स',
                 
                 // Welcome messages
-                'welcomeTitle': 'ShanxAi में आपका स्वागत है! 👋',
+                'welcomeTitle': 'NEXUS AI में आपका स्वागत है! 👋',
                 'welcomeMessage': `मैं आपका एआई सहायक हूं जो कई एआई सेवाओं द्वारा संचालित है। शुरू करने के लिए:
 
 1. ड्रॉपडाउन से अपनी पसंदीदा एआई सेवा चुनें
@@ -67,7 +67,7 @@ export class LanguageService {
                 'importHistory': 'इतिहास आयात करें',
                 
                 // Status messages
-                'loaded': 'ShanxAi सफलतापूर्वक लोड हुआ',
+                'loaded': 'NEXUS AI सफलतापूर्वक लोड हुआ',
                 'generating': 'उत्तर तैयार कर रहे हैं...',
                 'listening': 'सुन रहे हैं...',
                 'processingVoice': 'आवाज़ प्रोसेस कर रहे हैं...',

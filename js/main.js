@@ -6,6 +6,7 @@ import { HistoryService } from './services/historyService.js';
 import { VoiceInputService } from './services/voiceInputService.js';
 import { LanguageService } from './services/languageService.js';
 import { UIManager } from './ui/uiManager.js';
+import { ThreeRenderer } from './3d/threeRenderer.js';
 
 class NexusAiApp {
     constructor() {
@@ -15,6 +16,7 @@ class NexusAiApp {
         this.voiceService = null;
         this.languageService = null;
         this.uiManager = null;
+        this.threeRenderer = null;
         this.currentMessageElement = null;
         
         this.init();
@@ -38,6 +40,11 @@ class NexusAiApp {
             // Initialize UI
             this.uiManager.init();
             
+            // Initialize 3D renderer
+            setTimeout(() => {
+                this.threeRenderer = new ThreeRenderer();
+            }, 100);
+            
             // Load saved API keys
             this.loadSavedApiKeys();
             
@@ -47,9 +54,9 @@ class NexusAiApp {
             // Load chat history
             this.loadChatHistory();
 
-            console.log('ShanxAi initialized successfully');
+            console.log('NEXUS AI initialized successfully');
         } catch (error) {
-            console.error('Failed to initialize ShanxAi:', error);
+            console.error('Failed to initialize NEXUS AI:', error);
             if (this.uiManager) {
                 this.uiManager.showError(`Initialization failed: ${error.message}`);
             }

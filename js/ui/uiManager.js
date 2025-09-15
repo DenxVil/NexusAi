@@ -28,7 +28,12 @@ export class UIManager {
             languageSelector: document.getElementById('language-selector'),
             statusIndicator: document.getElementById('status-indicator'),
             typingIndicator: document.getElementById('typing-indicator'),
-            voiceStatus: document.getElementById('voice-status')
+            voiceStatus: document.getElementById('voice-status'),
+            apiKeyInputs: document.querySelectorAll('[data-api-key]') || [],
+            fileInput: document.getElementById('file-input'),
+            clearHistoryButton: document.getElementById('clear-history-button'),
+            exportHistoryButton: document.getElementById('export-history-button'),
+            importHistoryButton: document.getElementById('import-history-button')
         };
     }
 
@@ -132,15 +137,17 @@ export class UIManager {
         }
 
         // API key inputs
-        this.elements.apiKeyInputs.forEach(input => {
-            input.addEventListener('change', (e) => {
-                const service = e.target.dataset.apiKey;
-                const apiKey = e.target.value;
-                if (this.onApiKeyChange) {
-                    this.onApiKeyChange(service, apiKey);
-                }
+        if (this.elements.apiKeyInputs && this.elements.apiKeyInputs.length > 0) {
+            this.elements.apiKeyInputs.forEach(input => {
+                input.addEventListener('change', (e) => {
+                    const service = e.target.dataset.apiKey;
+                    const apiKey = e.target.value;
+                    if (this.onApiKeyChange) {
+                        this.onApiKeyChange(service, apiKey);
+                    }
+                });
             });
-        });
+        }
 
         // Language selector
         if (this.elements.languageSelector) {
@@ -401,6 +408,6 @@ export class UIManager {
     // Initialize the UI after page load
     init() {
         this.loadTheme();
-        this.updateStatus('ShanxAi loaded successfully', 'success');
+        this.updateStatus('NEXUS AI loaded successfully', 'success');
     }
 }
