@@ -12,12 +12,13 @@ export class AIService {
     }
 
     /**
-     * Cascading AI Provider Chain: Perplexity → Gemini → HuggingFace
+     * Cascading AI Provider Chain: Perplexity → Gemini → HuggingFace → Local Fallback
      * Each provider is tried in sequence until one succeeds
      */
     async generateResponse(message: string, chatHistory: any[] = []): Promise<string> {
         const providers = ['perplexity', 'gemini', 'huggingface'];
         let lastError: Error | null = null;
+        let errors: string[] = [];
 
         console.log(`🔄 Starting cascading AI chain for message: "${message.substring(0, 50)}..."`);
 
@@ -32,6 +33,8 @@ export class AIService {
                 return verifiedResponse;
             } catch (error) {
                 lastError = error as Error;
+                const errorMsg = `${provider.toUpperCase()}: ${error instanceof Error ? error.message : 'Unknown error'}`;
+                errors.push(errorMsg);
                 console.warn(`❌ ${provider.toUpperCase()} provider failed:`, error);
                 
                 // Continue to next provider
@@ -39,9 +42,10 @@ export class AIService {
             }
         }
 
-        // If all providers fail
+        // If all AI providers fail, return a helpful fallback response
         console.error('🚨 All AI providers failed in cascading chain');
-        throw new Error(`All AI providers failed. Last error: ${lastError?.message || 'Unknown error'}`);
+        
+        return this.generateLocalFallbackResponse(message, errors);
     }
 
     /**
@@ -66,8 +70,8 @@ export class AIService {
     private async generateGeminiResponse(message: string, chatHistory: any[]): Promise<string> {
         const apiKey = config.geminiApiKey;
         
-        if (!apiKey) {
-            throw new Error('Gemini API key not configured');
+        if (!apiKey || apiKey.trim() === '') {
+            throw new Error('Gemini API key not configured or empty');
         }
 
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
@@ -106,23 +110,27 @@ export class AIService {
             clearTimeout(timeoutId);
 
             if (!response.ok) {
-                throw new Error(`Gemini API error: ${response.status} ${response.statusText}`);
+                const errorText = await response.text().catch(() => 'Unable to read error response');
+                throw new Error(`Gemini API error: ${response.status} ${response.statusText} - ${errorText}`);
             }
 
             const data = await response.json() as any;
             const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
             
-            if (!content) {
-                throw new Error('No content received from Gemini API');
+            if (!content || typeof content !== 'string' || content.trim().length === 0) {
+                throw new Error('No valid content received from Gemini API');
             }
 
-            return content;
+            return content.trim();
         } catch (error) {
             clearTimeout(timeoutId);
             if (error instanceof Error && error.name === 'AbortError') {
                 throw new Error('Gemini API request timeout');
             }
-            throw error;
+            if (error instanceof Error) {
+                throw new Error(`Gemini provider failed: ${error.message}`);
+            }
+            throw new Error('Gemini provider failed with unknown error');
         }
     }
 
@@ -132,8 +140,8 @@ export class AIService {
     private async generatePerplexityResponse(message: string, chatHistory: any[]): Promise<string> {
         const apiKey = config.perplexityApiKey;
         
-        if (!apiKey) {
-            throw new Error('Perplexity API key not configured');
+        if (!apiKey || apiKey.trim() === '') {
+            throw new Error('Perplexity API key not configured or empty');
         }
 
         // Convert chat history to Perplexity format
@@ -175,23 +183,27 @@ export class AIService {
             clearTimeout(timeoutId);
 
             if (!response.ok) {
-                throw new Error(`Perplexity API error: ${response.status} ${response.statusText}`);
+                const errorText = await response.text().catch(() => 'Unable to read error response');
+                throw new Error(`Perplexity API error: ${response.status} ${response.statusText} - ${errorText}`);
             }
 
             const data = await response.json() as any;
             const content = data.choices?.[0]?.message?.content;
             
-            if (!content) {
-                throw new Error('No content received from Perplexity API');
+            if (!content || typeof content !== 'string' || content.trim().length === 0) {
+                throw new Error('No valid content received from Perplexity API');
             }
 
-            return content;
+            return content.trim();
         } catch (error) {
             clearTimeout(timeoutId);
             if (error instanceof Error && error.name === 'AbortError') {
                 throw new Error('Perplexity API request timeout');
             }
-            throw error;
+            if (error instanceof Error) {
+                throw new Error(`Perplexity provider failed: ${error.message}`);
+            }
+            throw new Error('Perplexity provider failed with unknown error');
         }
     }
 
@@ -201,8 +213,8 @@ export class AIService {
     private async generateHuggingFaceResponse(message: string, chatHistory: any[]): Promise<string> {
         const apiKey = config.huggingfaceApiKey;
         
-        if (!apiKey) {
-            throw new Error('HuggingFace API key not configured');
+        if (!apiKey || apiKey.trim() === '') {
+            throw new Error('HuggingFace API key not configured or empty');
         }
 
         // Build context from chat history
@@ -240,7 +252,8 @@ export class AIService {
             clearTimeout(timeoutId);
 
             if (!response.ok) {
-                throw new Error(`HuggingFace API error: ${response.status} ${response.statusText}`);
+                const errorText = await response.text().catch(() => 'Unable to read error response');
+                throw new Error(`HuggingFace API error: ${response.status} ${response.statusText} - ${errorText}`);
             }
 
             const data = await response.json() as any;
@@ -249,10 +262,19 @@ export class AIService {
                 // Extract only the assistant's response
                 const fullText = data[0].generated_text;
                 const assistantStart = fullText.lastIndexOf('Assistant:');
+                let extractedText = '';
+                
                 if (assistantStart !== -1) {
-                    return fullText.substring(assistantStart + 10).trim();
+                    extractedText = fullText.substring(assistantStart + 10).trim();
+                } else {
+                    extractedText = fullText.trim();
                 }
-                return fullText.trim();
+                
+                if (!extractedText || extractedText.length === 0) {
+                    throw new Error('Empty response from HuggingFace API');
+                }
+                
+                return extractedText;
             }
             
             throw new Error('No valid content received from HuggingFace API');
@@ -261,7 +283,10 @@ export class AIService {
             if (error instanceof Error && error.name === 'AbortError') {
                 throw new Error('HuggingFace API request timeout');
             }
-            throw error;
+            if (error instanceof Error) {
+                throw new Error(`HuggingFace provider failed: ${error.message}`);
+            }
+            throw new Error('HuggingFace provider failed with unknown error');
         }
     }
 
@@ -348,8 +373,56 @@ export class AIService {
     }
 
     /**
-     * Legacy method for backward compatibility
+     * Generate a helpful local fallback response when all AI providers fail
      */
+    private generateLocalFallbackResponse(message: string, errors: string[]): string {
+        const fallbackResponses = [
+            `I apologize, but I'm currently experiencing technical difficulties with my AI providers. Your message "${message.substring(0, 50)}${message.length > 50 ? '...' : ''}" is important to me, and I want to help you.`,
+            
+            `Unfortunately, my AI services are temporarily unavailable. I understand you're asking about "${message.substring(0, 30)}${message.length > 30 ? '...' : ''}" and I'd love to assist you once my systems are back online.`,
+            
+            `I'm having trouble connecting to my AI backends right now. Your question about "${message.substring(0, 40)}${message.length > 40 ? '...' : ''}" deserves a proper response, so please try again in a few moments.`
+        ];
+
+        const randomResponse = fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
+        
+        const suggestions = this.generateSuggestionsBasedOnMessage(message);
+        
+        return `${randomResponse}
+
+🔧 **What you can try:**
+${suggestions}
+
+🕐 **Status:** All AI providers are currently unavailable
+📞 **Support:** Please try again in a few minutes
+
+*I'm Nexus AI, created with love by ◉Ɗєиνιℓ, and I'm working to get back online soon!*`;
+    }
+
+    /**
+     * Generate helpful suggestions based on the user's message
+     */
+    private generateSuggestionsBasedOnMessage(message: string): string {
+        const lowerMsg = message.toLowerCase();
+        
+        if (lowerMsg.includes('weather') || lowerMsg.includes('temperature')) {
+            return '• Try asking about weather in a specific city\n• Check a weather app for immediate results\n• Use weather-related commands like /weather [city]';
+        }
+        
+        if (lowerMsg.includes('calculate') || lowerMsg.includes('math') || /\d+\s*[\+\-\*\/]\s*\d+/.test(lowerMsg)) {
+            return '• Use the /calculate command for math operations\n• Try a calculator app for complex calculations\n• Reformulate your math question more clearly';
+        }
+        
+        if (lowerMsg.includes('image') || lowerMsg.includes('picture') || lowerMsg.includes('draw')) {
+            return '• Use the /imagine command to generate images\n• Describe what you want to see in detail\n• Try creative prompts for better results';
+        }
+        
+        if (lowerMsg.includes('define') || lowerMsg.includes('meaning') || lowerMsg.includes('what is')) {
+            return '• Use the /define command for word definitions\n• Try rephrasing your question\n• Search for the term in a dictionary';
+        }
+        
+        return '• Try rephrasing your question\n• Use specific commands like /help for assistance\n• Check back in a few minutes when services are restored';
+    }
     async generateResponseWithModel(message: string, model: string = 'perplexity', chatHistory: any[] = []): Promise<string> {
         console.warn('⚠️ generateResponseWithModel is deprecated, using cascading chain instead');
         return this.generateResponse(message, chatHistory);
