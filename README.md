@@ -1,21 +1,32 @@
 # NEXUS AI - Advanced AI Application Platform
 
+![Nexus AI Logo](🔮)
+
 *Created by ◉Ɗєиνιℓ*
 
-A cutting-edge AI-powered application platform featuring multi-model support, Telegram bot integration, and stunning 3D-enhanced user interface with custom three.js elements.
+A cutting-edge AI-powered application platform featuring **sequential AI provider chain**, Telegram bot integration, and stunning 3D-enhanced user interface with iask.ai-inspired design.
+
+🌐 **Website**: [https://denx.me/NexusAi](https://denx.me/NexusAi)  
+📱 **Telegram Bot**: [@NexusAiProbot](https://t.me/NexusAiProbot)
+
+## ⚡ Key Innovations
+
+- **🔗 Sequential AI Provider Chain** - Perplexity → Gemini → HuggingFace with automatic fallback
+- **✅ Response Verification** - Perfect, powerful, and accurate AI responses
+- **🎯 Smart Fallback System** - Ensures reliable responses every time
+- **🔮 3D Interactive Elements** - Custom three.js powered NEXUS AI logo
+- **🌊 iask.ai Inspired Design** - Clean, centered, minimal interface
 
 ## 🚀 Features
 
-- **🤖 Multi-AI Integration** - Support for Gemini, Perplexity, and HuggingFace models
-- **💬 Telegram Bot** - Seamless interaction through Telegram messenger  
-- **🎨 Custom 3D Elements** - Stunning three.js powered 3D logo and particle effects
-- **✨ Modern Minimal UI** - Clean, iask.ai-inspired design with glass morphism
-- **🌐 Multi-language Support** - English and Hindi language support
-- **🎤 Voice Input** - Voice-to-text capability for hands-free interaction
+- **🤖 Multi-AI Integration** - Sequential provider chain for maximum reliability
+- **💬 Enhanced Telegram Bot** - Simplified, core chat experience with website integration
+- **🎨 Custom 3D Elements** - Interactive NEXUS AI 3D logo with smooth animations
+- **✨ Modern Minimal UI** - Clean, iask.ai-inspired design with glassmorphism effects
+- **🌐 Cross-Platform Links** - Seamless integration between web and Telegram
 - **📱 Responsive Design** - Mobile-first responsive UI optimized for all devices
-- **💾 Chat History** - Persistent conversation storage and export/import
-- **🔐 Secure API Management** - Safe storage and management of API keys
-- **⚡ Real-time Processing** - Fast response times with multiple AI backends
+- **🔐 Secure API Management** - Environment-based API key configuration
+- **⚡ Real-time Processing** - Fast response times with intelligent routing
 
 ## 📸 Screenshots
 

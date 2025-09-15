@@ -15,6 +15,14 @@ export class MultiAIService {
         this.services.set('gemini', new GeminiService(this.config.ai.services.gemini));
         this.services.set('perplexity', new PerplexityService(this.config.ai.services.perplexity));
         this.services.set('huggingface', new HuggingFaceService(this.config.ai.services.huggingface));
+        
+        // Add virtual "auto" service for sequential fallback
+        this.services.set('auto', {
+            name: 'Auto (Sequential)',
+            hasApiKey: () => true, // Auto is always available
+            generateResponse: (prompt, options) => this.generateSequentialResponse(prompt, options),
+            generateStreamingResponse: (prompt, onChunk, options) => this.generateSequentialStreamingResponse(prompt, onChunk, options)
+        });
     }
 
     setApiKey(serviceName, apiKey) {
@@ -146,6 +154,8 @@ export class MultiAIService {
     async testAllServices() {
         const results = {};
         for (const [serviceName, service] of this.services) {
+            if (serviceName === 'auto') continue; // Skip auto service in tests
+            
             try {
                 if (service.hasApiKey()) {
                     await service.generateResponse('Hello', { timeout: 5000 });
@@ -158,5 +168,90 @@ export class MultiAIService {
             }
         }
         return results;
+    }
+
+    // Sequential response generation with fallback
+    async generateSequentialResponse(prompt, options = {}) {
+        const providers = [
+            { name: 'perplexity', service: this.services.get('perplexity') },
+            { name: 'gemini', service: this.services.get('gemini') },
+            { name: 'huggingface', service: this.services.get('huggingface') }
+        ];
+
+        let lastError = null;
+
+        for (const provider of providers) {
+            try {
+                if (provider.service && provider.service.hasApiKey()) {
+                    console.log(`Attempting to generate response with ${provider.name}...`);
+                    const response = await provider.service.generateResponse(prompt, options);
+                    
+                    // Basic response verification
+                    const verifiedResponse = this.verifyAndCorrectResponse(response, prompt);
+                    console.log(`Successfully generated response with ${provider.name}`);
+                    return verifiedResponse;
+                }
+            } catch (error) {
+                console.warn(`${provider.name} failed:`, error);
+                lastError = error;
+                continue;
+            }
+        }
+
+        // If all providers fail, throw the last error
+        throw new Error(`All AI providers failed. Last error: ${lastError?.message || 'Unknown error'}`);
+    }
+
+    // Sequential streaming response generation with fallback
+    async generateSequentialStreamingResponse(prompt, onChunk, options = {}) {
+        const providers = [
+            { name: 'perplexity', service: this.services.get('perplexity') },
+            { name: 'gemini', service: this.services.get('gemini') },
+            { name: 'huggingface', service: this.services.get('huggingface') }
+        ];
+
+        let lastError = null;
+
+        for (const provider of providers) {
+            try {
+                if (provider.service && provider.service.hasApiKey()) {
+                    console.log(`Attempting to generate streaming response with ${provider.name}...`);
+                    return await provider.service.generateStreamingResponse(prompt, onChunk, options);
+                }
+            } catch (error) {
+                console.warn(`${provider.name} streaming failed:`, error);
+                lastError = error;
+                continue;
+            }
+        }
+
+        // If all providers fail, throw the last error
+        throw new Error(`All AI providers failed. Last error: ${lastError?.message || 'Unknown error'}`);
+    }
+
+    // Response verification and correction
+    verifyAndCorrectResponse(response, originalPrompt) {
+        // Basic response verification and correction
+        if (!response || response.trim().length === 0) {
+            return "I apologize, but I couldn't generate a proper response. Please try rephrasing your question.";
+        }
+
+        // Remove common AI artifacts and improve response quality
+        let correctedResponse = response.trim();
+        
+        // Remove redundant prefixes
+        correctedResponse = correctedResponse.replace(/^(Assistant:|AI:|Bot:|Response:)\s*/i, '');
+        
+        // Ensure proper sentence structure
+        if (correctedResponse.length > 0 && !correctedResponse.match(/[.!?]$/)) {
+            correctedResponse += '.';
+        }
+
+        // Ensure minimum quality response
+        if (correctedResponse.length < 10) {
+            return `I understand you're asking about "${originalPrompt}". Let me provide a more detailed response: ${correctedResponse}`;
+        }
+
+        return correctedResponse;
     }
 }

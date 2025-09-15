@@ -327,7 +327,14 @@ class NexusAiApp {
     }
 
     updateServiceSelector() {
-        const services = this.aiService.getAvailableServices().map(serviceName => {
+        const availableServices = this.aiService.getAvailableServices();
+        
+        // Ensure 'auto' is first in the list
+        const orderedServices = availableServices.includes('auto') 
+            ? ['auto', ...availableServices.filter(s => s !== 'auto')]
+            : availableServices;
+            
+        const services = orderedServices.map(serviceName => {
             const info = this.aiService.getServiceInfo(serviceName);
             return {
                 id: serviceName,
