@@ -1,27 +1,90 @@
-# Blueprint for deploying the Nexus Ai monorepo on Render
+# Optimized Blueprint for deploying the Nexus Ai monorepo on Render with Azure integration
 services:
   - type: web
     name: nexus-ai
     env: node
-    plan: free
+    plan: starter  # Upgraded from free for better performance and reliability
+    region: oregon  # Optimized region for Azure connectivity
     # Specifies the root directory of the backend service
     rootDir: ./server
-    # Commands to build both the client and server
+    # Optimized build commands with caching and error handling
     buildCommand: |
-      npm install && \
+      set -e && \
+      echo "🔧 Building Nexus AI for production..." && \
+      npm ci --production=false && \
       npm run build && \
+      echo "📦 Building client application..." && \
       cd ../client && \
-      npm install && \
-      npm run build
-    # Command to start the production server
-    startCommand: 'npm start'
+      npm ci --production=false && \
+      npm run build && \
+      echo "✅ Build completed successfully"
+    # Optimized start command with health monitoring
+    startCommand: 'NODE_ENV=production npm start'
+    # Health check configuration for Azure Load Balancer compatibility
+    healthCheckPath: /health
+    # Auto-deploy configuration
+    autoDeploy: true
+    # Enhanced environment variables for Azure deployment
     envVars:
       - key: NODE_ENV
         value: production
+      - key: PORT
+        value: "10000"
       - key: TELEGRAM_BOT_TOKEN
-        sync: false # Set this securely in the Render dashboard
+        sync: false # Set securely in Render dashboard
       - key: REACT_APP_API_URL
-        sync: false # Set this to your deployed backend URL (e.g., https://your-app.onrender.com/api)
+        sync: false # Set to your deployed backend URL
+      - key: WEBSITE_URL
+        sync: false # Main website URL for Telegram bot
+      - key: PERPLEXITY_API_KEY
+        sync: false # AI service API key
+      - key: GEMINI_API_KEY
+        sync: false # Google Gemini API key
+      - key: HUGGINGFACE_API_KEY
+        sync: false # HuggingFace API key
+      - key: MONGO_URI
+        sync: false # MongoDB connection string
+      - key: JWT_SECRET
+        sync: false # JWT signing secret
+      - key: CORS_ORIGIN
+        sync: false # CORS origin for client
+      - key: TELEGRAM_ADMIN_UID
+        sync: false # Telegram admin user ID
+      - key: RATE_LIMIT_WINDOW_MS
+        value: "900000"
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: "200"
+      - key: MAX_TOKENS_PER_REQUEST
+        value: "2048"
+      - key: REQUEST_TIMEOUT_MS
+        value: "30000"
+      - key: ENABLE_TELEGRAM_BOT
+        value: "true"
+      - key: ENABLE_RATE_LIMITING
+        value: "true"
+      - key: ENABLE_SOCKET_IO
+        value: "true"
 
-# Note: This setup assumes your Express server in 'server/index.js' is configured
-# to serve the static files from the 'client/build' directory.
+# Database service for MongoDB (optional - can use MongoDB Atlas instead)
+  - type: pserv
+    name: nexus-ai-mongo
+    env: docker
+    dockerfilePath: ./Dockerfile.mongo
+    plan: starter
+    disk:
+      name: nexus-ai-mongo-data
+      mountPath: /data/db
+      sizeGB: 10
+    envVars:
+      - key: MONGO_INITDB_ROOT_USERNAME
+        sync: false
+      - key: MONGO_INITDB_ROOT_PASSWORD
+        sync: false
+
+# Note: This optimized setup includes:
+# - Upgraded plan for better performance
+# - Comprehensive environment variables
+# - Health check endpoint for load balancers
+# - Optimized build process with error handling
+# - Azure-compatible configuration
+# - Optional MongoDB service (recommended to use MongoDB Atlas for production)

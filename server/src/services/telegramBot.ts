@@ -52,6 +52,20 @@ export class TelegramBotService {
     "🔮 Outlook not so good", "🔮 Very doubtful"
   ];
 
+  // Redoura-inspired text formatting for Telegram
+  private formatWithRedouraStyle(text: string): string {
+    // Apply elegant Unicode styling similar to Redoura font aesthetic
+    return text
+      .replace(/\*\*(.*?)\*\*/g, '𝗥$1')  // Bold with Redoura-style emphasis
+      .replace(/\*(.*?)\*/g, '𝑅$1')      // Italic with flowing style
+      .replace(/`(.*?)`/g, '⟨$1⟩')       // Code with elegant brackets
+      .replace(/^(#{1,6})\s*(.*)/gm, (match, hashes, content) => {
+        const level = hashes.length;
+        const prefixes = ['◆', '◇', '◈', '◊', '◉', '◎'];
+        return `${prefixes[level - 1] || '◆'} ${content}`;
+      });
+  }
+
   constructor(aiService: AIService) {
     this.aiService = aiService;
     
@@ -478,23 +492,12 @@ _For complete definitions, consider consulting comprehensive dictionaries._
       // Use the new cascading AI service
       const aiResponse = await this.aiService.generateResponse(userMessage, chatHistory);
 
-      // Send response with website link
-      const responseMessage = `${aiResponse}
+      // Apply Redoura-style formatting
+      const styledResponse = this.formatWithRedouraStyle(aiResponse);
 
-🌐 *Experience the full Nexus AI interface:*
-${config.websiteUrl}`;
-
-      const keyboard: InlineKeyboardMarkup = {
-        inline_keyboard: [
-          [
-            { text: '🌐 Try Web Interface', url: config.websiteUrl }
-          ]
-        ]
-      };
-
-      await this.bot.sendMessage(chatId, responseMessage, {
-        parse_mode: 'Markdown',
-        reply_markup: keyboard
+      // Send response WITHOUT website link (as per requirement)
+      await this.bot.sendMessage(chatId, styledResponse, {
+        parse_mode: 'Markdown'
       });
 
       // Update usage and save to history
@@ -503,10 +506,7 @@ ${config.websiteUrl}`;
 
     } catch (error) {
       console.error('Error handling user message:', error);
-      await this.bot.sendMessage(chatId, `❌ I encountered an error processing your message. Please try again.
-
-🌐 *For a better experience, visit:*
-${config.websiteUrl}`);
+      await this.bot.sendMessage(chatId, `❌ I encountered an error processing your message. Please try again.`);
     }
   }
 
