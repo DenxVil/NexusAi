@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus AI - GitHub Pages Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-text { 
+            background: linear-gradient(to right, #60a5fa, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white relative overflow-hidden">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 opacity-20">
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20"></div>
+        <div class="absolute inset-0" style="background-image: radial-gradient(circle at 25% 25%, rgba(120, 119, 198, 0.3) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(255, 119, 198, 0.3) 0%, transparent 50%);"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
+        
+        <!-- 3D Logo Placeholder -->
+        <div class="mb-8 floating">
+            <div class="w-96 h-72 glass-effect rounded-lg flex items-center justify-center">
+                <div class="text-center">
+                    <div class="text-6xl gradient-text font-bold mb-4">🌟</div>
+                    <div class="text-sm text-slate-400">3D Nexus Logo</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Title - iask.ai style -->
+        <div class="text-center mb-8">
+            <h1 class="text-5xl md:text-7xl font-bold mb-4 gradient-text">
+                NEXUS AI
+            </h1>
+            <p class="text-xl md:text-2xl text-slate-300 mb-2 font-light">
+                Advanced Intelligence Platform
+            </p>
+            <p class="text-sm text-slate-400 max-w-md mx-auto leading-relaxed">
+                Powered by multiple AI services including Perplexity, Gemini, and HuggingFace with intelligent fallback systems.
+            </p>
+        </div>
+
+        <!-- Chat Interface - Enhanced iask.ai inspired design -->
+        <div class="w-full max-w-4xl mx-auto">
+            <!-- Response Display -->
+            <div class="mb-6 glass-effect rounded-2xl p-6" style="display: none;" id="response-box">
+                <div class="prose prose-invert max-w-none">
+                    <p class="text-white leading-relaxed" id="response-text"></p>
+                </div>
+            </div>
+
+            <!-- Input Form -->
+            <form onsubmit="handleSubmit(event)" class="relative">
+                <div class="relative glass-effect rounded-2xl p-2 focus-within:border-blue-400/50 focus-within:bg-white/15 transition-all duration-300">
+                    <textarea
+                        id="message-input"
+                        placeholder="Ask me anything..."
+                        class="w-full bg-transparent text-white placeholder-slate-400 border-0 outline-none resize-none px-4 py-4 text-lg leading-relaxed"
+                        rows="1"
+                        style="min-height: 60px; max-height: 200px; scrollbar-width: none; -ms-overflow-style: none;"
+                    ></textarea>
+                    
+                    <!-- Controls Bar -->
+                    <div class="flex items-center justify-between mt-2 px-2">
+                        <div class="flex items-center space-x-4">
+                            <div class="text-xs text-slate-400">
+                                Press Enter to send, Shift+Enter for new line
+                            </div>
+                            <button
+                                type="button"
+                                onclick="toggleApiConfig()"
+                                class="text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                            >
+                                ⚙️ API Config
+                            </button>
+                        </div>
+                        
+                        <button
+                            type="submit"
+                            id="send-button"
+                            class="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2 rounded-xl font-medium transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl"
+                        >
+                            <span>Send</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- API Configuration Panel -->
+            <div id="api-config" class="mt-4 glass-effect rounded-2xl p-6 hidden">
+                <h3 class="text-lg font-semibold mb-4 text-center">API Configuration</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-slate-300">
+                            🤖 Google Gemini
+                        </label>
+                        <input
+                            type="password"
+                            placeholder="Enter API key..."
+                            class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-slate-400 focus:border-blue-400/50 focus:outline-none transition-colors"
+                        />
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-slate-300">
+                            🔍 Perplexity
+                        </label>
+                        <input
+                            type="password"
+                            placeholder="Enter API key..."
+                            class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-slate-400 focus:border-blue-400/50 focus:outline-none transition-colors"
+                        />
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-slate-300">
+                            🤗 HuggingFace
+                        </label>
+                        <input
+                            type="password"
+                            placeholder="Enter API key..."
+                            class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-slate-400 focus:border-blue-400/50 focus:outline-none transition-colors"
+                        />
+                    </div>
+                </div>
+                <div class="mt-4 text-xs text-slate-400 text-center">
+                    🔒 API keys are stored locally in your browser and never sent to our servers.
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Grid - Enhanced -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 max-w-4xl mx-auto">
+            <div class="group glass-effect rounded-xl p-6 text-center hover:bg-white/10 transition-all duration-300">
+                <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                    <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">Lightning Fast</h3>
+                <p class="text-slate-400 text-sm">Sequential AI provider chain ensures fast and reliable responses</p>
+            </div>
+
+            <div class="group glass-effect rounded-xl p-6 text-center hover:bg-white/10 transition-all duration-300">
+                <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                    <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">Multi-AI Powered</h3>
+                <p class="text-slate-400 text-sm">Harnesses the power of multiple AI services for optimal results</p>
+            </div>
+
+            <div class="group glass-effect rounded-xl p-6 text-center hover:bg-white/10 transition-all duration-300">
+                <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                    <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">Mobile Ready</h3>
+                <p class="text-slate-400 text-sm">Available on Telegram bot for seamless mobile experience</p>
+            </div>
+        </div>
+
+        <!-- Status Indicator for Environment -->
+        <div class="mt-8 text-center">
+            <div class="inline-flex items-center space-x-2 glass-effect rounded-full px-4 py-2">
+                <div class="w-2 h-2 rounded-full bg-green-400"></div>
+                <span class="text-xs text-slate-400">
+                    Running on GitHub Pages with client-side AI
+                </span>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-16 text-center">
+            <p class="text-slate-400 text-sm">
+                Created with love 🩶 by <span class="text-blue-400 font-medium">Denvil</span> 🧑‍💻
+            </p>
+            <div class="mt-4 flex justify-center space-x-6 text-sm">
+                <a href="https://denx.me" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-white transition-colors">
+                    Website
+                </a>
+                <a href="https://t.me/NexusAiProbot" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-white transition-colors">
+                    Telegram Bot
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Telegram Link -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <a
+            href="https://t.me/NexusAiProbot"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group flex items-center space-x-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+        >
+            <!-- Telegram Icon -->
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.374 0 0 5.374 0 12s5.374 12 12 12 12-5.374 12-12S18.626 0 12 0zm5.568 8.16c-.181 1.858-.513 6.011-.693 8.025-.076.852-.225 1.134-.369 1.161-.313.028-.513-.207-.794-.404-1.109-.771-1.735-1.248-2.815-2.003-1.181-.826-.409-1.277.26-2.019.174-.193 3.306-3.03 3.367-3.287.008-.032.014-.15-.056-.212-.07-.063-.174-.041-.249-.024-.106.024-1.793 1.139-5.062 3.345-.48.329-.913.489-1.302.481-.428-.009-.854-.155-1.237-.381-.395-.232-.711-.358-.682-.755.028-.397.447-.623.942-.789 3.706-1.628 6.187-2.701 7.444-3.22 1.425-.616 1.981-.722 2.204-.722.049 0 .158.011.228.069.059.049.075.115.083.162.007.047.017.153.009.236z"/>
+            </svg>
+            
+            <!-- Text -->
+            <span class="hidden sm:block font-medium text-sm">
+                Try me on Telegram
+            </span>
+            
+            <!-- Mobile-only pulse indicator -->
+            <div class="sm:hidden absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+        </a>
+    </div>
+
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault();
+            const input = document.getElementById('message-input');
+            const responseBox = document.getElementById('response-box');
+            const responseText = document.getElementById('response-text');
+            const sendButton = document.getElementById('send-button');
+            
+            if (!input.value.trim()) return;
+            
+            // Show loading state
+            sendButton.innerHTML = `
+                <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                <span>Thinking...</span>
+            `;
+            sendButton.disabled = true;
+            
+            // Simulate AI response
+            setTimeout(() => {
+                responseText.textContent = "Hello! I'm Nexus AI running on GitHub Pages with client-side AI integration. This is a demonstration of the enhanced interface with iask.ai inspired design. To fully activate me, please configure your API keys using the ⚙️ API Config button above!";
+                responseBox.style.display = 'block';
+                
+                // Reset button
+                sendButton.innerHTML = `
+                    <span>Send</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    </svg>
+                `;
+                sendButton.disabled = false;
+                input.value = '';
+            }, 2000);
+        }
+        
+        function toggleApiConfig() {
+            const apiConfig = document.getElementById('api-config');
+            apiConfig.classList.toggle('hidden');
+        }
+        
+        // Add enter key support
+        document.getElementById('message-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit(e);
+            }
+        });
+    </script>
+</body>
+</html>
