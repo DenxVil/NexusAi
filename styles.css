@@ -1020,6 +1020,40 @@ textarea:focus {
   }
 }
 
+/* Floating Telegram Button */
+.floating-telegram-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: linear-gradient(135deg, #0088cc, #229ed9);
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 50px;
+  box-shadow: 0 4px 20px rgba(0, 136, 204, 0.3);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  border: none;
+  backdrop-filter: blur(10px);
+}
+
+.floating-telegram-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(0, 136, 204, 0.4);
+  background: linear-gradient(135deg, #229ed9, #0088cc);
+  color: white;
+  text-decoration: none;
+}
+
+.floating-telegram-btn svg {
+  flex-shrink: 0;
+}
+
 @media (max-width: 480px) {
   .app-header {
     padding: 0.75rem;
@@ -1046,5 +1080,16 @@ textarea:focus {
   .voice-button, .image-button {
     padding: 0.4rem;
     font-size: 1rem;
+  }
+
+  .floating-telegram-btn {
+    bottom: 1rem;
+    right: 1rem;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.8rem;
+  }
+
+  .floating-telegram-btn span {
+    display: none;
   }
 }
