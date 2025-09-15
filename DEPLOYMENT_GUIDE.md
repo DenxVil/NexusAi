@@ -42,7 +42,7 @@ Client-side AI Services    Server-side AI Services
 ### Environment Variables (Build Time)
 ```bash
 REACT_APP_API_URL=https://nexus-ai-backend.onrender.com/api
-REACT_APP_WEBSITE_URL=https://denxvil.github.io/NexusAi
+REACT_APP_WEBSITE_URL=https://denxvil.github.io/NexusAi/
 REACT_APP_TELEGRAM_BOT_URL=https://t.me/NexusAiProbot
 REACT_APP_ENVIRONMENT=github-pages
 REACT_APP_ENABLE_CLIENT_SIDE_API_KEYS=true
@@ -74,7 +74,7 @@ REACT_APP_ENABLE_OFFLINE_MODE=true
    NODE_ENV=production
    PORT=10000
    CORS_ORIGIN=https://denxvil.github.io
-   WEBSITE_URL=https://denxvil.github.io/NexusAi
+   WEBSITE_URL=https://denxvil.github.io/NexusAi/
    
    # AI Service API Keys
    PERPLEXITY_API_KEY=your_key_here

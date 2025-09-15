@@ -67,6 +67,7 @@ class NexusAiApp {
         this.uiManager.setOnSendMessage((message) => this.handleSendMessage(message));
         this.uiManager.setOnVoiceToggle(() => this.handleVoiceToggle());
         this.uiManager.setOnImageGenerate((prompt) => this.handleImageGenerate(prompt));
+        this.uiManager.setOnSummarize((text) => this.handleSummarize(text));
         this.uiManager.setOnServiceChange((service) => this.handleServiceChange(service));
         this.uiManager.setOnApiKeyChange((service, apiKey) => this.handleApiKeyChange(service, apiKey));
         this.uiManager.setOnClearHistory(() => this.handleClearHistory());
@@ -258,6 +259,64 @@ class NexusAiApp {
         } catch (error) {
             console.error('Image generation error:', error);
             this.uiManager.showError(`Failed to generate image: ${error.message}`);
+        }
+    }
+
+    async handleSummarize(text) {
+        try {
+            // Add user text to UI
+            const userMessageElement = this.uiManager.addMessage(`📝 Summarize: ${text}`, 'user', {
+                timestamp: new Date().toLocaleTimeString()
+            });
+
+            // Show processing status
+            this.uiManager.updateStatus('Summarizing text...', 'info');
+            
+            // Add processing indicator
+            const processingElement = this.uiManager.addMessage('📝 Analyzing and summarizing text, please wait...', 'assistant', {
+                timestamp: new Date().toLocaleTimeString(),
+                service: 'text-summarizer'
+            });
+
+            // Create summarization prompt
+            const summarizePrompt = `Please provide a concise and clear summary of the following text. Focus on the main points and key information:\n\n${text}`;
+
+            // Get AI response for summarization
+            const summary = await this.aiService.generateResponse(summarizePrompt, {
+                enableFallback: true
+            });
+
+            // Remove processing message
+            processingElement.remove();
+
+            // Add summarized text
+            const summaryContent = `
+                <div class="summary-result">
+                    <h4>📝 Summary:</h4>
+                    <p>${summary}</p>
+                    <div class="summary-meta">
+                        <small>Original text length: ${text.length} characters</small>
+                    </div>
+                </div>
+            `;
+
+            this.uiManager.addMessage(summaryContent, 'assistant', {
+                timestamp: new Date().toLocaleTimeString(),
+                service: 'text-summarizer',
+                isHtml: true
+            });
+
+            // Add conversation to history
+            const currentService = this.aiService.getCurrentServiceName();
+            this.historyService.addConversation(`📝 Summarize: ${text}`, summary, {
+                service: currentService
+            });
+
+            this.uiManager.updateStatus('Text summarized successfully!', 'success');
+
+        } catch (error) {
+            console.error('Summarization error:', error);
+            this.uiManager.showError(`Failed to summarize text: ${error.message}`);
         }
     }
 

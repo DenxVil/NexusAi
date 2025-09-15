@@ -6,6 +6,7 @@ export class UIManager {
         this.onSendMessage = null;
         this.onVoiceToggle = null;
         this.onImageGenerate = null;
+        this.onSummarize = null;
         this.onServiceChange = null;
         this.onLanguageChange = null;
         
@@ -23,6 +24,7 @@ export class UIManager {
             sendButton: document.getElementById('send-button'),
             voiceButton: document.getElementById('voice-button'),
             imageButton: document.getElementById('image-button'),
+            summarizeButton: document.getElementById('summarize-button'),
             serviceSelector: document.getElementById('service-selector'),
             themeToggle: document.getElementById('theme-toggle'),
             settingsToggle: document.getElementById('settings-toggle'),
@@ -78,6 +80,18 @@ export class UIManager {
                 const prompt = this.elements.messageInput.value.trim();
                 if (prompt && this.onImageGenerate) {
                     this.onImageGenerate(prompt);
+                    this.elements.messageInput.value = '';
+                    this.autoResizeTextarea(this.elements.messageInput);
+                }
+            });
+        }
+
+        // Summarize button
+        if (this.elements.summarizeButton) {
+            this.elements.summarizeButton.addEventListener('click', () => {
+                const text = this.elements.messageInput.value.trim();
+                if (text && this.onSummarize) {
+                    this.onSummarize(text);
                     this.elements.messageInput.value = '';
                     this.autoResizeTextarea(this.elements.messageInput);
                 }
@@ -499,6 +513,10 @@ export class UIManager {
 
     setOnImageGenerate(callback) {
         this.onImageGenerate = callback;
+    }
+
+    setOnSummarize(callback) {
+        this.onSummarize = callback;
     }
 
     setOnServiceChange(callback) {
