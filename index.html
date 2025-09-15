@@ -45,9 +45,51 @@
                     </select>
                 </div>
                 <div id="status-indicator" class="status"></div>
+                <button id="settings-toggle" class="icon-button" title="Settings">⚙️</button>
                 <button id="theme-toggle" class="icon-button" title="Toggle theme">🌙</button>
             </div>
         </header>
+
+        <!-- Settings Panel -->
+        <div id="settings-panel" class="settings-panel">
+            <div class="settings-content">
+                <div class="settings-header">
+                    <h3>⚙️ API Configuration</h3>
+                    <button id="settings-close" class="icon-button">✕</button>
+                </div>
+                <div class="settings-body">
+                    <p>Configure your AI service API keys for full functionality:</p>
+                    
+                    <div class="api-key-group">
+                        <label for="gemini-api-key">🤖 Google Gemini API Key:</label>
+                        <input type="password" id="gemini-api-key" data-api-key="gemini" placeholder="Enter your Gemini API key">
+                        <small>Get your key from <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a></small>
+                    </div>
+
+                    <div class="api-key-group">
+                        <label for="perplexity-api-key">🔍 Perplexity API Key:</label>
+                        <input type="password" id="perplexity-api-key" data-api-key="perplexity" placeholder="Enter your Perplexity API key">
+                        <small>Get your key from <a href="https://www.perplexity.ai/settings/api" target="_blank">Perplexity Settings</a></small>
+                    </div>
+
+                    <div class="api-key-group">
+                        <label for="huggingface-api-key">🤗 HuggingFace API Key:</label>
+                        <input type="password" id="huggingface-api-key" data-api-key="huggingface" placeholder="Enter your HuggingFace API key">
+                        <small>Get your key from <a href="https://huggingface.co/settings/tokens" target="_blank">HuggingFace Tokens</a></small>
+                    </div>
+
+                    <div class="settings-actions">
+                        <button id="save-api-keys" class="primary-button">💾 Save Configuration</button>
+                        <button id="clear-api-keys" class="secondary-button">🗑️ Clear All Keys</button>
+                    </div>
+
+                    <div class="settings-info">
+                        <p><strong>🔒 Privacy:</strong> API keys are stored locally in your browser and never sent to our servers.</p>
+                        <p><strong>💡 Tip:</strong> You only need one API key to start using NEXUS AI!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Main Chat Area -->
         <main class="chat-main">

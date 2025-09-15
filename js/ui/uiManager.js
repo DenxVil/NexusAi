@@ -25,6 +25,11 @@ export class UIManager {
             imageButton: document.getElementById('image-button'),
             serviceSelector: document.getElementById('service-selector'),
             themeToggle: document.getElementById('theme-toggle'),
+            settingsToggle: document.getElementById('settings-toggle'),
+            settingsPanel: document.getElementById('settings-panel'),
+            settingsClose: document.getElementById('settings-close'),
+            saveApiKeys: document.getElementById('save-api-keys'),
+            clearApiKeys: document.getElementById('clear-api-keys'),
             languageSelector: document.getElementById('language-selector'),
             statusIndicator: document.getElementById('status-indicator'),
             typingIndicator: document.getElementById('typing-indicator'),
@@ -94,6 +99,52 @@ export class UIManager {
                 this.toggleTheme();
             });
         }
+
+        // Settings panel toggle
+        if (this.elements.settingsToggle) {
+            this.elements.settingsToggle.addEventListener('click', () => {
+                this.showSettings();
+            });
+        }
+
+        // Settings panel close
+        if (this.elements.settingsClose) {
+            this.elements.settingsClose.addEventListener('click', () => {
+                this.hideSettings();
+            });
+        }
+
+        // Close settings panel when clicking outside
+        if (this.elements.settingsPanel) {
+            this.elements.settingsPanel.addEventListener('click', (e) => {
+                if (e.target === this.elements.settingsPanel) {
+                    this.hideSettings();
+                }
+            });
+        }
+
+        // Save API keys
+        if (this.elements.saveApiKeys) {
+            this.elements.saveApiKeys.addEventListener('click', () => {
+                this.saveApiKeys();
+            });
+        }
+
+        // Clear API keys
+        if (this.elements.clearApiKeys) {
+            this.elements.clearApiKeys.addEventListener('click', () => {
+                if (confirm('Are you sure you want to clear all API keys?')) {
+                    this.clearApiKeys();
+                }
+            });
+        }
+
+        // API key input change handlers
+        this.elements.apiKeyInputs.forEach(input => {
+            input.addEventListener('change', () => {
+                this.saveApiKey(input.dataset.apiKey, input.value);
+            });
+        });
 
         // Clear history
         if (this.elements.clearHistoryButton) {
@@ -357,6 +408,75 @@ export class UIManager {
             this.currentTheme = savedTheme;
             this.applyTheme(this.currentTheme);
         }
+    }
+
+    // Settings Panel Methods
+    showSettings() {
+        if (this.elements.settingsPanel) {
+            this.elements.settingsPanel.classList.add('show');
+            this.loadApiKeysToInputs();
+        }
+    }
+
+    hideSettings() {
+        if (this.elements.settingsPanel) {
+            this.elements.settingsPanel.classList.remove('show');
+        }
+    }
+
+    loadApiKeysToInputs() {
+        this.elements.apiKeyInputs.forEach(input => {
+            const service = input.dataset.apiKey;
+            const savedKey = localStorage.getItem(`nexus_ai_api_key_${service}`);
+            if (savedKey) {
+                input.value = savedKey;
+            }
+        });
+    }
+
+    saveApiKey(service, apiKey) {
+        if (apiKey.trim()) {
+            localStorage.setItem(`nexus_ai_api_key_${service}`, apiKey.trim());
+            // Trigger callback to update AI service
+            if (this.onApiKeyChange) {
+                this.onApiKeyChange(service, apiKey.trim());
+            }
+        } else {
+            localStorage.removeItem(`nexus_ai_api_key_${service}`);
+            if (this.onApiKeyChange) {
+                this.onApiKeyChange(service, '');
+            }
+        }
+    }
+
+    saveApiKeys() {
+        let savedCount = 0;
+        this.elements.apiKeyInputs.forEach(input => {
+            const service = input.dataset.apiKey;
+            const apiKey = input.value.trim();
+            if (apiKey) {
+                this.saveApiKey(service, apiKey);
+                savedCount++;
+            }
+        });
+        
+        this.updateStatus(`✅ Saved ${savedCount} API key(s)`, 'success');
+        setTimeout(() => {
+            this.hideSettings();
+        }, 1000);
+    }
+
+    clearApiKeys() {
+        this.elements.apiKeyInputs.forEach(input => {
+            const service = input.dataset.apiKey;
+            input.value = '';
+            localStorage.removeItem(`nexus_ai_api_key_${service}`);
+            if (this.onApiKeyChange) {
+                this.onApiKeyChange(service, '');
+            }
+        });
+        
+        this.updateStatus('🗑️ All API keys cleared', 'info');
     }
 
     showError(message) {
