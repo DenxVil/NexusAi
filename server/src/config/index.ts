@@ -36,12 +36,12 @@ export const config = {
   allowedFileTypes: process.env.ALLOWED_FILE_TYPES?.split(',') || ['image/jpeg', 'image/png', 'image/gif'],
 
   // AI Service Configuration
-  defaultModel: process.env.DEFAULT_AI_MODEL || 'perplexity',
+  defaultModel: process.env.DEFAULT_AI_MODEL || 'gemini',
   maxTokensPerRequest: parseInt(process.env.MAX_TOKENS_PER_REQUEST || '2048'),
   requestTimeoutMs: parseInt(process.env.REQUEST_TIMEOUT_MS || '30000'),
 
   // Website Configuration
-  websiteUrl: process.env.WEBSITE_URL || 'https://denx.me/Nexusai',
+  websiteUrl: process.env.WEBSITE_URL || 'https://denxvil.github.io/NexusAi',
   telegramBotUrl: process.env.TELEGRAM_BOT_URL || 'https://t.me/NexusAiProbot',
 
   // Security Configuration
@@ -54,10 +54,33 @@ export const config = {
   enableRateLimiting: process.env.ENABLE_RATE_LIMITING !== 'false',
   enableSocketIO: process.env.ENABLE_SOCKET_IO !== 'false',
 
-  // Validation
+  // Platform Detection
+  isRender: process.env.RENDER === 'true' || process.env.RENDER_SERVICE_ID !== undefined,
+  isAzure: process.env.WEBSITE_SITE_NAME !== undefined,
+  isLocal: process.env.NODE_ENV === 'development',
+
+  // Environment Validation
   isProduction: process.env.NODE_ENV === 'production',
   isDevelopment: process.env.NODE_ENV === 'development',
   isTest: process.env.NODE_ENV === 'test'
+};
+
+// Get platform-specific CORS origins
+export const getCorsOrigins = (): string | string[] => {
+  const origins = [config.corsOrigin];
+  
+  // Add GitHub Pages origin
+  if (config.isProduction) {
+    origins.push('https://denxvil.github.io');
+  }
+  
+  // Add localhost for development
+  if (config.isDevelopment) {
+    origins.push('http://localhost:3000', 'http://127.0.0.1:3000');
+  }
+
+  // Remove duplicates and empty values
+  return [...new Set(origins.filter(Boolean))];
 };
 
 // Validate required configuration
@@ -83,6 +106,11 @@ export const validateConfig = (): void => {
   if (!config.telegramBotToken && config.enableTelegramBot) {
     console.warn('⚠️ Warning: Telegram bot token not configured. Bot features will be disabled.');
   }
+
+  // Log deployment platform
+  const platform = config.isRender ? 'Render' : config.isAzure ? 'Azure' : config.isLocal ? 'Local' : 'Unknown';
+  console.log(`🚀 Detected platform: ${platform}`);
+  console.log(`🌐 CORS Origins: ${JSON.stringify(getCorsOrigins())}`);
 };
 
 export default config;

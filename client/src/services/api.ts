@@ -1,12 +1,11 @@
 import axios, { AxiosResponse } from 'axios';
 import { ApiResponse, AuthResponse, User } from '../types';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+import configService from './config';
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: configService.getApiUrl(),
   headers: {
-    'Content-Type': 'application/json',
+    ...configService.getApiHeaders(),
   },
 });
 
@@ -29,7 +28,13 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = '/login';
+      // Handle redirect based on environment
+      const environment = configService.getEnvironment();
+      if (environment === 'github-pages') {
+        window.location.href = configService.getWebsiteUrl() + '/login';
+      } else {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
