@@ -24,28 +24,15 @@ jobs:
         node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
 
-    - name: 📦 Install root dependencies
-      run: npm ci
-
     - name: 📦 Install server dependencies
       run: cd server && npm ci
-
-    - name: 📦 Install client dependencies
-      run: cd client && npm ci
 
     - name: 🧪 Run server tests
       run: cd server && npm test
       continue-on-error: true
 
-    - name: 🧪 Run client tests
-      run: cd client && npm test -- --watchAll=false
-      continue-on-error: true
-
     - name: 🏗️ Build server (TypeScript)
       run: cd server && npm run build
-
-    - name: 🏗️ Build client (React)
-      run: cd client && npm run build
 
     - name: 📝 Generate build timestamp
       run: echo "BUILD_TIMESTAMP=$(date +%s)" >> $GITHUB_ENV
@@ -59,12 +46,8 @@ jobs:
         cp -r server/dist deployment/
         cp server/package*.json deployment/
         
-        # Copy client build
-        cp -r client/build deployment/client-build
-        
-        # Copy root files
+        # Copy root package.json for npm scripts
         cp package*.json deployment/
-        cp -r node_modules deployment/ 2>/dev/null || echo "Skipping node_modules"
         
         # Copy Azure configuration
         cp .azure-config deployment/ 2>/dev/null || echo "No Azure config found"
@@ -113,9 +96,7 @@ jobs:
 
     - name: 📦 Install and build
       run: |
-        npm ci
         cd server && npm ci && npm run build
-        cd ../client && npm ci && npm run build
 
     - name: 🚀 Deploy to Azure Web App (Staging)
       uses: azure/webapps-deploy@v3

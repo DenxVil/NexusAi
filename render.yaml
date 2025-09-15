@@ -1,5 +1,4 @@
 # Optimized Blueprint for deploying the Nexus Ai backend on Render
-# Frontend will be deployed separately on GitHub Pages
 services:
   - type: web
     name: nexus-ai-backend
@@ -29,14 +28,9 @@ services:
         value: production
       - key: PORT
         value: "10000"
-      
-      # CORS Configuration for GitHub Pages Frontend
+      # CORS Configuration for API access
       - key: CORS_ORIGIN
-        value: "https://denxvil.github.io"
-      - key: WEBSITE_URL
-        value: "https://denxvil.github.io/NexusAi"
-      
-      # API Keys (Set securely in Render dashboard)
+        value: "*"
       - key: TELEGRAM_BOT_TOKEN
         sync: false # Set securely in Render dashboard
       - key: PERPLEXITY_API_KEY
@@ -95,10 +89,10 @@ services:
         value: "image/jpeg,image/png,image/gif,text/plain"
 
 # Note: Optimizations for Render deployment:
-# 1. Separated backend from frontend (frontend goes to GitHub Pages)
-# 2. CORS configured for GitHub Pages domain
+# 1. Backend-only deployment (frontend systems permanently removed)
+# 2. CORS configured for open API access
 # 3. Health check endpoint for monitoring
 # 4. Environment variables optimized for production
 # 5. Build process optimized for TypeScript compilation
-# 6. Rate limiting configured for expected GitHub Pages traffic
+# 6. Rate limiting configured for API usage
 # 7. All sensitive data configured as secure environment variables
