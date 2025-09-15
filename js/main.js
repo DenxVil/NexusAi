@@ -54,7 +54,12 @@ class NexusAiApp {
             // Load chat history
             this.loadChatHistory();
 
+            // Show deployment information in development or on first load
+            this.displayDeploymentInfo();
+
             console.log('NEXUS AI initialized successfully');
+            console.log(`🚀 Deployment: ${this.config.deployment.environment}`);
+            console.log(`🔧 Backend: ${this.config.deployment.useBackend ? 'Enabled' : 'Direct API Mode'}`);
         } catch (error) {
             console.error('Failed to initialize NEXUS AI:', error);
             if (this.uiManager) {
@@ -392,6 +397,30 @@ class NexusAiApp {
 
     getUIManager() {
         return this.uiManager;
+    }
+
+    // Display deployment information for users
+    displayDeploymentInfo() {
+        if (this.config.ui.showDeploymentInfo || this.config.deployment.isGitHubPages) {
+            const deploymentMsg = this.getDeploymentMessage();
+            if (deploymentMsg) {
+                this.uiManager.updateStatus(deploymentMsg, 'info');
+            }
+        }
+    }
+
+    getDeploymentMessage() {
+        const { deployment } = this.config;
+        
+        if (deployment.isGitHubPages) {
+            return '🌐 GitHub Pages Mode: Configure API keys in Settings ⚙️ to enable AI features';
+        } else if (deployment.isDevelopment) {
+            return `🔧 Development Mode: ${deployment.useBackend ? 'Backend connected' : 'Direct API mode'}`;
+        } else if (deployment.isCustomDomain) {
+            return '🚀 Production Mode: Direct AI API integration';
+        }
+        
+        return null;
     }
 }
 

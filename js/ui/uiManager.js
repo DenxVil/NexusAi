@@ -415,6 +415,7 @@ export class UIManager {
         if (this.elements.settingsPanel) {
             this.elements.settingsPanel.classList.add('show');
             this.loadApiKeysToInputs();
+            this.updateDeploymentStatus();
         }
     }
 
@@ -477,6 +478,46 @@ export class UIManager {
         });
         
         this.updateStatus('🗑️ All API keys cleared', 'info');
+    }
+
+    updateDeploymentStatus() {
+        const deploymentStatusEl = document.getElementById('deployment-status');
+        if (!deploymentStatusEl) return;
+
+        // Get deployment info from global config
+        if (window.nexusAiApp && window.nexusAiApp.config) {
+            const { deployment } = window.nexusAiApp.config;
+            
+            let statusHTML = '';
+            let className = '';
+            
+            if (deployment.isGitHubPages) {
+                className = 'github-pages';
+                statusHTML = `
+                    <strong>🌐 GitHub Pages Deployment</strong><br>
+                    ✅ Static site mode - fully functional<br>
+                    🔧 API keys stored locally in your browser<br>
+                    📖 <a href="https://github.com/DenxVil/NexusAi/blob/main/DEPLOYMENT_GUIDE.md" target="_blank">View deployment guide</a>
+                `;
+            } else if (deployment.isDevelopment) {
+                className = 'development';
+                statusHTML = `
+                    <strong>🔧 Development Mode</strong><br>
+                    Backend: ${deployment.useBackend ? '✅ Connected' : '⚡ Direct API mode'}<br>
+                    Environment: ${deployment.environment}
+                `;
+            } else {
+                className = 'production';
+                statusHTML = `
+                    <strong>🚀 Production Deployment</strong><br>
+                    Mode: Direct AI API integration<br>
+                    Environment: ${deployment.environment}
+                `;
+            }
+            
+            deploymentStatusEl.className = `deployment-status ${className}`;
+            deploymentStatusEl.innerHTML = statusHTML;
+        }
     }
 
     showError(message) {

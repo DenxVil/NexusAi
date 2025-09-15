@@ -1,6 +1,24 @@
 // Created with love 🩶 by Denvil 🧑‍💻
 // Centralized configuration for NEXUS AI
+
+// Detect deployment environment
+const isDevelopment = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+const isGitHubPages = location.hostname.includes('github.io');
+const isCustomDomain = !isDevelopment && !isGitHubPages;
+
 export const config = {
+    // Deployment Configuration
+    deployment: {
+        environment: isDevelopment ? 'development' : (isGitHubPages ? 'github-pages' : 'production'),
+        isDevelopment,
+        isGitHubPages,
+        isCustomDomain,
+        // Backend API URL - only used if available
+        apiUrl: isDevelopment ? 'http://localhost:5000/api' : null, // No backend for GitHub Pages
+        // Enable backend integration if API URL is available
+        useBackend: isDevelopment && location.port !== '8000' // Only use backend in dev when not serving static files
+    },
+
     // AI Service Configuration
     ai: {
         defaultService: 'gemini',
@@ -31,7 +49,9 @@ export const config = {
         maxChatHistory: 100,
         autoScroll: true,
         typewriterEffect: true,
-        animations: true
+        animations: true,
+        // Show deployment info in development
+        showDeploymentInfo: isDevelopment
     },
     
     // Voice Input Configuration
@@ -47,5 +67,15 @@ export const config = {
         maxItems: 50,
         persistToLocalStorage: true,
         storageKey: 'nexus_ai_chat_history'
+    },
+
+    // Feature Flags based on deployment
+    features: {
+        // Enable additional features in development
+        debugMode: isDevelopment,
+        // Telegram bot integration info (frontend display only)
+        telegramBot: true,
+        // GitHub Pages specific features
+        directApiMode: isGitHubPages || !isDevelopment
     }
 };

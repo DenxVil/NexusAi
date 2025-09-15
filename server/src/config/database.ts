@@ -1,12 +1,15 @@
 import mongoose from 'mongoose';
+import config from './index';
 
 export const connectDatabase = async (): Promise<void> => {
   try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/shanxai';
+    // Use the config mongoUri which handles both MONGO_URI and fallback
+    const mongoURI = config.mongoUri;
     
     await mongoose.connect(mongoURI);
     
     console.log('✅ MongoDB connected successfully');
+    console.log(`📊 Database: ${mongoURI.includes('localhost') ? 'Local MongoDB' : 'Remote MongoDB'}`);
     
     // Handle connection events
     mongoose.connection.on('error', (error) => {
@@ -26,6 +29,10 @@ export const connectDatabase = async (): Promise<void> => {
     
   } catch (error) {
     console.error('❌ Failed to connect to MongoDB:', error);
-    process.exit(1);
+    console.log('⚠️ Server will continue without database functionality');
+    console.log('💡 To fix this: Install MongoDB locally or set MONGO_URI environment variable');
+    
+    // Don't exit the process - allow server to run without database for development
+    return;
   }
 };

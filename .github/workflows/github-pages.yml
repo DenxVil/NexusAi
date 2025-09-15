@@ -1,0 +1,104 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Build job (optional, for validation)
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: 📦 Install dependencies
+        run: |
+          npm ci
+          cd server && npm ci
+          cd ../client && npm ci
+          
+      - name: 🧪 Test vanilla JS frontend
+        run: |
+          echo "Testing vanilla JS frontend structure..."
+          test -f index.html || exit 1
+          test -f styles.css || exit 1
+          test -d js/ || exit 1
+          test -f js/main.js || exit 1
+          echo "✅ Frontend structure is valid"
+          
+      - name: 🔍 Validate HTML
+        run: |
+          echo "Validating index.html..."
+          grep -q "NEXUS AI" index.html || exit 1
+          grep -q "settings-panel" index.html || exit 1
+          echo "✅ HTML validation passed"
+
+  # Deployment job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        
+      - name: 🔧 Setup Pages
+        uses: actions/configure-pages@v4
+        
+      - name: 📝 Create deployment info
+        run: |
+          # Add build timestamp to config
+          echo "// Build Info: $(date)" >> js/config.js
+          echo "// GitHub Pages deployment" >> js/config.js
+          echo "// Commit: ${{ github.sha }}" >> js/config.js
+          
+      - name: 📤 Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload root directory (vanilla JS frontend)
+          path: '.'
+          
+      - name: 🚀 Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        
+      - name: 📊 Deployment Summary
+        run: |
+          echo "## 🚀 GitHub Pages Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: GitHub Pages" >> $GITHUB_STEP_SUMMARY
+          echo "- **Deployment Type**: Vanilla JS Frontend (Static)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Pages URL**: ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Features**: Direct AI API integration, Settings panel for API keys" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: ✅ Deployed Successfully" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📋 User Instructions" >> $GITHUB_STEP_SUMMARY
+          echo "1. Visit the deployed site" >> $GITHUB_STEP_SUMMARY
+          echo "2. Click the Settings ⚙️ button" >> $GITHUB_STEP_SUMMARY
+          echo "3. Add your AI service API keys" >> $GITHUB_STEP_SUMMARY
+          echo "4. Start chatting with NEXUS AI!" >> $GITHUB_STEP_SUMMARY

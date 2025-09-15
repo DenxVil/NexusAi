@@ -225,6 +225,32 @@
   margin-bottom: 0;
 }
 
+.deployment-status {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  border-left: 3px solid;
+}
+
+.deployment-status.github-pages {
+  background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+  border-left-color: #10b981;
+  color: #d1fae5;
+}
+
+.deployment-status.development {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+  border-left-color: #3b82f6;
+  color: #dbeafe;
+}
+
+.deployment-status.production {
+  background: linear-gradient(135deg, #7c2d12 0%, #9a3412 100%);
+  border-left-color: #f97316;
+  color: #fed7aa;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
