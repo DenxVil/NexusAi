@@ -1,12 +1,12 @@
 import mongoose from 'mongoose';
-import { config } from './index';
 
 export const connectDatabase = async (): Promise<void> => {
   try {
-    await mongoose.connect(config.MONGODB_URI);
+    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/shanxai';
+    
+    await mongoose.connect(mongoURI);
     
     console.log('✅ MongoDB connected successfully');
-    console.log(`📍 Database: ${config.MONGODB_URI.replace(/\/\/.*@/, '//*****@')}`); // Hide credentials in logs
     
     // Handle connection events
     mongoose.connection.on('error', (error) => {
