@@ -86,5 +86,3 @@ export const validateConfig = (): void => {
 };
 
 export default config;
-
-export default config;
