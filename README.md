@@ -1,7 +1,7 @@
 # NEXUS AI - Advanced AI Application Platform
 
 <p align="center">
-  <img src="client/public/nexus-ai-logo.svg" alt="Nexus AI Logo" width="120" height="120"/>
+  <img src="libs/IMG_6596.jpeg" alt="Nexus AI Logo" width="120" height="120"/>
 </p>
 
 *Created by ◉Ɗєиνιℓ*
