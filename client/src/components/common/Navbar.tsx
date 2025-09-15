@@ -18,12 +18,12 @@ export const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center transform hover:scale-110 transition-transform duration-300">
-                <span className="text-white font-bold text-lg">ⵢ</span>
+            <Link to="/" className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-500 rounded-xl flex items-center justify-center transform hover:scale-110 transition-transform duration-300 shadow-lg">
+                <span className="text-white font-bold text-xl">🔮</span>
               </div>
               <div className="flex flex-col">
-                <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">{t('appName')}</span>
+                <span className="text-xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-500 bg-clip-text text-transparent">{t('appName')}</span>
                 <span className="text-xs text-gray-500 font-medium">{t('tagline')}</span>
               </div>
             </Link>

@@ -33,13 +33,13 @@ const translations = {
     'imagePrompt': 'Describe the image you want to generate...',
     
     // Welcome messages
-    'welcomeTitle': 'Welcome to ⵢɧαɳ Aⵊ! 👋',
-    'welcomeMessage': 'Your intelligent AI assistant with emotional understanding',
+    'welcomeTitle': 'Welcome to Nexus AI! 👋',
+    'welcomeMessage': 'Your advanced intelligence assistant with cutting-edge AI technology',
     
     // Branding
-    'appName': 'ⵢɧαɳ Aⵊ',
+    'appName': 'Nexus AI',
     'tagline': 'Created by ◉Ɗєиνιℓ',
-    'description': 'AI-powered application platform providing intelligent conversation and AI services.',
+    'description': 'Advanced AI application platform providing perfect, powerful, and accurate intelligent responses.',
     
     // AI Personality responses (emotional/humorous)
     'aiResponses': [
@@ -72,13 +72,13 @@ const translations = {
     'imagePrompt': 'जो इमेज आप बनाना चाहते हैं उसका वर्णन करें...',
     
     // Welcome messages
-    'welcomeTitle': 'ⵢɧαɳ Aⵊ में आपका स्वागत है! 👋',
-    'welcomeMessage': 'आपका बुद्धिमान एआई सहायक भावनात्मक समझ के साथ',
+    'welcomeTitle': 'Nexus AI में आपका स्वागत है! 👋',
+    'welcomeMessage': 'आपका उन्नत बुद्धिमत्ता सहायक अत्याधुनिक एआई तकनीक के साथ',
     
     // Branding
-    'appName': 'ⵢɧαɳ Aⵊ',
+    'appName': 'Nexus AI',
     'tagline': '◉Ɗєиνιℓ द्वारा निर्मित',
-    'description': 'एआई-संचालित एप्लिकेशन प्लेटफॉर्म जो बुद्धिमान बातचीत और एआई सेवाएं प्रदान करता है।',
+    'description': 'उन्नत एआई एप्लिकेशन प्लेटफॉर्म जो परफेक्ट, शक्तिशाली और सटीक बुद्धिमान प्रतिक्रियाएं प्रदान करता है।',
     
     // AI Personality responses (emotional/humorous in Hindi)
     'aiResponses': [
@@ -100,7 +100,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
 
   useEffect(() => {
     // Load saved language preference
-    const savedLanguage = localStorage.getItem('shanxai_language');
+    const savedLanguage = localStorage.getItem('nexus_ai_language');
     if (savedLanguage && translations[savedLanguage as keyof typeof translations]) {
       setCurrentLanguage(savedLanguage);
     }
@@ -109,7 +109,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   const setLanguage = (lang: string) => {
     if (translations[lang as keyof typeof translations]) {
       setCurrentLanguage(lang);
-      localStorage.setItem('shanxai_language', lang);
+      localStorage.setItem('nexus_ai_language', lang);
     }
   };
 
