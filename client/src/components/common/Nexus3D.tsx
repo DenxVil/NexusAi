@@ -152,4 +152,4 @@ const Nexus3D: React.FC<Nexus3DProps> = ({
   );
 };
 
-export default Nexus3D;
+export { Nexus3D };
