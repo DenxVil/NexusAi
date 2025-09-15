@@ -977,26 +977,74 @@ textarea:focus {
   animation: float 3s ease-in-out infinite;
 }
 
-/* Responsive Enhancements */
+/* Responsive Design - Mobile First */
 @media (max-width: 768px) {
   .app-header {
-    padding: 0.75rem 1rem;
-    transform: translateZ(10px);
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .header-left {
+    gap: 0.5rem;
   }
   
   .app-title .app-name {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
   
-  .app-title .app-icon {
-    font-size: 1.75rem;
+  .app-title .app-tagline {
+    font-size: 0.7rem;
   }
   
-  .support-item {
-    transform: translateZ(2px);
+  .chat-main {
+    max-width: 100%;
   }
   
-  .support-item:hover {
-    transform: translateZ(5px) translateY(-1px);
+  .messages-container {
+    padding: 1rem;
+    gap: 1rem;
+  }
+  
+  .input-container {
+    padding: 1rem;
+  }
+  
+  .user-message {
+    max-width: 95%;
+  }
+  
+  .three-background {
+    opacity: 0.5; /* Reduce 3D effects on mobile for performance */
+  }
+}
+
+@media (max-width: 480px) {
+  .app-header {
+    padding: 0.75rem;
+  }
+  
+  .app-title .app-name {
+    font-size: 1rem;
+  }
+  
+  .header-right {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+  
+  .input-wrapper {
+    padding: 0.75rem;
+  }
+  
+  .input-actions {
+    gap: 0.25rem;
+  }
+  
+  .voice-button, .image-button {
+    padding: 0.4rem;
+    font-size: 1rem;
   }
 }

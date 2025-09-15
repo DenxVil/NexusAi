@@ -1,29 +1,41 @@
-# Nexus Ai - Advanced AI Application Platform
+# NEXUS AI - Advanced AI Application Platform
 
 *Created by ◉Ɗєиνιℓ*
 
-A cutting-edge AI-powered application platform featuring multi-model support, Telegram bot integration, and modern 3D-enhanced user interface.
+A cutting-edge AI-powered application platform featuring multi-model support, Telegram bot integration, and stunning 3D-enhanced user interface with custom three.js elements.
 
 ## 🚀 Features
 
 - **🤖 Multi-AI Integration** - Support for Gemini, Perplexity, and HuggingFace models
-- **💬 Telegram Bot** - Seamless interaction through Telegram messenger
-- **🎨 Modern 3D UI** - Engaging interface with 3D elements and animations
+- **💬 Telegram Bot** - Seamless interaction through Telegram messenger  
+- **🎨 Custom 3D Elements** - Stunning three.js powered 3D logo and particle effects
+- **✨ Modern Minimal UI** - Clean, iask.ai-inspired design with glass morphism
 - **🌐 Multi-language Support** - English and Hindi language support
 - **🎤 Voice Input** - Voice-to-text capability for hands-free interaction
-- **📱 Responsive Design** - Mobile-first responsive UI that works on all devices
+- **📱 Responsive Design** - Mobile-first responsive UI optimized for all devices
 - **💾 Chat History** - Persistent conversation storage and export/import
 - **🔐 Secure API Management** - Safe storage and management of API keys
 - **⚡ Real-time Processing** - Fast response times with multiple AI backends
+
+## 📸 Screenshots
+
+### NEXUS AI Interface
+![NEXUS AI Interface](docs/images/nexus-ai-interface.png)
+
+*The modern, minimal interface featuring custom 3D elements, glassmorphism design, and clean typography inspired by iask.ai*
 
 ## 🏗️ Architecture
 
 ```
 nexus-ai/
-├── 📱 Frontend (Vanilla JS + React)
+├── 📱 Frontend (Vanilla JS + Three.js)
 │   ├── index.html          # Main web interface
 │   ├── js/                 # Core application logic
-│   ├── styles.css          # Modern styling with 3D effects
+│   │   ├── 3d/             # Three.js 3D rendering components
+│   │   ├── services/       # AI services and utilities
+│   │   └── ui/             # UI management
+│   ├── styles.css          # Modern minimal styling with 3D effects
+│   ├── libs/               # Three.js library
 │   └── client/             # React-based admin interface
 ├── 🔧 Backend (Node.js + TypeScript)
 │   ├── server/             # Express.js API server
@@ -38,9 +50,10 @@ nexus-ai/
 
 ### Frontend
 - **Vanilla JavaScript** - Core application with ES6 modules
-- **React** - Admin interface and advanced components
-- **CSS3** - Modern styling with 3D transforms and animations
-- **Web APIs** - Speech Recognition, Local Storage, File API
+- **Three.js** - Custom 3D graphics, animations, and particle systems
+- **React** - Admin interface and advanced components  
+- **CSS3** - Modern minimal styling with glassmorphism and 3D effects
+- **Web APIs** - Speech Recognition, Local Storage, File API, WebGL
 
 ### Backend
 - **Node.js** - Runtime environment
@@ -129,17 +142,26 @@ The application will be available at:
 
 ## 🎨 UI Features
 
-### 3D Elements
-- **Floating animations** for interactive elements
-- **Depth effects** on cards and panels
-- **Smooth transitions** between states
-- **Parallax effects** for engaging user experience
+### 3D Elements Powered by Three.js
+- **Custom 3D Logo** - Animated NEXUS AI logo with dynamic lighting
+- **Particle System** - Beautiful floating particles with color gradients  
+- **3D Background** - Immersive full-screen 3D canvas background
+- **Smooth Animations** - Hardware-accelerated 3D transformations
+- **Interactive Elements** - 3D hover effects and depth layering
 
-### Modern Design
-- **Dark/Light themes** with smooth transitions
-- **Glassmorphism effects** for modern look
-- **Gradient backgrounds** with animated elements
-- **Responsive grid layouts** for all screen sizes
+### Modern Minimal Design (iask.ai Inspired)
+- **Clean Interface** - Minimal, distraction-free chat experience
+- **Glassmorphism Effects** - Subtle transparency and backdrop blur
+- **Centered Layout** - Focused 800px max-width for optimal reading
+- **Modern Typography** - Inter font family for excellent readability
+- **Dark/Light Themes** - Seamless theme switching with animations
+- **Mobile-First Responsive** - Optimized for all screen sizes
+
+### Performance & Accessibility  
+- **Fast Loading** - Optimized assets and minimal dependencies
+- **WebGL Acceleration** - Hardware-accelerated 3D rendering
+- **Reduced Motion** - Respects user accessibility preferences
+- **Cross-Browser** - Compatible with modern browsers
 
 ## 📱 Usage
 
