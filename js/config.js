@@ -3,7 +3,7 @@
 export const config = {
     // AI Service Configuration
     ai: {
-        defaultService: 'gemini',
+        defaultService: 'auto',
         services: {
             gemini: {
                 name: 'Gemini',
