@@ -1,14 +1,13 @@
-# NEXUS AI - Advanced AI Application Platform
+# NEXUS AI - Advanced AI Telegram Bot Platform
 
 <p align="center">
-  <img src="libs/IMG_6596.jpeg" alt="Nexus AI Logo" width="120" height="120"/>
+  🤖 Telegram Bot: [@NexusAiProbot](https://t.me/NexusAiProbot)
 </p>
 
 *Created by ◉Ɗєиνιℓ*
 
-A cutting-edge AI-powered application platform featuring **sequential AI provider chain**, Telegram bot integration, and stunning 3D-enhanced user interface with iask.ai-inspired design.
+A cutting-edge AI-powered Telegram bot platform featuring **sequential AI provider chain** with Perplexity → Gemini → HuggingFace automatic fallback for maximum reliability.
 
-🌐 **Website**: [https://denx.me/Nexusai](https://denx.me/Nexusai)  
 📱 **Telegram Bot**: [@NexusAiProbot](https://t.me/NexusAiProbot)
 
 ## ⚡ Key Innovations
@@ -16,62 +15,45 @@ A cutting-edge AI-powered application platform featuring **sequential AI provide
 - **🔗 Sequential AI Provider Chain** - Perplexity → Gemini → HuggingFace with automatic fallback
 - **✅ Response Verification** - Perfect, powerful, and accurate AI responses
 - **🎯 Smart Fallback System** - Ensures reliable responses every time
-- **🔮 3D Interactive Elements** - Custom three.js powered NEXUS AI logo
-- **🌊 iask.ai Inspired Design** - Clean, centered, minimal interface
+- **🤖 Advanced Telegram Bot** - Streamlined chat experience with multi-AI integration
+- **🔐 Secure API Management** - Environment-based API key configuration
+
 ## 🚀 Features
 
 - **🤖 Multi-AI Integration** - Sequential provider chain for maximum reliability
-- **💬 Enhanced Telegram Bot** - Simplified, core chat experience with website integration
-- **🎨 Custom 3D Elements** - Interactive NEXUS AI 3D logo with smooth animations
-- **✨ Modern Minimal UI** - Clean, iask.ai-inspired design with glassmorphism effects
-- **🌐 Cross-Platform Links** - Seamless integration between web and Telegram
-- **📱 Responsive Design** - Mobile-first responsive UI optimized for all devices
-- **🔐 Secure API Management** - Environment-based API key configuration
+- **💬 Advanced Telegram Bot** - Core chat experience with intelligent AI routing
 - **⚡ Real-time Processing** - Fast response times with intelligent routing
-
-## 📸 Screenshots
-
-### NEXUS AI Interface
-![NEXUS AI Interface](https://github.com/user-attachments/assets/ebabe458-12d4-4548-83f8-5974fb52ac01)
-
-*The modern, minimal interface featuring custom 3D elements, glassmorphism design, and clean typography inspired by iask.ai*
+- **🔐 Secure Backend** - Express.js API server with comprehensive security
+- **📊 MongoDB Integration** - Persistent data storage and user management
+- **🌐 Cross-Platform Support** - Works seamlessly across all Telegram clients
 
 ## 🏗️ Architecture
 
 ```
 nexus-ai/
-├── 📱 Frontend (Vanilla JS + Three.js)
-│   ├── index.html          # Main web interface
-│   ├── js/                 # Core application logic
-│   │   ├── 3d/             # Three.js 3D rendering components
-│   │   ├── services/       # AI services and utilities
-│   │   └── ui/             # UI management
-│   ├── styles.css          # Modern minimal styling with 3D effects
-│   ├── libs/               # Three.js library
-│   └── client/             # React-based admin interface
 ├── 🔧 Backend (Node.js + TypeScript)
 │   ├── server/             # Express.js API server
-│   ├── bot/                # Telegram bot integration
-│   └── services/           # AI service integrations
+│   │   ├── src/
+│   │   │   ├── controllers/  # API controllers
+│   │   │   ├── models/       # MongoDB models
+│   │   │   ├── routes/       # API routes
+│   │   │   ├── services/     # Business logic
+│   │   │   └── bot/          # Telegram bot integration
+│   │   └── dist/            # Compiled JavaScript
 └── 📋 Deployment
-    ├── Procfile            # Heroku deployment configuration
-    └── package.json        # Production-ready scripts
+    ├── Dockerfile           # Docker configuration
+    ├── docker-compose.yml   # Multi-container setup
+    └── azure-*.yml         # Azure deployment configs
 ```
 
 ## 🛠️ Tech Stack
-
-### Frontend
-- **Vanilla JavaScript** - Core application with ES6 modules
-- **Three.js** - Custom 3D graphics, animations, and particle systems
-- **React** - Admin interface and advanced components  
-- **CSS3** - Modern minimal styling with glassmorphism and 3D effects
-- **Web APIs** - Speech Recognition, Local Storage, File API, WebGL
 
 ### Backend
 - **Node.js** - Runtime environment
 - **Express.js** - Web framework
 - **TypeScript** - Type safety and modern JavaScript
 - **Socket.io** - Real-time communication
+- **MongoDB** - Database for user data and chat history
 - **Telegram Bot API** - Bot integration
 
 ### AI Services
@@ -83,7 +65,8 @@ nexus-ai/
 
 ### Prerequisites
 - Node.js 18.x or higher
-- npm or yarn package manager
+- MongoDB database
+- Telegram Bot Token (from @BotFather)
 
 ### Installation
 
@@ -95,7 +78,7 @@ cd NexusAi
 
 2. **Install dependencies:**
 ```bash
-npm run install-all
+cd server && npm install
 ```
 
 3. **Configure environment variables:**
@@ -109,6 +92,9 @@ nano server/.env
 
 Add your API keys and configuration:
 ```env
+# Database Configuration
+MONGODB_URI=mongodb://localhost:27017/nexus-ai
+
 # AI Service API Keys
 GEMINI_API_KEY=your_gemini_key_here
 PERPLEXITY_API_KEY=your_perplexity_key_here
@@ -120,18 +106,14 @@ TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
 # Server Configuration
 PORT=5000
 NODE_ENV=development
-
-# Frontend API Configuration (for production deployment)
-REACT_APP_API_URL=http://localhost:5000/api
 ```
 
-4. **Start the development environment:**
+4. **Start the development server:**
 ```bash
-npm run dev
+cd server && npm run dev
 ```
 
-The application will be available at:
-- **Web Interface:** http://localhost:3000
+The API server will be available at:
 - **API Server:** http://localhost:5000
 
 ## 🤖 Telegram Bot Setup
@@ -142,8 +124,8 @@ The application will be available at:
    - Save the bot token
 
 2. **Configure the bot:**
-   - Add your bot token to the `.env` file
-   - Start the server: `npm run server`
+   - Add your bot token to the `.env` file in the server directory
+   - Start the server: `cd server && npm run dev`
    - Your bot will automatically be available for interactions
 
 3. **Bot Commands:**
@@ -152,37 +134,7 @@ The application will be available at:
    - `/clear` - Clear chat history
    - Simply send a message to chat with AI
 
-## 🎨 UI Features
-
-### 3D Elements Powered by Three.js
-- **Custom 3D Logo** - Animated NEXUS AI logo with dynamic lighting
-- **Particle System** - Beautiful floating particles with color gradients  
-- **3D Background** - Immersive full-screen 3D canvas background
-- **Smooth Animations** - Hardware-accelerated 3D transformations
-- **Interactive Elements** - 3D hover effects and depth layering
-
-### Modern Minimal Design (iask.ai Inspired)
-- **Clean Interface** - Minimal, distraction-free chat experience
-- **Glassmorphism Effects** - Subtle transparency and backdrop blur
-- **Centered Layout** - Focused 800px max-width for optimal reading
-- **Modern Typography** - Inter font family for excellent readability
-- **Dark/Light Themes** - Seamless theme switching with animations
-- **Mobile-First Responsive** - Optimized for all screen sizes
-
-### Performance & Accessibility  
-- **Fast Loading** - Optimized assets and minimal dependencies
-- **WebGL Acceleration** - Hardware-accelerated 3D rendering
-- **Reduced Motion** - Respects user accessibility preferences
-- **Cross-Browser** - Compatible with modern browsers
-
 ## 📱 Usage
-
-### Web Interface
-1. Open the application in your browser
-2. Configure your AI service API keys in Settings ⚙️
-3. Select your preferred AI service from the dropdown
-4. Start chatting with the AI assistant
-5. Use voice input 🎤 for hands-free interaction
 
 ### Telegram Bot
 1. Find your bot on Telegram using the username you created
@@ -207,7 +159,7 @@ The application will be available at:
 #### HuggingFace
 1. Visit [HuggingFace Tokens](https://huggingface.co/settings/tokens)
 2. Create a new token with read permissions
-3. Configure in your application
+3. Add to your configuration in the server's `.env` file
 
 ## 🚀 Deployment
 
@@ -222,7 +174,7 @@ heroku create your-nexus-ai-app
 ```bash
 heroku config:set TELEGRAM_BOT_TOKEN=your_token_here
 heroku config:set GEMINI_API_KEY=your_key_here
-heroku config:set REACT_APP_API_URL=https://your-nexus-ai-app.herokuapp.com/api
+heroku config:set MONGODB_URI=your_mongodb_connection_string
 # Add other environment variables as needed
 ```
 
@@ -232,12 +184,10 @@ git push heroku main
 ```
 
 ### Other Platforms
-- **Vercel** - Perfect for frontend deployment
-- **Railway** - Excellent for full-stack deployment  
+- **Railway** - Excellent for backend API deployment  
 - **DigitalOcean App Platform** - Scalable container deployment
-- **Render** - Full-stack deployment (see `render.yaml` configuration)
-
-**Important:** For all deployment platforms, make sure to set the `REACT_APP_API_URL` environment variable to point to your deployed backend API URL (e.g., `https://your-app.onrender.com/api`).
+- **Render** - Backend deployment (see `render.yaml` configuration)
+- **Azure** - Enterprise deployment (see azure configuration files)
 
 ## 📞 Support
 

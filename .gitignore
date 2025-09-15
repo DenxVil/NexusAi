@@ -59,7 +59,6 @@ terraform.tfvars
 docker-compose.override.yml
 
 # Production builds
-client/build/
 server/dist/
 
 # Package managers

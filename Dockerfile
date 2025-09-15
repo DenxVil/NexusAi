@@ -9,20 +9,16 @@ RUN apk add --no-cache python3 make g++
 
 # Copy package.json files for dependency installation
 COPY package*.json ./
-COPY client/package*.json ./client/
 COPY server/package*.json ./server/
 
-# Install all dependencies
-RUN npm run install-all
+# Install server dependencies
+RUN cd server && npm install
 
 # Copy source code
-COPY . .
+COPY server/ ./server/
 
 # Build the server (TypeScript compilation)
 RUN cd server && npm run build
-
-# Build the client (React production build)
-RUN cd client && npm run build
 
 # Create a non-root user for security
 RUN addgroup -g 1001 -S nodejs
