@@ -1,8 +1,15 @@
 # NEXUS AI - Advanced AI Application Platform
 
+<p align="center">
+  <img src="client/public/nexus-ai-logo.svg" alt="Nexus AI Logo" width="120" height="120"/>
+</p>
+
 *Created by ◉Ɗєиνιℓ*
 
 A cutting-edge AI-powered application platform featuring multi-model support, Telegram bot integration, and stunning 3D-enhanced user interface with custom three.js elements.
+
+🌐 **Website**: [https://denx.me](https://denx.me)  
+🤖 **Telegram Bot**: [https://t.me/NexusAiProbot](https://t.me/NexusAiProbot)
 
 ## 🚀 Features
 
@@ -20,7 +27,7 @@ A cutting-edge AI-powered application platform featuring multi-model support, Te
 ## 📸 Screenshots
 
 ### NEXUS AI Interface
-![NEXUS AI Interface](docs/images/nexus-ai-interface.png)
+![NEXUS AI Interface](https://github.com/user-attachments/assets/ebabe458-12d4-4548-83f8-5974fb52ac01)
 
 *The modern, minimal interface featuring custom 3D elements, glassmorphism design, and clean typography inspired by iask.ai*
 

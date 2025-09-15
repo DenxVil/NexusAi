@@ -193,77 +193,35 @@ export class TelegramBotService {
     
     if (!user) return;
 
-    // Initialize user data with Project Phoenix features
+    // Initialize user data (simplified)
     const isNewUser = !this.users.has(user.id);
     this.initializeUser(user.id, user);
-    
-    // Award first message achievement for new users
-    if (isNewUser) {
-      this.awardAchievement(user.id, 'first_message');
-    }
 
     const welcomeMessage = `
-🌟 *Welcome to ShanxAi!* 🌟
-_The most advanced AI assistant with Phoenix Intelligence_
+🌟 *Welcome to Nexus AI!* 🌟
+_Your Advanced AI Assistant_
 
-🔮 *Featuring:*
-• 🧠 Multi-AI Intelligence (Gemini, Perplexity, HuggingFace)
-• 🎭 Dynamic Personality Adaptation
-• 🎯 Smart Context Understanding
-• 🏆 Gamification & Achievements
-• 📊 Daily Streak Rewards
-• 🤝 Referral System
-• 📰 Personalized News
-• ⏰ Smart Reminders
+🤖 **What I can do:**
+• Have intelligent conversations
+• Answer questions and provide information
+• Help with tasks and problem-solving
+• Provide creative assistance
 
-✨ *Quick Actions:*
-Choose what you'd like to do:
+💬 **Get Started:**
+Just send me a message and I'll respond with helpful information!
+
+🌐 **Also available at:** https://denx.me/NexusAi
+📱 **Try the web interface for a full experience**
+
+_Ready to chat? Send me anything!_ ✨
+
+**Created with love 🩶 by Denvil 🧑‍💻**
     `;
-
-    const keyboard: InlineKeyboardMarkup = {
-      inline_keyboard: [
-        [
-          { text: '🤖 Start Chatting', callback_data: 'start_chat' },
-          { text: '🎭 Set Personality', callback_data: 'set_persona' }
-        ],
-        [
-          { text: '🎨 Generate Image', callback_data: 'generate_image' },
-          { text: '📰 Daily News', callback_data: 'get_news' }
-        ],
-        [
-          { text: '🏆 My Profile', callback_data: 'view_profile' },
-          { text: '🤝 Refer Friends', callback_data: 'refer_friends' }
-        ],
-        [
-          { text: '⏰ Set Reminder', callback_data: 'set_reminder' },
-          { text: '🔮 Magic 8-Ball', callback_data: 'magic_8ball' }
-        ],
-        [
-          { text: '📋 All Commands', callback_data: 'show_help' },
-          { text: '📊 Daily Content', callback_data: 'daily_content' }
-        ]
-      ]
-    };
 
     try {
       await this.bot.sendMessage(chatId, welcomeMessage, {
-        parse_mode: 'Markdown',
-        reply_markup: keyboard
+        parse_mode: 'Markdown'
       });
-
-      // Send quick tips after a moment
-      setTimeout(async () => {
-        const tipsMessage = `💡 *Pro Tips:*
-• Type naturally - I understand context and emotions
-• Use /suggest for smart quick replies
-• Build your daily streak for bonus features
-• Refer friends with /refer for premium access
-
-Ready to explore the future of AI? 🚀`;
-
-        await this.bot?.sendMessage(chatId, tipsMessage, { parse_mode: 'Markdown' });
-      }, 2000);
-
     } catch (error) {
       console.error('Error sending welcome message:', error);
     }
@@ -273,112 +231,34 @@ Ready to explore the future of AI? 🚀`;
     if (!this.bot) return;
     
     const chatId = msg.chat.id;
-    const isAdmin = this.isAdmin(msg.from?.id);
 
     const helpMessage = `
-🆘 *ShanxAi Phoenix Command Center* 🆘
-_Your complete guide to advanced AI interaction_
+🆘 *Nexus AI - Help Guide* 🆘
+_Your AI Assistant Command Reference_
 
-*🤖 AI Chat Commands:*
-• Just type anything - Chat with enhanced emotional intelligence
-• /persona [personality] - Set AI personality & mood
-• /moods - Explore emotional intelligence modes
-• /suggest - Get smart quick reply suggestions
-• /clear - Clear chat history
+*💬 Basic Commands:*
+• **Just chat** - Send any message to start a conversation
+• /start - Show welcome message
+• /help - Show this help guide  
+• /info - Bot information and statistics
+• /clear - Clear your chat history
 
-*🎨 Creative & AI Features:*
-• /imagine [prompt] - Generate AI images
-• /avatar [description] - Create custom avatars
-• /summarize [URL] - Summarize web content intelligently
+*🌐 More Features:*
+Visit our website for the full experience:
+**https://denx.me/NexusAi**
 
-*🎯 Gamification & Engagement:*
-• /profile - View your complete user profile
-• /achievements - See unlocked & available achievements
-• /streak - Check your daily streak status
-• /leaderboard - View top users rankings
-• /refer - Get your referral link & stats
-
-*📰 Personalized News System:*
-• /news - Get your customized news digest
-• /news_subscribe [topic] - Subscribe to news topics
-• /news_topics - See all available news categories
-
-*⏰ Smart Reminders:*
-• /remind [message] - Set natural language reminders
-• /reminders - View your active reminders
-
-*🎮 Fun & Interactive:*
-• /8ball [question] - Magic 8-ball predictions
-• /daily - Daily trivia, quotes & challenges
-
-*🛠️ Utility Commands:*
-• /weather [city] - Weather forecasts
-• /calculate [expression] - Math calculations
-• /define [word] - Dictionary definitions
-
-*📊 Account & Stats:*
-• /info - Bot information & your progress
-• /history - View recent chat history
-
-${isAdmin ? `
-*👑 Admin Commands:*
-• /admin_users - List all users
-• /admin_stats - Comprehensive bot statistics
-• /admin_history [userID] - View user chat history
-• /admin_broadcast [message] - Send message to all users
-` : ''}
-
-*🌟 Phoenix Intelligence Features:*
-• **Dynamic Response Adaptation** - Responses adapt to your personality
-• **Emotional Intelligence** - Recognizes and responds to your emotions  
-• **Context-Aware Conversations** - Maintains context across multiple turns
-• **Smart Quick Replies** - Contextual one-tap response suggestions
-• **Advanced Progress Indicators** - Real-time typing and processing status
-• **Button-Centric Interface** - Easy navigation with interactive buttons
-• **Reaction-Based Actions** - Quick actions through message reactions
-• **Automatic Code Detection** - Formats code snippets intelligently
-
-*💡 Pro Tips:*
-• Express emotions - I'll adapt my responses accordingly
-• Use quick reply buttons for faster interactions
-• Build daily streaks for bonus features and points
-• Refer friends to unlock premium capabilities
-• Subscribe to news topics for personalized content
-• Set reminders using natural language
-
-_Experience the future of AI conversation with Phoenix Intelligence!_ 🚀
+*✨ Key Features:*
+• Multi-AI backend (Perplexity, Gemini, HuggingFace)
+• Intelligent conversation handling
+• Context-aware responses
+• Fast and reliable service
 
 **Created with love 🩶 by Denvil 🧑‍💻**
     `;
 
-    const keyboard: InlineKeyboardMarkup = {
-      inline_keyboard: [
-        [
-          { text: '🎭 Set Personality', callback_data: 'set_persona' },
-          { text: '🏆 My Profile', callback_data: 'view_profile' }
-        ],
-        [
-          { text: '🎨 Generate Image', callback_data: 'generate_image' },
-          { text: '📰 Get News', callback_data: 'get_news' }
-        ],
-        [
-          { text: '⏰ Set Reminder', callback_data: 'set_reminder' },
-          { text: '🔮 Magic 8-Ball', callback_data: 'magic_8ball' }
-        ],
-        [
-          { text: '🤝 Refer Friends', callback_data: 'refer_friends' },
-          { text: '📊 Daily Content', callback_data: 'daily_content' }
-        ],
-        [
-          { text: '💬 Start Chatting', callback_data: 'start_chat' }
-        ]
-      ]
-    };
-
     try {
       await this.bot.sendMessage(chatId, helpMessage, {
-        parse_mode: 'Markdown',
-        reply_markup: keyboard
+        parse_mode: 'Markdown'
       });
     } catch (error) {
       console.error('Error sending help message:', error);
@@ -391,87 +271,43 @@ _Experience the future of AI conversation with Phoenix Intelligence!_ 🚀
     const chatId = msg.chat.id;
     const totalUsers = this.users.size;
     const activeUsers = this.activeUsers.size;
-    const user = this.users.get(chatId);
 
     const infoMessage = `
-🔮 *ShanxAi Bot Information* 🔮
-_Project Phoenix Intelligence Platform_
+🔮 *Nexus AI Bot Information* 🔮
+_Advanced AI Assistant Platform_
 
-*🧠 Phoenix Core Features:*
-• Dynamic Response Adaptation
-• Emotional Intelligence Recognition
-• Context-Aware Multi-turn Conversations
-• Smart Quick Reply Suggestions
-• Advanced Progress Indicators
+*🤖 Core Features:*
+• Multi-AI backend integration
+• Intelligent conversation handling
+• Context-aware responses  
+• Fast and reliable service
 
-*🎯 Engagement Systems:*
-• Gamification & Achievement Badges
-• Daily Streak Counter & Rewards
-• Comprehensive Referral System
-• Personalized News Digest
-• Smart Natural Language Reminders
-
-*📊 Real-time Statistics:*
+*📊 Live Statistics:*
 • 👥 Total Users: ${totalUsers}
 • 🟢 Active Users: ${activeUsers}
-• 🚀 Version: Phoenix 3.0
+• 🚀 Version: Nexus AI 1.0
 • ⚡ Status: Online & Optimized
-• 🌍 Multi-language Support
 
-*🛠️ Technical Capabilities:*
-• Multi-AI Integration (Gemini, Perplexity, HuggingFace)
-• Advanced Message Formatting
-• Button-Centric Interface Design
-• Reaction-Based Action System
-• Automatic Code Snippet Detection
-• Voice Message Processing
+*🛠️ Technical Stack:*
+• Perplexity AI (Primary)
+• Google Gemini (Secondary)
+• HuggingFace (Backup)
+• Sequential fallback system
 
-${user ? `
-*📈 Your Progress:*
-• 🏆 Level: ${user.level || 1}
-• ⭐ Points: ${user.totalPoints || 0}
-• 🔥 Daily Streak: ${user.dailyStreak || 0}
-• 🎖️ Achievements: ${user.achievements?.length || 0}
-• 👥 Referrals: ${user.referrals?.length || 0}
-` : ''}
+*🌐 Full Experience:*
+Visit our website for more features:
+**https://denx.me/NexusAi**
 
-*🔒 Privacy & Security:*
-• GDPR Compliant Data Handling
-• Secure API Key Management
-• User-Controlled Data Retention
-• Advanced Error Recovery Systems
-
-*🌟 What Makes ShanxAi Special:*
-Phoenix Intelligence represents the next evolution in AI interaction, combining cutting-edge technology with intuitive user experience design. Every conversation is enhanced with emotional understanding, contextual awareness, and personalized engagement.
-
-*📞 Support & Community:*
-Need help? Use /help for commands or contact our support team.
+*📞 Support:*
+Use /help for commands or visit our website.
 
 ---
 **Created with love 🩶 by Denvil 🧑‍💻**
-_The exclusive signature home of ShanxAi_
     `;
-
-    const keyboard: InlineKeyboardMarkup = {
-      inline_keyboard: [
-        [
-          { text: '🏆 My Profile', callback_data: 'view_profile' },
-          { text: '📋 All Commands', callback_data: 'show_help' }
-        ],
-        [
-          { text: '🤝 Refer Friends', callback_data: 'refer_friends' },
-          { text: '🔥 Daily Streak', callback_data: 'daily_streak' }
-        ],
-        [
-          { text: '💬 Start Chatting', callback_data: 'start_chat' }
-        ]
-      ]
-    };
 
     try {
       await this.bot.sendMessage(chatId, infoMessage, {
-        parse_mode: 'Markdown',
-        reply_markup: keyboard
+        parse_mode: 'Markdown'
       });
     } catch (error) {
       console.error('Error sending info message:', error);

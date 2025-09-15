@@ -1,0 +1,47 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="nexusGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="90" fill="url(#nexusGradient)" opacity="0.1"/>
+  
+  <!-- Main logo elements representing "NEXUS AI" -->
+  <!-- N -->
+  <rect x="30" y="60" width="8" height="80" fill="url(#nexusGradient)" filter="url(#glow)"/>
+  <rect x="30" y="80" width="30" height="8" fill="url(#nexusGradient)" filter="url(#glow)"/>
+  <rect x="52" y="60" width="8" height="80" fill="url(#nexusGradient)" filter="url(#glow)"/>
+  
+  <!-- E -->
+  <rect x="70" y="60" width="8" height="80" fill="url(#nexusGradient)" filter="url(#glow)"/>
+  <rect x="70" y="60" width="25" height="8" fill="url(#nexusGradient)" filter="url(#glow)"/>
+  <rect x="70" y="96" width="20" height="8" fill="url(#nexusGradient)" filter="url(#glow)"/>
+  <rect x="70" y="132" width="25" height="8" fill="url(#nexusGradient)" filter="url(#glow)"/>
+  
+  <!-- X -->
+  <rect x="105" y="60" width="8" height="80" fill="url(#nexusGradient)" filter="url(#glow)" transform="rotate(15 109 100)"/>
+  <rect x="105" y="60" width="8" height="80" fill="url(#nexusGradient)" filter="url(#glow)" transform="rotate(-15 109 100)"/>
+  
+  <!-- AI indicator - neural network style -->
+  <circle cx="140" cy="80" r="4" fill="url(#nexusGradient)" filter="url(#glow)"/>
+  <circle cx="160" cy="80" r="4" fill="url(#nexusGradient)" filter="url(#glow)"/>
+  <circle cx="140" cy="120" r="4" fill="url(#nexusGradient)" filter="url(#glow)"/>
+  <circle cx="160" cy="120" r="4" fill="url(#nexusGradient)" filter="url(#glow)"/>
+  
+  <!-- Neural connections -->
+  <line x1="144" y1="80" x2="156" y2="80" stroke="url(#nexusGradient)" stroke-width="2" filter="url(#glow)"/>
+  <line x1="144" y1="120" x2="156" y2="120" stroke="url(#nexusGradient)" stroke-width="2" filter="url(#glow)"/>
+  <line x1="140" y1="84" x2="160" y2="116" stroke="url(#nexusGradient)" stroke-width="2" filter="url(#glow)"/>
+  <line x1="160" y1="84" x2="140" y2="116" stroke="url(#nexusGradient)" stroke-width="2" filter="url(#glow)"/>
+</svg>

@@ -1,10 +1,11 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './hooks/useAuth';
 import { LanguageProvider } from './hooks/useLanguage';
 import { ProtectedRoute } from './components/common/ProtectedRoute';
 
 // Pages
+import { MainPage } from './pages/MainPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { DashboardPage } from './pages/DashboardPage';
@@ -23,35 +24,47 @@ function App() {
       <AuthProvider>
         <Router>
           <div className="App min-h-screen bg-gray-50 flex flex-col">
-            <Navbar />
-            <main className="flex-grow">
-              <Routes>
-                {/* Public routes */}
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
-                
-                {/* Protected routes */}
-                <Route path="/dashboard" element={
-                  <ProtectedRoute>
-                    <DashboardPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/chat/:chatId?" element={
-                  <ProtectedRoute>
-                    <ChatPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/profile" element={
-                  <ProtectedRoute>
-                    <ProfilePage />
-                  </ProtectedRoute>
-                } />
-                
-                {/* Default redirect */}
-                <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              </Routes>
-            </main>
-            <Footer />
+            <Routes>
+              {/* Public routes */}
+              <Route path="/" element={<MainPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              
+              {/* Protected routes */}
+              <Route path="/dashboard" element={
+                <>
+                  <Navbar />
+                  <main className="flex-grow">
+                    <ProtectedRoute>
+                      <DashboardPage />
+                    </ProtectedRoute>
+                  </main>
+                  <Footer />
+                </>
+              } />
+              <Route path="/chat/:chatId?" element={
+                <>
+                  <Navbar />
+                  <main className="flex-grow">
+                    <ProtectedRoute>
+                      <ChatPage />
+                    </ProtectedRoute>
+                  </main>
+                  <Footer />
+                </>
+              } />
+              <Route path="/profile" element={
+                <>
+                  <Navbar />
+                  <main className="flex-grow">
+                    <ProtectedRoute>
+                      <ProfilePage />
+                    </ProtectedRoute>
+                  </main>
+                  <Footer />
+                </>
+              } />
+            </Routes>
           </div>
         </Router>
       </AuthProvider>

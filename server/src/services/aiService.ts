@@ -5,22 +5,72 @@ export class AIService {
         // Initialize with environment variables
     }
 
-    async generateResponse(message: string, model: string = 'gemini', chatHistory: any[] = []): Promise<string> {
+    async generateResponse(message: string, model: string = 'sequential', chatHistory: any[] = []): Promise<string> {
+        // If sequential mode (default), try providers in priority order
+        if (model === 'sequential') {
+            return this.generateSequentialResponse(message, chatHistory);
+        }
+
+        // For specific model requests, try that model directly
         try {
             switch (model.toLowerCase()) {
                 case 'gemini':
-                    return this.generateGeminiResponse(message, chatHistory);
+                    return await this.generateGeminiResponse(message, chatHistory);
                 case 'perplexity':
-                    return this.generatePerplexityResponse(message, chatHistory);
+                    return await this.generatePerplexityResponse(message, chatHistory);
                 case 'huggingface':
-                    return this.generateHuggingFaceResponse(message, chatHistory);
+                    return await this.generateHuggingFaceResponse(message, chatHistory);
                 default:
-                    return this.generateGeminiResponse(message, chatHistory);
+                    return await this.generateSequentialResponse(message, chatHistory);
             }
         } catch (error) {
             console.error(`Error generating response with ${model}:`, error);
             throw new Error(`Failed to generate response using ${model} model. Please check your API configuration.`);
         }
+    }
+
+    async generateSequentialResponse(message: string, chatHistory: any[] = []): Promise<string> {
+        const providers = [
+            { name: 'perplexity', fn: this.generatePerplexityResponse.bind(this) },
+            { name: 'gemini', fn: this.generateGeminiResponse.bind(this) },
+            { name: 'huggingface', fn: this.generateHuggingFaceResponse.bind(this) }
+        ];
+
+        let lastError: Error | null = null;
+
+        for (const provider of providers) {
+            try {
+                console.log(`Attempting to generate response with ${provider.name}...`);
+                const response = await provider.fn(message, chatHistory);
+                
+                // Re-verify and correct the response if needed
+                const verifiedResponse = await this.reverifyAndCorrectResponse(response, message);
+                console.log(`✅ Successfully generated response with ${provider.name}`);
+                return verifiedResponse;
+            } catch (error) {
+                console.warn(`❌ ${provider.name} failed:`, error instanceof Error ? error.message : error);
+                lastError = error instanceof Error ? error : new Error(String(error));
+                continue;
+            }
+        }
+
+        // If all providers fail, throw the last error
+        throw new Error(`All AI providers failed. Last error: ${lastError?.message || 'Unknown error'}`);
+    }
+
+    async reverifyAndCorrectResponse(response: string, originalMessage: string): Promise<string> {
+        // Placeholder function for future implementation of strict accuracy check
+        // This could include:
+        // - Fact checking against reliable sources
+        // - Grammar and coherence validation
+        // - Context appropriateness verification
+        // - Safety and content policy compliance
+        
+        console.log('Response re-verification placeholder called');
+        
+        // For now, just return the response as-is
+        // Future implementation could call another AI service for verification
+        return response;
     }
 
     private async generateGeminiResponse(message: string, chatHistory: any[]): Promise<string> {
@@ -71,7 +121,7 @@ export class AIService {
 
         // Convert chat history to Perplexity format
         const messages = [
-            { role: 'system', content: 'You are ShanxAi, a helpful AI assistant created by Denvil 🧑‍💻. Provide informative and engaging responses.' }
+            { role: 'system', content: 'You are Nexus AI, a helpful AI assistant created by Denvil 🧑‍💻. Provide informative and engaging responses.' }
         ];
 
         // Add recent chat history
@@ -121,8 +171,8 @@ export class AIService {
             .join('\n');
 
         const prompt = context 
-            ? `You are ShanxAi, a helpful assistant. Continue this conversation:\n\n${context}\nUser: ${message}\nAssistant:`
-            : `You are ShanxAi, a helpful assistant. User: ${message}\nAssistant:`;
+            ? `You are Nexus AI, a helpful assistant. Continue this conversation:\n\n${context}\nUser: ${message}\nAssistant:`
+            : `You are Nexus AI, a helpful assistant. User: ${message}\nAssistant:`;
 
         const response = await fetch('https://api-inference.huggingface.co/models/microsoft/DialoGPT-large', {
             method: 'POST',
