@@ -1,0 +1,76 @@
+name: Deploy NEXUS AI Frontend to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/deploy-frontend.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+
+    - name: 🔧 Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+
+    - name: 📦 Install frontend dependencies
+      run: cd frontend && npm ci
+
+    - name: 🔨 Build frontend
+      run: cd frontend && npm run build
+      env:
+        VITE_API_BASE_URL: https://nexus-ai-app.azurewebsites.net
+        VITE_AI_API_KEY: ${{ secrets.AI_API_KEY }}
+        VITE_APP_NAME: NEXUS AI
+        VITE_APP_VERSION: ${{ github.sha }}
+        VITE_APP_DESCRIPTION: Advanced AI Assistant
+        VITE_ENABLE_VOICE_INPUT: false
+        VITE_ENABLE_FILE_UPLOAD: false
+
+    - name: 📋 Setup Pages
+      uses: actions/configure-pages@v5
+
+    - name: 📤 Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: frontend/dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+    - name: 🚀 Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+
+    - name: 📊 Deployment Summary
+      run: |
+        echo "## 🚀 Frontend Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- **Environment**: GitHub Pages" >> $GITHUB_STEP_SUMMARY
+        echo "- **Build SHA**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Deployment URL**: ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **API Backend**: https://nexus-ai-app.azurewebsites.net" >> $GITHUB_STEP_SUMMARY
+        echo "- **Status**: ✅ Deployed Successfully" >> $GITHUB_STEP_SUMMARY
