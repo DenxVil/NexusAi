@@ -1,90 +1,104 @@
-# Optimized Blueprint for deploying the Nexus Ai monorepo on Render with Azure integration
+# Optimized Blueprint for deploying the Nexus Ai backend on Render
+# Frontend will be deployed separately on GitHub Pages
 services:
   - type: web
-    name: nexus-ai
+    name: nexus-ai-backend
     env: node
     plan: starter  # Upgraded from free for better performance and reliability
-    region: oregon  # Optimized region for Azure connectivity
+    region: oregon  # Optimized region for global performance
     # Specifies the root directory of the backend service
     rootDir: ./server
     # Optimized build commands with caching and error handling
     buildCommand: |
       set -e && \
-      echo "🔧 Building Nexus AI for production..." && \
+      echo "🔧 Installing dependencies for Nexus AI backend..." && \
       npm ci --production=false && \
+      echo "🏗️ Building TypeScript backend..." && \
       npm run build && \
-      echo "📦 Building client application..." && \
-      cd ../client && \
-      npm ci --production=false && \
-      npm run build && \
-      echo "✅ Build completed successfully"
-    # Optimized start command with health monitoring
+      echo "✅ Backend build completed successfully"
+    # Optimized start command with production settings
     startCommand: 'NODE_ENV=production npm start'
-    # Health check configuration for Azure Load Balancer compatibility
+    # Health check configuration for monitoring
     healthCheckPath: /health
     # Auto-deploy configuration
     autoDeploy: true
-    # Enhanced environment variables for Azure deployment
+    # Enhanced environment variables for Render deployment
     envVars:
+      # Core Configuration
       - key: NODE_ENV
         value: production
       - key: PORT
         value: "10000"
+      
+      # CORS Configuration for GitHub Pages Frontend
+      - key: CORS_ORIGIN
+        value: "https://denxvil.github.io"
+      - key: WEBSITE_URL
+        value: "https://denxvil.github.io/NexusAi"
+      
+      # API Keys (Set securely in Render dashboard)
       - key: TELEGRAM_BOT_TOKEN
         sync: false # Set securely in Render dashboard
-      - key: REACT_APP_API_URL
-        sync: false # Set to your deployed backend URL
-      - key: WEBSITE_URL
-        sync: false # Main website URL for Telegram bot
       - key: PERPLEXITY_API_KEY
         sync: false # AI service API key
       - key: GEMINI_API_KEY
         sync: false # Google Gemini API key
       - key: HUGGINGFACE_API_KEY
         sync: false # HuggingFace API key
+      
+      # Database Configuration
       - key: MONGO_URI
-        sync: false # MongoDB connection string
+        sync: false # MongoDB connection string (use MongoDB Atlas)
+      
+      # Security Configuration
       - key: JWT_SECRET
         sync: false # JWT signing secret
-      - key: CORS_ORIGIN
-        sync: false # CORS origin for client
+      - key: SESSION_SECRET
+        sync: false # Session secret
+      - key: BCRYPT_ROUNDS
+        value: "12"
+      
+      # Telegram Bot Configuration
       - key: TELEGRAM_ADMIN_UID
         sync: false # Telegram admin user ID
+      - key: TELEGRAM_BOT_URL
+        value: "https://t.me/NexusAiProbot"
+      
+      # Rate Limiting and Performance
       - key: RATE_LIMIT_WINDOW_MS
-        value: "900000"
+        value: "900000"  # 15 minutes
       - key: RATE_LIMIT_MAX_REQUESTS
-        value: "200"
+        value: "200"     # Increased for GitHub Pages traffic
       - key: MAX_TOKENS_PER_REQUEST
         value: "2048"
       - key: REQUEST_TIMEOUT_MS
-        value: "30000"
+        value: "30000"   # 30 seconds
+      
+      # Feature Flags
       - key: ENABLE_TELEGRAM_BOT
         value: "true"
       - key: ENABLE_RATE_LIMITING
         value: "true"
       - key: ENABLE_SOCKET_IO
         value: "true"
+      - key: ENABLE_FILE_UPLOADS
+        value: "true"
+      
+      # AI Service Configuration
+      - key: DEFAULT_AI_MODEL
+        value: "gemini"
+      
+      # File Upload Configuration
+      - key: MAX_FILE_SIZE
+        value: "10485760"  # 10MB
+      - key: ALLOWED_FILE_TYPES
+        value: "image/jpeg,image/png,image/gif,text/plain"
 
-# Database service for MongoDB (optional - can use MongoDB Atlas instead)
-  - type: pserv
-    name: nexus-ai-mongo
-    env: docker
-    dockerfilePath: ./Dockerfile.mongo
-    plan: starter
-    disk:
-      name: nexus-ai-mongo-data
-      mountPath: /data/db
-      sizeGB: 10
-    envVars:
-      - key: MONGO_INITDB_ROOT_USERNAME
-        sync: false
-      - key: MONGO_INITDB_ROOT_PASSWORD
-        sync: false
-
-# Note: This optimized setup includes:
-# - Upgraded plan for better performance
-# - Comprehensive environment variables
-# - Health check endpoint for load balancers
-# - Optimized build process with error handling
-# - Azure-compatible configuration
-# - Optional MongoDB service (recommended to use MongoDB Atlas for production)
+# Note: Optimizations for Render deployment:
+# 1. Separated backend from frontend (frontend goes to GitHub Pages)
+# 2. CORS configured for GitHub Pages domain
+# 3. Health check endpoint for monitoring
+# 4. Environment variables optimized for production
+# 5. Build process optimized for TypeScript compilation
+# 6. Rate limiting configured for expected GitHub Pages traffic
+# 7. All sensitive data configured as secure environment variables

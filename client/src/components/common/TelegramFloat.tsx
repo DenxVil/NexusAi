@@ -2,13 +2,14 @@
 // Floating Telegram Link Component
 
 import React from 'react';
+import configService from '../../services/config';
 
 interface TelegramFloatProps {
   className?: string;
 }
 
 export const TelegramFloat: React.FC<TelegramFloatProps> = ({ className = '' }) => {
-  const telegramUrl = 'https://t.me/NexusAiProbot';
+  const telegramUrl = configService.getTelegramBotUrl();
 
   return (
     <div className={`fixed bottom-6 right-6 z-50 ${className}`}>

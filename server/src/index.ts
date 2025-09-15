@@ -9,7 +9,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import rateLimit from 'express-rate-limit';
 
-import config, { validateConfig } from './config';
+import config, { validateConfig, getCorsOrigins } from './config';
 import { connectDatabase } from './config/database';
 import { errorHandler } from './middleware/errorHandler';
 import { notFoundHandler } from './middleware/notFoundHandler';
@@ -62,7 +62,7 @@ const app: Application = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: config.corsOrigin,
+    origin: getCorsOrigins(),
     methods: ["GET", "POST"]
   }
 });
@@ -84,7 +84,7 @@ const limiter = rateLimit({
 // Middleware
 app.use(helmet());
 app.use(cors({
-  origin: config.corsOrigin,
+  origin: getCorsOrigins(),
   credentials: true
 }));
 app.use(morgan('combined'));
