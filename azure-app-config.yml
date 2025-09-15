@@ -1,0 +1,139 @@
+# Azure Static Web Apps deployment configuration
+# This configuration is optimized for Azure Education benefits
+
+version: '1.0'
+
+# Build configuration
+build:
+  # App location (relative to repository root)
+  app_location: '/'
+  
+  # API location (Node.js backend)
+  api_location: 'server'
+  
+  # Output location for static files
+  output_location: 'client/build'
+  
+  # Skip API build (we'll handle it separately)
+  skip_api_build: false
+  
+  # Environment variables for build process
+  env:
+    NODE_VERSION: '18'
+    NPM_VERSION: '9'
+    ENABLE_ORYX_BUILD: 'true'
+    SCM_DO_BUILD_DURING_DEPLOYMENT: 'true'
+
+# Azure App Service specific configuration
+platform:
+  version: 'linux'
+  
+  # Runtime configuration
+  runtime:
+    name: 'node'
+    version: '18-lts'
+  
+  # Build commands
+  build_commands:
+    - 'npm ci --production=false'
+    - 'npm run build'
+    - 'cd client && npm ci --production=false && npm run build'
+  
+  # Start command
+  start_command: 'npm start'
+  
+  # Health check endpoint
+  health_check_path: '/health'
+
+# Routing and redirects
+routes:
+  # API routes
+  - route: '/api/*'
+    allowedRoles: ['anonymous']
+    headers:
+      Access-Control-Allow-Origin: '*'
+      Access-Control-Allow-Methods: 'GET, POST, PUT, DELETE, OPTIONS'
+      Access-Control-Allow-Headers: 'Content-Type, Authorization'
+  
+  # Health check
+  - route: '/health'
+    allowedRoles: ['anonymous']
+  
+  # Static assets with caching
+  - route: '/static/*'
+    headers:
+      Cache-Control: 'public, max-age=31536000, immutable'
+  
+  # Frontend routes (SPA fallback)
+  - route: '/*'
+    rewrite: '/index.html'
+    allowedRoles: ['anonymous']
+
+# Security headers
+globalHeaders:
+  X-Content-Type-Options: 'nosniff'
+  X-Frame-Options: 'DENY'
+  X-XSS-Protection: '1; mode=block'
+  Strict-Transport-Security: 'max-age=31536000; includeSubDomains'
+  Content-Security-Policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https:"
+
+# Environment-specific configurations
+environments:
+  production:
+    env:
+      NODE_ENV: 'production'
+      
+  staging:
+    env:
+      NODE_ENV: 'staging'
+      
+  development:
+    env:
+      NODE_ENV: 'development'
+
+# Monitoring and logging
+monitoring:
+  # Enable Application Insights
+  application_insights: true
+  
+  # Log levels
+  log_level: 'info'
+  
+  # Custom metrics
+  custom_metrics:
+    - name: 'error_rate'
+      type: 'counter'
+    - name: 'response_time'
+      type: 'histogram'
+    - name: 'active_users'
+      type: 'gauge'
+
+# Performance optimizations
+performance:
+  # Enable compression
+  compression: true
+  
+  # Enable HTTP/2
+  http2: true
+  
+  # Cache settings
+  static_cache_control: 'public, max-age=31536000'
+  api_cache_control: 'no-cache'
+  
+  # Connection limits
+  max_connections: 1000
+  keep_alive_timeout: 65
+
+# Scaling configuration (for higher tiers)
+scaling:
+  # Auto-scaling rules
+  min_instances: 1
+  max_instances: 3
+  
+  # Scaling triggers
+  cpu_threshold: 70
+  memory_threshold: 80
+  
+  # Cool-down periods
+  scale_up_cooldown: 300
+  scale_down_cooldown: 600
