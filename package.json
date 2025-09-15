@@ -13,8 +13,6 @@
     "start": "cd server && npm start",
     "install-all": "npm install && cd server && npm install && cd ../frontend && npm install",
     "test": "cd server && npm test",
-    "azure:build": "echo 'Building for Azure...' && npm run install-all && npm run build",
-    "azure:start": "echo 'Starting Azure deployment...' && cd server && node dist/index.js",
     "postinstall": "if [ \"$NODE_ENV\" = \"production\" ]; then npm run build; fi"
   },
   "dependencies": {
