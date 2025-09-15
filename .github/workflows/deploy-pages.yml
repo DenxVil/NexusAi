@@ -42,7 +42,7 @@ jobs:
         env:
           # Configure for production with Render backend
           REACT_APP_API_URL: https://nexus-ai.onrender.com/api
-          REACT_APP_WEBSITE_URL: https://denxvil.github.io/NexusAi
+          REACT_APP_WEBSITE_URL: https://denxvil.github.io/NexusAi/
           REACT_APP_TELEGRAM_BOT_URL: https://t.me/NexusAiProbot
           REACT_APP_ENVIRONMENT: github-pages
 
@@ -81,6 +81,15 @@ jobs:
           cp index.html static-build/index-static.html
           cp styles.css static-build/
           cp -r js static-build/ 2>/dev/null || echo "No js directory"
+          
+          # Add cache-busting timestamp to prevent old version display
+          TIMESTAMP=$(date +%s)
+          echo "<!-- Cache bust: $TIMESTAMP -->" >> static-build/index-static.html
+          
+          # Ensure no cache headers for main index
+          if [ ! -f "static-build/index.html" ]; then
+            cp static-build/index-static.html static-build/index.html
+          fi
           
           # Create a simple router for GitHub Pages
           cat > static-build/404.html << 'EOF'
