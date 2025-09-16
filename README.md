@@ -52,7 +52,7 @@ nexus-ai/
 └── 📋 Deployment
     ├── Dockerfile           # Docker configuration
     ├── docker-compose.yml   # Multi-container setup
-    └── azure-*.yml         # Azure deployment configs
+    └── render.yaml          # Render deployment config
 ```
 
 ## 🛠️ Tech Stack
@@ -249,10 +249,8 @@ git push heroku main
 ```
 
 ### Other Platforms
-- **Railway** - Excellent for backend API deployment  
-- **DigitalOcean App Platform** - Scalable container deployment
+- **Railway** - Alternative backend deployment option
 - **Render** - Backend deployment (see `render.yaml` configuration)
-- **Azure** - Enterprise deployment (see azure configuration files)
 
 ## 📞 Support
 

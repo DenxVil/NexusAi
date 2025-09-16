@@ -38,7 +38,7 @@ jobs:
     - name: 🔨 Build frontend
       run: cd frontend && npm run build
       env:
-        VITE_API_BASE_URL: https://nexus-ai-app.azurewebsites.net
+        VITE_API_BASE_URL: https://nexus-ai-backend.onrender.com
         VITE_AI_API_KEY: ${{ secrets.AI_API_KEY }}
         VITE_APP_NAME: NEXUS AI
         VITE_APP_VERSION: ${{ github.sha }}
@@ -72,5 +72,5 @@ jobs:
         echo "- **Environment**: GitHub Pages" >> $GITHUB_STEP_SUMMARY
         echo "- **Build SHA**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Deployment URL**: ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
-        echo "- **API Backend**: https://nexus-ai-app.azurewebsites.net" >> $GITHUB_STEP_SUMMARY
+        echo "- **API Backend**: https://nexus-ai-backend.onrender.com" >> $GITHUB_STEP_SUMMARY
         echo "- **Status**: ✅ Deployed Successfully" >> $GITHUB_STEP_SUMMARY

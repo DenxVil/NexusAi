@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://nexus-ai-app.azurewebsites.net';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://nexus-ai-backend.onrender.com';
 const API_KEY = import.meta.env.VITE_AI_API_KEY;
 
 export class ChatService {

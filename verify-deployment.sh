@@ -15,7 +15,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Check if we're in the right directory
-if [ ! -f "package.json" ] || [ ! -d "client" ] || [ ! -d "server" ]; then
+if [ ! -f "package.json" ] || [ ! -d "frontend" ] || [ ! -d "server" ]; then
     echo -e "${RED}❌ Error: Not in NexusAi repository root${NC}"
     exit 1
 fi
@@ -23,236 +23,202 @@ fi
 echo -e "${BLUE}📋 Checking Frontend Configuration (GitHub Pages)${NC}"
 echo "------------------------------------------------"
 
-# Check client package.json for GitHub Pages configuration
-if grep -q '"homepage": "https://denxvil.github.io/NexusAi"' client/package.json; then
-    echo -e "${GREEN}✅ GitHub Pages homepage configured${NC}"
+# Check GitHub Actions workflow
+if [ -f ".github/workflows/deploy-frontend.yml" ]; then
+    echo -e "${GREEN}✅ GitHub Pages deployment workflow found${NC}"
+    if grep -q "VITE_API_BASE_URL: https://nexus-ai-backend.onrender.com" .github/workflows/deploy-frontend.yml; then
+        echo -e "${GREEN}✅ Frontend configured for Render backend${NC}"
+    else
+        echo -e "${RED}❌ Frontend not configured for Render backend${NC}"
+    fi
 else
-    echo -e "${RED}❌ GitHub Pages homepage not configured${NC}"
+    echo -e "${RED}❌ GitHub Pages deployment workflow not found${NC}"
 fi
 
-if grep -q '"gh-pages"' client/package.json; then
-    echo -e "${GREEN}✅ gh-pages dependency found${NC}"
+# Check Vite configuration
+if [ -f "frontend/vite.config.ts" ]; then
+    echo -e "${GREEN}✅ Vite configuration found${NC}"
+    if grep -q 'base: "/NexusAi/"' frontend/vite.config.ts; then
+        echo -e "${GREEN}✅ GitHub Pages base path configured${NC}"
+    else
+        echo -e "${RED}❌ GitHub Pages base path not configured${NC}"
+    fi
 else
-    echo -e "${RED}❌ gh-pages dependency missing${NC}"
+    echo -e "${RED}❌ Vite configuration not found${NC}"
 fi
 
-if grep -q '"deploy"' client/package.json; then
-    echo -e "${GREEN}✅ Deploy script configured${NC}"
+# Check frontend package.json
+if [ -f "frontend/package.json" ]; then
+    echo -e "${GREEN}✅ Frontend package.json found${NC}"
+    if grep -q '"build": "vite build"' frontend/package.json; then
+        echo -e "${GREEN}✅ Vite build script configured${NC}"
+    else
+        echo -e "${RED}❌ Vite build script not configured${NC}"
+    fi
 else
-    echo -e "${RED}❌ Deploy script missing${NC}"
+    echo -e "${RED}❌ Frontend package.json not found${NC}"
 fi
 
-# Check for GitHub Pages workflow
-if [ -f ".github/workflows/deploy-pages.yml" ]; then
-    echo -e "${GREEN}✅ GitHub Pages workflow found${NC}"
+# Check frontend environment example
+if [ -f "frontend/.env.example" ]; then
+    echo -e "${GREEN}✅ Frontend environment example found${NC}"
+    if grep -q "https://nexus-ai-backend.onrender.com" frontend/.env.example; then
+        echo -e "${GREEN}✅ Frontend configured for Render backend URL${NC}"
+    else
+        echo -e "${RED}❌ Frontend not configured for Render backend URL${NC}"
+    fi
 else
-    echo -e "${RED}❌ GitHub Pages workflow missing${NC}"
-fi
-
-# Check for configuration service
-if [ -f "client/src/services/config.ts" ]; then
-    echo -e "${GREEN}✅ Configuration service found${NC}"
-else
-    echo -e "${RED}❌ Configuration service missing${NC}"
-fi
-
-# Check for client-side AI service
-if [ -f "client/src/services/clientAI.ts" ]; then
-    echo -e "${GREEN}✅ Client-side AI service found${NC}"
-else
-    echo -e "${RED}❌ Client-side AI service missing${NC}"
-fi
-
-# Check for enhanced main page
-if [ -f "client/src/pages/EnhancedMainPage.tsx" ]; then
-    echo -e "${GREEN}✅ Enhanced main page found${NC}"
-else
-    echo -e "${RED}❌ Enhanced main page missing${NC}"
+    echo -e "${RED}❌ Frontend environment example not found${NC}"
 fi
 
 echo ""
-echo -e "${BLUE}🚀 Checking Backend Configuration (Render)${NC}"
-echo "--------------------------------------------"
+echo -e "${BLUE}🔧 Checking Backend Configuration (Render)${NC}"
+echo "---------------------------------------------"
 
 # Check render.yaml configuration
 if [ -f "render.yaml" ]; then
     echo -e "${GREEN}✅ Render configuration found${NC}"
-    
-    if grep -q "nexus-ai-backend" render.yaml; then
+    if grep -q "name: nexus-ai-backend" render.yaml; then
         echo -e "${GREEN}✅ Render service name configured${NC}"
     else
         echo -e "${RED}❌ Render service name not configured${NC}"
     fi
-    
-    if grep -q "https://denxvil.github.io" render.yaml; then
-        echo -e "${GREEN}✅ CORS origin configured for GitHub Pages${NC}"
+    if grep -q "rootDir: ./server" render.yaml; then
+        echo -e "${GREEN}✅ Render root directory configured${NC}"
     else
-        echo -e "${RED}❌ CORS origin not configured for GitHub Pages${NC}"
+        echo -e "${RED}❌ Render root directory not configured${NC}"
+    fi
+    if grep -q "healthCheckPath: /health" render.yaml; then
+        echo -e "${GREEN}✅ Health check path configured${NC}"
+    else
+        echo -e "${RED}❌ Health check path not configured${NC}"
     fi
 else
-    echo -e "${RED}❌ Render configuration missing${NC}"
+    echo -e "${RED}❌ Render configuration not found${NC}"
 fi
 
-# Check server configuration
-if [ -f "server/src/config/index.ts" ]; then
-    echo -e "${GREEN}✅ Server configuration found${NC}"
-    
-    if grep -q "getCorsOrigins" server/src/config/index.ts; then
-        echo -e "${GREEN}✅ Dynamic CORS configuration found${NC}"
+# Check server package.json
+if [ -f "server/package.json" ]; then
+    echo -e "${GREEN}✅ Server package.json found${NC}"
+    if grep -q '"build": "tsc"' server/package.json; then
+        echo -e "${GREEN}✅ TypeScript build script configured${NC}"
     else
-        echo -e "${RED}❌ Dynamic CORS configuration missing${NC}"
+        echo -e "${RED}❌ TypeScript build script missing${NC}"
     fi
-    
-    if grep -q "isRender" server/src/config/index.ts; then
-        echo -e "${GREEN}✅ Platform detection configured${NC}"
+    if grep -q '"start": "node dist/index.js"' server/package.json; then
+        echo -e "${GREEN}✅ Start script configured${NC}"
     else
-        echo -e "${RED}❌ Platform detection missing${NC}"
+        echo -e "${RED}❌ Start script not configured${NC}"
     fi
 else
-    echo -e "${RED}❌ Server configuration missing${NC}"
+    echo -e "${RED}❌ Server package.json not found${NC}"
 fi
 
-# Check Render environment template
-if [ -f "server/.env.render-template" ]; then
-    echo -e "${GREEN}✅ Render environment template found${NC}"
+# Check for server source files
+if [ -d "server/src" ]; then
+    echo -e "${GREEN}✅ Server source directory found${NC}"
+    if [ -f "server/src/index.ts" ]; then
+        echo -e "${GREEN}✅ Main server file found${NC}"
+    else
+        echo -e "${RED}❌ Main server file missing${NC}"
+    fi
 else
-    echo -e "${RED}❌ Render environment template missing${NC}"
+    echo -e "${RED}❌ Server source directory missing${NC}"
+fi
+
+# Check server environment example
+if [ -f "server/.env.example" ]; then
+    echo -e "${GREEN}✅ Server environment example found${NC}"
+else
+    echo -e "${RED}❌ Server environment example not found${NC}"
 fi
 
 echo ""
-echo -e "${BLUE}🤖 Checking Telegram Integration${NC}"
-echo "-----------------------------------"
-
-# Check TelegramFloat component
-if [ -f "client/src/components/common/TelegramFloat.tsx" ]; then
-    if grep -q "configService" client/src/components/common/TelegramFloat.tsx; then
-        echo -e "${GREEN}✅ TelegramFloat uses configuration service${NC}"
-    else
-        echo -e "${YELLOW}⚠️ TelegramFloat not using configuration service${NC}"
-    fi
-else
-    echo -e "${RED}❌ TelegramFloat component missing${NC}"
-fi
-
-# Check Telegram bot service
-if [ -f "server/src/services/telegramBot.ts" ]; then
-    echo -e "${GREEN}✅ Telegram bot service found${NC}"
-else
-    echo -e "${RED}❌ Telegram bot service missing${NC}"
-fi
-
-echo ""
-echo -e "${BLUE}📚 Checking Documentation${NC}"
-echo "----------------------------"
-
-if [ -f "DEPLOYMENT_GUIDE.md" ]; then
-    echo -e "${GREEN}✅ Deployment guide found${NC}"
-else
-    echo -e "${RED}❌ Deployment guide missing${NC}"
-fi
-
-echo ""
-echo -e "${BLUE}🔧 Testing Build Process${NC}"
+echo -e "${BLUE}🧹 Checking Azure Removal${NC}"
 echo "-------------------------"
 
-# Test client build
-echo -e "${YELLOW}Building client...${NC}"
-cd client
-if npm run build > /dev/null 2>&1; then
-    echo -e "${GREEN}✅ Client build successful${NC}"
-else
-    echo -e "${RED}❌ Client build failed${NC}"
-fi
-cd ..
-
-# Test server build
-echo -e "${YELLOW}Building server...${NC}"
-cd server
-if npm run build > /dev/null 2>&1; then
-    echo -e "${GREEN}✅ Server build successful${NC}"
-else
-    echo -e "${RED}❌ Server build failed${NC}"
-fi
-cd ..
-
-echo ""
-echo -e "${BLUE}📊 Summary${NC}"
-echo "----------"
-
-# Count successful checks
-total_checks=0
-passed_checks=0
-
-# Frontend checks
-checks=(
-    "client/package.json:homepage"
-    "client/package.json:gh-pages"
-    ".github/workflows/deploy-pages.yml"
-    "client/src/services/config.ts"
-    "client/src/services/clientAI.ts"
-    "client/src/pages/EnhancedMainPage.tsx"
+# Check that Azure files are removed
+AZURE_FILES=(
+    "azure-infrastructure.tf"
+    "azure-app-config.yml"
+    "AZURE_DEPLOYMENT.md"
+    ".azure-config"
+    ".github/workflows/azure-deploy.yml"
 )
 
-for check in "${checks[@]}"; do
-    total_checks=$((total_checks + 1))
-    case $check in
-        *"package.json:homepage"*)
-            if grep -q '"homepage": "https://denxvil.github.io/NexusAi"' client/package.json; then
-                passed_checks=$((passed_checks + 1))
-            fi
-            ;;
-        *"package.json:gh-pages"*)
-            if grep -q '"gh-pages"' client/package.json; then
-                passed_checks=$((passed_checks + 1))
-            fi
-            ;;
-        *)
-            if [ -f "$check" ]; then
-                passed_checks=$((passed_checks + 1))
-            fi
-            ;;
-    esac
-done
-
-# Backend checks
-backend_checks=(
-    "render.yaml"
-    "server/src/config/index.ts"
-    "server/.env.render-template"
-    "server/src/services/telegramBot.ts"
-)
-
-for check in "${backend_checks[@]}"; do
-    total_checks=$((total_checks + 1))
-    if [ -f "$check" ]; then
-        passed_checks=$((passed_checks + 1))
+ALL_REMOVED=true
+for file in "${AZURE_FILES[@]}"; do
+    if [ -f "$file" ]; then
+        echo -e "${RED}❌ Azure file still exists: $file${NC}"
+        ALL_REMOVED=false
     fi
 done
 
-# Documentation check
-total_checks=$((total_checks + 1))
-if [ -f "DEPLOYMENT_GUIDE.md" ]; then
-    passed_checks=$((passed_checks + 1))
+if [ "$ALL_REMOVED" = true ]; then
+    echo -e "${GREEN}✅ All Azure files have been removed${NC}"
 fi
 
-echo -e "${GREEN}✅ Passed: $passed_checks/$total_checks checks${NC}"
-
-if [ $passed_checks -eq $total_checks ]; then
-    echo -e "${GREEN}🎉 All checks passed! Ready for deployment.${NC}"
-    echo ""
-    echo -e "${BLUE}Next steps:${NC}"
-    echo "1. Push to main branch to trigger GitHub Pages deployment"
-    echo "2. Configure environment variables in Render dashboard"
-    echo "3. Deploy backend to Render"
-    echo "4. Test the complete integration"
+# Check for Azure references in code
+if grep -r -i "azure" . --exclude-dir=.git --exclude-dir=node_modules --exclude="verify-deployment.sh" 2>/dev/null | grep -v "DEPLOYMENT.md" | grep -v "DEPLOYMENT_GUIDE.md" >/dev/null; then
+    echo -e "${RED}❌ Azure references still found in code${NC}"
 else
-    echo -e "${YELLOW}⚠️ Some checks failed. Please review the output above.${NC}"
+    echo -e "${GREEN}✅ No Azure references found in code${NC}"
 fi
 
 echo ""
-echo -e "${BLUE}🔗 Deployment URLs:${NC}"
-echo "Frontend: https://denxvil.github.io/NexusAi"
-echo "Backend: https://nexus-ai-backend.onrender.com"
-echo "Telegram: https://t.me/NexusAiProbot"
+echo -e "${BLUE}🏗️ Testing Build Process${NC}"
+echo "------------------------"
+
+# Test backend build
+echo -e "${YELLOW}🔨 Testing backend build...${NC}"
+cd server
+if npm run build >/dev/null 2>&1; then
+    echo -e "${GREEN}✅ Backend build successful${NC}"
+else
+    echo -e "${RED}❌ Backend build failed${NC}"
+fi
+cd ..
+
+# Test frontend build
+echo -e "${YELLOW}🔨 Testing frontend build...${NC}"
+cd frontend
+if npm run build >/dev/null 2>&1; then
+    echo -e "${GREEN}✅ Frontend build successful${NC}"
+else
+    echo -e "${RED}❌ Frontend build failed${NC}"
+fi
+cd ..
+
 echo ""
-echo "Created with love 🩶 by Denvil 🧑‍💻"
+echo -e "${BLUE}📊 Deployment Readiness Summary${NC}"
+echo "==============================="
+
+# Check if builds exist
+if [ -d "server/dist" ]; then
+    echo -e "${GREEN}✅ Backend build artifacts ready${NC}"
+else
+    echo -e "${RED}❌ Backend build artifacts missing${NC}"
+fi
+
+if [ -d "frontend/dist" ]; then
+    echo -e "${GREEN}✅ Frontend build artifacts ready${NC}"
+else
+    echo -e "${RED}❌ Frontend build artifacts missing${NC}"
+fi
+
+echo ""
+echo -e "${BLUE}🌐 Deployment URLs${NC}"
+echo "=================="
+echo -e "${GREEN}Frontend (GitHub Pages):${NC} https://denxvil.github.io/NexusAi/"
+echo -e "${GREEN}Backend (Render):${NC} https://nexus-ai-backend.onrender.com"
+echo -e "${GREEN}Backend Health Check:${NC} https://nexus-ai-backend.onrender.com/health"
+echo -e "${GREEN}Telegram Bot:${NC} @NexusAiProbot"
+
+echo ""
+echo -e "${GREEN}🎉 Verification complete!${NC}"
+echo ""
+echo -e "${YELLOW}Next steps:${NC}"
+echo "1. Deploy backend to Render using render.yaml"
+echo "2. Configure environment variables in Render dashboard"
+echo "3. Push to main branch to trigger GitHub Pages deployment"
+echo "4. Test the deployed application"
