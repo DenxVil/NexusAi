@@ -57,14 +57,14 @@ const ChatInput: React.FC = () => {
   };
 
   return (
-    <div className="sticky bottom-0 backdrop-blur-xl bg-slate-900/90 border-t border-slate-800/50 p-4">
-      <div className="container mx-auto max-w-4xl">
+    <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4">
+      <div className="max-w-4xl mx-auto">
         <form onSubmit={handleSubmit} className="relative">
-          <div className="flex items-end gap-3 bg-slate-800/50 rounded-2xl border border-slate-700/50 p-3 focus-within:border-nexus-500/50 transition-colors">
+          <div className="flex items-end gap-3 bg-gray-50 rounded-2xl border border-gray-200 p-3 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
             <button
               type="button"
               onClick={handleFileUpload}
-              className="flex-shrink-0 p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-slate-700/50"
+              className="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 transition-colors rounded-lg hover:bg-gray-100"
               disabled={isLoading}
             >
               <Paperclip className="w-5 h-5" />
@@ -76,7 +76,7 @@ const ChatInput: React.FC = () => {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Ask NEXUS AI anything..."
-              className="flex-1 bg-transparent text-white placeholder-gray-400 resize-none outline-none max-h-[120px] min-h-[24px] py-2"
+              className="flex-1 bg-transparent text-gray-900 placeholder-gray-500 resize-none outline-none max-h-[120px] min-h-[24px] py-2"
               rows={1}
               disabled={isLoading}
             />
@@ -87,8 +87,8 @@ const ChatInput: React.FC = () => {
                 onClick={toggleRecording}
                 className={`flex-shrink-0 p-2 transition-colors rounded-lg ${
                   isRecording
-                    ? 'text-red-400 bg-red-500/10 hover:bg-red-500/20'
-                    : 'text-gray-400 hover:text-white hover:bg-slate-700/50'
+                    ? 'text-red-500 bg-red-50 hover:bg-red-100'
+                    : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
                 }`}
                 disabled={isLoading}
               >
@@ -104,36 +104,14 @@ const ChatInput: React.FC = () => {
                 disabled={!input.trim() || isLoading}
                 className={`flex-shrink-0 p-2 rounded-lg transition-all ${
                   input.trim() && !isLoading
-                    ? 'nexus-button'
-                    : 'text-gray-500 bg-gray-700/30 cursor-not-allowed'
+                    ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                    : 'text-gray-400 bg-gray-200 cursor-not-allowed'
                 }`}
               >
                 <Send className="w-5 h-5" />
               </button>
             </div>
           </div>
-
-          {/* Input suggestions */}
-          {!input && (
-            <div className="mt-3 flex flex-wrap gap-2">
-              {[
-                'Explain quantum computing',
-                'Write a Python function',
-                'What is artificial intelligence?',
-                'Help me plan a project',
-              ].map((suggestion) => (
-                <button
-                  key={suggestion}
-                  type="button"
-                  onClick={() => setInput(suggestion)}
-                  className="px-3 py-1.5 text-sm bg-slate-800/50 hover:bg-slate-700/50 text-gray-300 hover:text-white rounded-full border border-slate-700/30 hover:border-slate-600/50 transition-all"
-                  disabled={isLoading}
-                >
-                  {suggestion}
-                </button>
-              ))}
-            </div>
-          )}
         </form>
 
         <div className="mt-3 text-center">
