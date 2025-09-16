@@ -249,8 +249,7 @@ git push heroku main
 ```
 
 ### Other Platforms
-- **Railway** - Excellent for backend API deployment  
-- **DigitalOcean App Platform** - Scalable container deployment
+- **Railway** - Alternative backend deployment option
 - **Render** - Backend deployment (see `render.yaml` configuration)
 
 ## 📞 Support

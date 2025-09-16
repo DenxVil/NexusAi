@@ -1,235 +1,161 @@
-# DigitalOcean Deployment Guide for Nexus Ai
+# Render + GitHub Pages Deployment Guide for Nexus AI
 
-This guide will help you deploy Nexus Ai on DigitalOcean using Docker containers.
+This guide covers the deployment setup for Nexus AI with frontend on GitHub Pages and backend on Render.
 
 ## Prerequisites
 
-- DigitalOcean account
-- Docker installed locally (for testing)
-- Domain name (optional, for custom domain)
+- GitHub account (for frontend hosting)
+- Render account (for backend hosting)
+- MongoDB Atlas account (for database)
+- Telegram Bot Token (from @BotFather)
+- AI Service API Keys (Gemini, Perplexity, HuggingFace)
 
-## Deployment Options
+## Deployment Overview
 
-### Option 1: DigitalOcean App Platform (Recommended)
+### Architecture
+```
+Frontend (GitHub Pages) ← → Backend (Render) ← → Telegram Bot
+     ↓                           ↓
+Client-side AI Services    Server-side AI Services
+                              ↓
+                         MongoDB Atlas
+```
 
-1. **Prepare your repository:**
-   ```bash
-   git push origin main
-   ```
+### Backend Deployment (Render)
 
-2. **Create a new App on DigitalOcean:**
-   - Go to [DigitalOcean App Platform](https://cloud.digitalocean.com/apps)
-   - Click "Create App"
+1. **Connect Repository to Render:**
+   - Go to [Render Dashboard](https://dashboard.render.com)
+   - Click "New" → "Web Service"
    - Connect your GitHub repository
    - Select the branch (main)
 
-3. **Configure the app:**
-   - App Name: `nexus-ai`
-   - Region: Choose closest to your users
-   - Plan: Basic ($5/month) or higher depending on needs
+2. **Configure the Service:**
+   - Name: `nexus-ai-backend`
+   - Root Directory: `./server`
+   - Environment: `Node`
+   - Build Command: `npm ci --production=false && npm run build`
+   - Start Command: `NODE_ENV=production npm start`
 
-4. **Set environment variables:**
+3. **Set Environment Variables in Render:**
    ```env
    NODE_ENV=production
-   PORT=5000
-   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/nexusai
+   PORT=10000
+   CORS_ORIGIN=https://denxvil.github.io
+   MONGO_URI=your_mongodb_connection_string
    JWT_SECRET=your_super_secret_jwt_key
    GEMINI_API_KEY=your_gemini_api_key
    PERPLEXITY_API_KEY=your_perplexity_api_key
    HUGGINGFACE_API_KEY=your_huggingface_api_key
    TELEGRAM_BOT_TOKEN=your_telegram_bot_token
-   CORS_ORIGIN=https://your-app-name.ondigitalocean.app
-   REACT_APP_API_URL=https://your-app-name.ondigitalocean.app/api
+   ENABLE_TELEGRAM_BOT=true
+   ENABLE_RATE_LIMITING=true
+   RATE_LIMIT_WINDOW_MS=900000
+   RATE_LIMIT_MAX_REQUESTS=200
    ```
 
-5. **Deploy:**
-   - Click "Create Resources"
+4. **Deploy:**
+   - Click "Create Web Service"
    - Wait for deployment to complete
+   - Your backend will be available at: `https://nexus-ai-backend.onrender.com`
 
-### Option 2: DigitalOcean Droplet with Docker
+### Frontend Deployment (GitHub Pages)
 
-1. **Create a Droplet:**
-   - Choose Ubuntu 22.04 LTS
-   - Size: Basic plan ($6/month minimum)
-   - Add your SSH key
+1. **Automatic Deployment:**
+   - Push to `main` branch automatically triggers GitHub Pages deployment
+   - Workflow located at `.github/workflows/deploy-frontend.yml`
+   - No manual intervention required
 
-2. **Connect to your Droplet:**
-   ```bash
-   ssh root@your_droplet_ip
-   ```
+2. **Configuration:**
+   - Frontend automatically connects to Render backend
+   - API calls route to: `https://nexus-ai-backend.onrender.com`
+   - Build environment variables configured in GitHub Actions
 
-3. **Install Docker and Docker Compose:**
-   ```bash
-   apt update
-   apt install -y docker.io docker-compose
-   systemctl start docker
-   systemctl enable docker
-   ```
+3. **Access:**
+   - Frontend available at: `https://denxvil.github.io/NexusAi/`
+### MongoDB Setup
 
-4. **Clone your repository:**
-   ```bash
-   git clone https://github.com/DenxVil/NexusAi.git
-   cd NexusAi
-   ```
+1. **Create MongoDB Atlas Cluster:**
+   - Go to [MongoDB Atlas](https://cloud.mongodb.com)
+   - Create a free cluster
+   - Create database user
+   - Whitelist IP addresses (0.0.0.0/0 for Render)
+   - Get connection string
 
-5. **Create environment file:**
-   ```bash
-   cp server/.env.example .env
-   nano .env
-   ```
+2. **Database Configuration:**
+   - Database name: `nexusai`
+   - Collections: `users`, `chats`, `messages`
+   - Connection string format: `mongodb+srv://username:password@cluster.mongodb.net/nexusai`
 
-   Add your configuration:
-   ```env
-   NODE_ENV=production
-   PORT=5000
-   MONGODB_URI=mongodb://mongo:27017/nexusai
-   JWT_SECRET=your_super_secret_jwt_key
-   GEMINI_API_KEY=your_gemini_api_key
-   PERPLEXITY_API_KEY=your_perplexity_api_key
-   HUGGINGFACE_API_KEY=your_huggingface_api_key
-   TELEGRAM_BOT_TOKEN=your_telegram_bot_token
-   CORS_ORIGIN=http://your_droplet_ip:5000
-   REACT_APP_API_URL=http://your_droplet_ip:5000/api
-   MONGO_ROOT_USERNAME=admin
-   MONGO_ROOT_PASSWORD=secure_password
-   ```
+### Telegram Bot Setup
 
-6. **Start the application:**
-   ```bash
-   docker-compose up -d
-   ```
+1. **Create Bot:**
+   - Message [@BotFather](https://t.me/botfather)
+   - Use `/newbot` command
+   - Save the bot token
 
-7. **Configure firewall:**
-   ```bash
-   ufw allow OpenSSH
-   ufw allow 5000
-   ufw enable
-   ```
+2. **Configure Bot:**
+   - Add bot token to Render environment variables
+   - Bot will automatically start with backend deployment
+   - Test with `/start` command
 
-## Database Setup
+## Health Checks & Monitoring
 
-### Option A: MongoDB Atlas (Recommended)
-1. Create a free MongoDB Atlas cluster
-2. Get connection string
-3. Use it in MONGODB_URI environment variable
-
-### Option B: Local MongoDB (with Docker Compose)
-- MongoDB is included in the docker-compose.yml
-- Data persists in Docker volumes
-- Accessible at mongodb://mongo:27017
-
-## SSL/HTTPS Setup
-
-### With DigitalOcean App Platform
-- SSL is automatically provided
-- Custom domains supported
-
-### With Droplet + Nginx
-1. **Install Nginx:**
-   ```bash
-   apt install -y nginx certbot python3-certbot-nginx
-   ```
-
-2. **Configure Nginx:**
-   ```nginx
-   server {
-       listen 80;
-       server_name your-domain.com;
-
-       location / {
-           proxy_pass http://localhost:5000;
-           proxy_http_version 1.1;
-           proxy_set_header Upgrade $http_upgrade;
-           proxy_set_header Connection 'upgrade';
-           proxy_set_header Host $host;
-           proxy_set_header X-Real-IP $remote_addr;
-           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-           proxy_set_header X-Forwarded-Proto $scheme;
-           proxy_cache_bypass $http_upgrade;
-       }
-   }
-   ```
-
-3. **Get SSL certificate:**
-   ```bash
-   certbot --nginx -d your-domain.com
-   ```
-
-## Monitoring and Maintenance
-
-### Health Checks
-- Health endpoint available at `/health`
-- Docker health checks configured
-- Monitor logs: `docker-compose logs -f`
-
-### Backups
-```bash
-# Backup MongoDB
-docker-compose exec mongo mongodump --db nexusai --out /backup
-
-# Backup to host
-docker cp container_name:/backup ./backup
-```
-
-### Updates
-```bash
-git pull origin main
-docker-compose down
-docker-compose build --no-cache
-docker-compose up -d
-```
-
-## Troubleshooting
+### Health Endpoints
+- **Backend**: `https://nexus-ai-backend.onrender.com/health`
+- **Frontend**: `https://denxvil.github.io/NexusAi/`
+- **Telegram Bot**: Send `/start` to your bot
 
 ### Common Issues
 
-1. **Port already in use:**
-   ```bash
-   docker-compose down
-   lsof -i :5000
-   kill -9 PID
-   ```
+1. **CORS Errors:**
+   - Verify `CORS_ORIGIN` in Render environment
+   - Should be: `https://denxvil.github.io`
 
-2. **Memory issues:**
-   - Upgrade to larger Droplet
-   - Add swap space
+2. **API Connection Issues:**
+   - Check backend health endpoint
+   - Verify environment variables in Render
+   - Check MongoDB connection string
 
-3. **Database connection:**
-   - Check MongoDB URI
-   - Verify network connectivity
-   - Check firewall rules
+3. **Build Failures:**
+   - Frontend: Check GitHub Actions logs
+   - Backend: Check Render build logs
 
-### Logs
-```bash
-# Application logs
-docker-compose logs app
+4. **Telegram Bot Not Responding:**
+   - Verify bot token in Render environment
+   - Check backend logs for errors
+   - Ensure MongoDB connection is working
 
-# MongoDB logs
-docker-compose logs mongo
+## Environment Variables Reference
 
-# All services
-docker-compose logs
+### Required for Render Backend
+```env
+NODE_ENV=production
+PORT=10000
+CORS_ORIGIN=https://denxvil.github.io
+MONGO_URI=mongodb+srv://...
+JWT_SECRET=your_jwt_secret
+TELEGRAM_BOT_TOKEN=your_bot_token
+GEMINI_API_KEY=your_gemini_key
+PERPLEXITY_API_KEY=your_perplexity_key
+HUGGINGFACE_API_KEY=your_huggingface_key
 ```
 
-## Security Best Practices
+### Optional Configuration
+```env
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=200
+ENABLE_TELEGRAM_BOT=true
+ENABLE_RATE_LIMITING=true
+ENABLE_SOCKET_IO=true
+```
 
-1. **Use strong passwords**
-2. **Keep environment variables secure**
-3. **Regular updates**
-4. **Monitor logs for suspicious activity**
-5. **Use HTTPS in production**
-6. **Configure proper CORS origins**
+## Deployment Complete! 🎉
 
-## Cost Estimation
-
-### DigitalOcean App Platform
-- Basic plan: $5/month
-- Professional: $12/month (recommended for production)
-
-### Droplet + Managed Database
-- Basic Droplet: $6/month
-- Managed MongoDB: $15/month
-- Total: ~$21/month
+Once deployed:
+- **Frontend**: Available at `https://denxvil.github.io/NexusAi/`
+- **Backend**: Available at `https://nexus-ai-backend.onrender.com`
+- **Telegram Bot**: Available at your bot's username
+- **API Health**: `https://nexus-ai-backend.onrender.com/health`
 
 ## Support
 
@@ -238,5 +164,7 @@ For deployment issues, contact:
 - Email: [NexusAisupport@gmail.com](mailto:NexusAisupport@gmail.com)
 
 ---
+
+**Made with ❤️ by ◉Ɗєиνιℓ**
 
 *Created by ◉Ɗєиνιℓ*

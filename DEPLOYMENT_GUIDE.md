@@ -174,10 +174,9 @@ Backend automatically configures CORS for:
    - Check backend health endpoint
    - Ensure MongoDB connection is working
 
-### Health Checks
-
+### Health Check URLs
 1. **Frontend**: `https://denxvil.github.io/NexusAi/`
-2. **Backend**: `https://your-render-app.onrender.com/health`
+2. **Backend**: `https://nexus-ai-backend.onrender.com/health`
 3. **Telegram Bot**: Send `/start` to [@NexusAiProbot](https://t.me/NexusAiProbot)
 
 ## 🚀 Performance Optimization
