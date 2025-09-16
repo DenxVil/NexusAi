@@ -3,7 +3,7 @@ services:
   - type: web
     name: nexus-ai-backend
     env: node
-    plan: starter  # Upgraded from free for better performance and reliability
+    plan: free  # Upgraded from free for better performance and reliability
     region: oregon  # Optimized region for global performance
     # Specifies the root directory of the backend service
     rootDir: ./server
