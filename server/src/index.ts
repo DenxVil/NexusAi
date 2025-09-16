@@ -142,7 +142,7 @@ app.get('/health', (req: Request, res: Response) => {
       cacheManagement: true
     },
     deployment: {
-      platform: 'Azure App Service',
+      platform: 'Render',
       region: process.env.REGION_NAME || 'Unknown',
       cacheBusting: cacheManager.getCacheBustingParams()
     }

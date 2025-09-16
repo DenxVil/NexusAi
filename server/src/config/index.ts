@@ -56,7 +56,6 @@ export const config = {
 
   // Platform Detection
   isRender: process.env.RENDER === 'true' || process.env.RENDER_SERVICE_ID !== undefined,
-  isAzure: process.env.WEBSITE_SITE_NAME !== undefined,
   isLocal: process.env.NODE_ENV === 'development',
 
   // Environment Validation
@@ -108,7 +107,7 @@ export const validateConfig = (): void => {
   }
 
   // Log deployment platform
-  const platform = config.isRender ? 'Render' : config.isAzure ? 'Azure' : config.isLocal ? 'Local' : 'Unknown';
+  const platform = config.isRender ? 'Render' : config.isLocal ? 'Local' : 'Unknown';
   console.log(`🚀 Detected platform: ${platform}`);
   console.log(`🌐 CORS Origins: ${JSON.stringify(getCorsOrigins())}`);
 };

@@ -43,11 +43,6 @@ coverage/
 .cache/
 .parcel-cache/
 
-# Azure specific
-.azure/
-azure-deploy.zip
-deployment.zip
-
 # Terraform
 *.tfstate
 *.tfstate.*

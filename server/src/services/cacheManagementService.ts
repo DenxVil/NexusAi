@@ -1,5 +1,5 @@
 // Created with love 🩶 by Denvil 🧑‍💻
-// Cache Management Service for Azure Deployment
+// Cache Management Service
 
 import config from '../config';
 
@@ -161,9 +161,9 @@ self.addEventListener('fetch', event => {
   }
 
   /**
-   * Generate Azure CDN cache invalidation paths
+   * Generate CDN cache invalidation paths
    */
-  public getAzureCdnInvalidationPaths(): string[] {
+  public getCdnInvalidationPaths(): string[] {
     return [
       '/',
       '/index.html',
