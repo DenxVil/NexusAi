@@ -38,7 +38,7 @@ fi
 # Check Vite configuration
 if [ -f "frontend/vite.config.ts" ]; then
     echo -e "${GREEN}✅ Vite configuration found${NC}"
-    if grep -q 'base: "/NexusAi/"' frontend/vite.config.ts; then
+    if grep -q "base: ['\"]\/NexusAi\/['\"]" frontend/vite.config.ts; then
         echo -e "${GREEN}✅ GitHub Pages base path configured${NC}"
     else
         echo -e "${RED}❌ GitHub Pages base path not configured${NC}"

@@ -1,7 +1,16 @@
 # NEXUS AI - Advanced AI Telegram Bot Platform
 
 <p align="center">
-  🤖 Telegram Bot: [@NexusAiProbot](https://t.me/NexusAiProbot)
+  <img src="assets/logo.svg" alt="NEXUS AI Logo" width="150" height="150">
+</p>
+
+<p align="center">
+  🤖 Telegram Bot: [@NexusAiProbot](https://t.me/NexusAiProbot) | 
+  🌐 Web App: [GitHub Pages](https://denxvil.github.io/NexusAi/)
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/68f9d8c2-4a36-4a64-80ea-ff96b209e407" alt="NEXUS AI Interface" width="600">
 </p>
 
 *Created by ◉Ɗєиνιℓ*
@@ -226,26 +235,35 @@ The frontend is automatically deployed to GitHub Pages:
 2. **Push changes to main branch:**
    - Frontend deployment triggers automatically
 3. **Access your deployed app:**
-   - URL: `https://yourusername.github.io/NexusAi/`
+   - URL: `https://denxvil.github.io/NexusAi/`
 
-### Heroku Deployment (Backend)
+**✅ Current Status**: GitHub Pages deployment is working correctly. The site loads properly with all CSS and JavaScript assets.
+
+### Render Deployment (Backend)
+### Render Deployment (Backend)
 1. **Prepare for deployment:**
 ```bash
-# Heroku CLI required
-heroku create your-nexus-ai-app
+# Backend is configured for Render deployment
+# See render.yaml for configuration
 ```
 
-2. **Set environment variables:**
+2. **Set environment variables in Render:**
 ```bash
-heroku config:set TELEGRAM_BOT_TOKEN=your_token_here
-heroku config:set GEMINI_API_KEY=your_key_here
-heroku config:set MONGODB_URI=your_mongodb_connection_string
+# Configure in Render dashboard
+TELEGRAM_BOT_TOKEN=your_token_here
+GEMINI_API_KEY=your_key_here
+MONGODB_URI=your_mongodb_connection_string
 # Add other environment variables as needed
 ```
 
 3. **Deploy:**
+   - Connect repository to Render
+   - Backend deploys automatically from main branch
+
+### Verification
+Run the deployment verification script to check configuration:
 ```bash
-git push heroku main
+./verify-deployment.sh
 ```
 
 ### Other Platforms
