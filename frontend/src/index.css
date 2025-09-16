@@ -10,32 +10,31 @@
   }
   
   body {
-    @apply bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white antialiased;
+    @apply bg-white text-gray-900 antialiased;
     min-height: 100vh;
   }
 }
 
 @layer components {
   .nexus-gradient {
-    @apply bg-gradient-to-r from-nexus-400 via-purple-500 to-pink-500;
+    @apply bg-gradient-to-r from-blue-500 to-purple-600;
   }
   
   .nexus-text-gradient {
-    @apply bg-gradient-to-r from-nexus-400 via-purple-400 to-pink-400 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent;
   }
   
   .chat-bubble-user {
-    @apply bg-gradient-to-r from-nexus-500 to-purple-600 text-white rounded-2xl rounded-br-sm;
+    @apply bg-blue-500 text-white rounded-2xl rounded-br-sm;
   }
   
   .chat-bubble-ai {
-    @apply bg-slate-800/90 backdrop-blur-sm text-gray-100 rounded-2xl rounded-bl-sm border border-slate-700/50;
+    @apply bg-gray-100 text-gray-900 rounded-2xl rounded-bl-sm border border-gray-200;
   }
   
   .nexus-button {
-    @apply bg-gradient-to-r from-nexus-500 to-purple-600 hover:from-nexus-600 hover:to-purple-700 
-           text-white font-medium py-2 px-4 rounded-xl transition-all duration-200 
-           shadow-lg hover:shadow-xl transform hover:scale-105;
+    @apply bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-xl 
+           transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105;
   }
 }
 
