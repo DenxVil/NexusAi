@@ -66,6 +66,7 @@ export class AIService {
 
     /**
      * Google Gemini Provider - Secondary provider in cascading chain
+     * Optimized for advanced reasoning and comprehensive responses
      */
     private async generateGeminiResponse(message: string, chatHistory: any[]): Promise<string> {
         const apiKey = config.geminiApiKey;
@@ -76,11 +77,38 @@ export class AIService {
 
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
         
-        // Build context from chat history
+        // Build context from chat history with enhanced formatting
         const context = chatHistory
             .slice(-10) // Last 10 messages for context
             .map(msg => `${msg.role === 'user' ? 'Human' : 'Assistant'}: ${msg.content}`)
             .join('\n');
+
+        const enhancedSystemPrompt = `You are Nexus AI, an intelligent assistant created by Denvil 🧑‍💻.
+
+Intelligence Framework:
+- Deep understanding of context and nuance
+- Multi-step reasoning for complex problems
+- Creative problem-solving abilities
+- Comprehensive knowledge across diverse topics
+- Ability to explain concepts at various complexity levels
+
+Response Strategy:
+- Analyze the question thoroughly before responding
+- Break down complex topics into digestible parts
+- Provide examples and real-world applications
+- Use analogies to clarify difficult concepts
+- Structure responses with clear formatting
+- Include code snippets when relevant (with syntax highlighting)
+- Offer follow-up suggestions or related topics
+
+Quality Standards:
+- Accuracy over speed
+- Depth over brevity (when appropriate)
+- Clarity in communication
+- Practical, actionable advice
+- Ethical and unbiased information
+
+Remember: Your goal is to be genuinely helpful and make complex information accessible.`;
 
         const prompt = context ? `${context}\nHuman: ${message}\nAssistant:` : message;
 
@@ -96,13 +124,25 @@ export class AIService {
                 body: JSON.stringify({
                     contents: [{
                         parts: [{
-                            text: `You are Nexus AI, a helpful assistant created by Denvil 🧑‍💻. ${prompt}`
+                            text: `${enhancedSystemPrompt}\n\n${prompt}`
                         }]
                     }],
                     generationConfig: {
                         maxOutputTokens: config.maxTokensPerRequest,
-                        temperature: 0.7
-                    }
+                        temperature: 0.8, // Slightly higher for more creative responses
+                        topP: 0.95,
+                        topK: 40
+                    },
+                    safetySettings: [
+                        {
+                            category: "HARM_CATEGORY_HARASSMENT",
+                            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                        },
+                        {
+                            category: "HARM_CATEGORY_HATE_SPEECH",
+                            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                        }
+                    ]
                 }),
                 signal: controller.signal
             });
@@ -136,6 +176,7 @@ export class AIService {
 
     /**
      * Perplexity AI Provider - Primary provider in cascading chain
+     * Optimized for internet-connected real-time information
      */
     private async generatePerplexityResponse(message: string, chatHistory: any[]): Promise<string> {
         const apiKey = config.perplexityApiKey;
@@ -144,9 +185,31 @@ export class AIService {
             throw new Error('Perplexity API key not configured or empty');
         }
 
-        // Convert chat history to Perplexity format
+        // Convert chat history to Perplexity format with enhanced system prompt
         const messages = [
-            { role: 'system', content: 'You are Nexus AI, a helpful AI assistant created by Denvil 🧑‍💻. Provide informative and engaging responses with high accuracy.' }
+            { 
+                role: 'system', 
+                content: `You are Nexus AI, an advanced AI assistant created by Denvil 🧑‍💻. You have access to real-time internet data and current information.
+
+Core Capabilities:
+- Provide accurate, well-researched answers using the latest internet data
+- Stay updated with current events, trends, and breaking news
+- Offer detailed technical explanations with examples
+- Cite sources when providing factual information
+- Give step-by-step guidance for complex problems
+- Understand context from conversation history
+- Adapt responses to user's expertise level
+
+Response Guidelines:
+- Be informative, concise, and engaging
+- Use markdown formatting for better readability
+- Include relevant examples and analogies
+- Verify facts before presenting them as truth
+- Acknowledge uncertainty when appropriate
+- Provide actionable insights and recommendations
+
+Always strive for accuracy, clarity, and helpfulness in your responses.` 
+            }
         ];
 
         // Add recent chat history
@@ -171,10 +234,14 @@ export class AIService {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    model: 'llama-3.1-sonar-small-128k-online',
+                    model: 'llama-3.1-sonar-large-128k-online', // Upgraded to large model for better intelligence
                     messages: messages,
                     max_tokens: config.maxTokensPerRequest,
                     temperature: 0.7,
+                    top_p: 0.9, // Nucleus sampling for better quality
+                    search_domain_filter: ["google.com", "wikipedia.org", "github.com", "stackoverflow.com"], // Focus on quality sources
+                    return_related_questions: false,
+                    search_recency_filter: "month", // Prioritize recent information
                     stream: false
                 }),
                 signal: controller.signal
@@ -209,6 +276,7 @@ export class AIService {
 
     /**
      * HuggingFace Provider - Tertiary fallback provider in cascading chain
+     * Optimized with better model for conversational AI
      */
     private async generateHuggingFaceResponse(message: string, chatHistory: any[]): Promise<string> {
         const apiKey = config.huggingfaceApiKey;
@@ -223,15 +291,18 @@ export class AIService {
             .map(msg => `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`)
             .join('\n');
 
+        const systemContext = `You are Nexus AI, an intelligent assistant by Denvil 🧑‍💻. Provide helpful, accurate, and well-structured responses.`;
+        
         const prompt = context 
-            ? `You are Nexus AI, a helpful assistant. Continue this conversation:\n\n${context}\nUser: ${message}\nAssistant:`
-            : `You are Nexus AI, a helpful assistant. User: ${message}\nAssistant:`;
+            ? `${systemContext}\n\nConversation:\n${context}\nUser: ${message}\nAssistant:`
+            : `${systemContext}\n\nUser: ${message}\nAssistant:`;
 
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), this.REQUEST_TIMEOUT);
 
         try {
-            const response = await fetch('https://api-inference.huggingface.co/models/microsoft/DialoGPT-large', {
+            // Using a better model for improved intelligence
+            const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${apiKey}`,
@@ -240,10 +311,12 @@ export class AIService {
                 body: JSON.stringify({
                     inputs: prompt,
                     parameters: {
-                        max_length: Math.min(config.maxTokensPerRequest, 500),
+                        max_new_tokens: Math.min(config.maxTokensPerRequest, 1024),
                         temperature: 0.7,
+                        top_p: 0.9,
                         do_sample: true,
-                        return_full_text: false
+                        return_full_text: false,
+                        repetition_penalty: 1.2
                     }
                 }),
                 signal: controller.signal
