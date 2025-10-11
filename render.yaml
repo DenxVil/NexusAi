@@ -1,23 +1,26 @@
-# Optimized Blueprint for deploying the Nexus Ai backend on Render
+# Optimized Blueprint for deploying the Nexus AI backend on Render
+# Enhanced for maximum performance and reliability
 services:
   - type: web
     name: nexus-ai-backend
     env: node
-    plan: free  # Upgraded from free for better performance and reliability
+    plan: free  # Can upgrade to starter for 512MB RAM and better performance
     region: oregon  # Optimized region for global performance
     # Specifies the root directory of the backend service
     rootDir: ./server
-    # Optimized build commands with caching and error handling
+    # Optimized build commands with caching, error handling, and production optimizations
     buildCommand: |
       set -e && \
       echo "🔧 Installing dependencies for Nexus AI backend..." && \
-      npm ci --production=false && \
-      echo "🏗️ Building TypeScript backend..." && \
+      npm ci --production=false --prefer-offline && \
+      echo "🏗️ Building TypeScript backend with optimizations..." && \
       npm run build && \
+      echo "🧹 Cleaning up dev dependencies for smaller deployment..." && \
+      npm prune --production && \
       echo "✅ Backend build completed successfully"
-    # Optimized start command with production settings
-    startCommand: 'NODE_ENV=production npm start'
-    # Health check configuration for monitoring
+    # Optimized start command with production settings and memory management
+    startCommand: 'NODE_ENV=production NODE_OPTIONS="--max-old-space-size=460" npm start'
+    # Health check configuration for monitoring and auto-restart
     healthCheckPath: /health
     # Auto-deploy configuration
     autoDeploy: true
@@ -34,39 +37,39 @@ services:
       - key: TELEGRAM_BOT_TOKEN
         sync: false # Set securely in Render dashboard
       - key: PERPLEXITY_API_KEY
-        sync: false # AI service API key
+        sync: false # AI service API key - PRIMARY for internet-connected responses
       - key: GEMINI_API_KEY
-        sync: false # Google Gemini API key
+        sync: false # Google Gemini API key - SECONDARY for advanced reasoning
       - key: HUGGINGFACE_API_KEY
-        sync: false # HuggingFace API key
+        sync: false # HuggingFace API key - TERTIARY fallback
       
       # Database Configuration
       - key: MONGO_URI
-        sync: false # MongoDB connection string (use MongoDB Atlas)
+        sync: false # MongoDB connection string (use MongoDB Atlas with connection pooling)
       
       # Security Configuration
       - key: JWT_SECRET
-        sync: false # JWT signing secret
+        sync: false # JWT signing secret (use strong random string)
       - key: SESSION_SECRET
-        sync: false # Session secret
+        sync: false # Session secret (use strong random string)
       - key: BCRYPT_ROUNDS
         value: "12"
       
       # Telegram Bot Configuration
       - key: TELEGRAM_ADMIN_UID
-        sync: false # Telegram admin user ID
+        sync: false # Telegram admin user ID for error notifications
       - key: TELEGRAM_BOT_URL
         value: "https://t.me/NexusAiProbot"
       
-      # Rate Limiting and Performance
+      # Rate Limiting and Performance - Optimized for Render free tier
       - key: RATE_LIMIT_WINDOW_MS
         value: "900000"  # 15 minutes
       - key: RATE_LIMIT_MAX_REQUESTS
-        value: "200"     # Increased for GitHub Pages traffic
+        value: "200"     # Balanced for free tier
       - key: MAX_TOKENS_PER_REQUEST
-        value: "2048"
+        value: "2048"    # Optimal for quality responses
       - key: REQUEST_TIMEOUT_MS
-        value: "30000"   # 30 seconds
+        value: "45000"   # 45 seconds - increased for better AI responses
       
       # Feature Flags
       - key: ENABLE_TELEGRAM_BOT
@@ -78,21 +81,28 @@ services:
       - key: ENABLE_FILE_UPLOADS
         value: "true"
       
-      # AI Service Configuration
+      # AI Service Configuration - Enhanced for better intelligence
       - key: DEFAULT_AI_MODEL
-        value: "gemini"
+        value: "perplexity"  # Use Perplexity as primary for internet data
       
       # File Upload Configuration
       - key: MAX_FILE_SIZE
         value: "10485760"  # 10MB
       - key: ALLOWED_FILE_TYPES
         value: "image/jpeg,image/png,image/gif,text/plain"
+      
+      # Website Configuration
+      - key: WEBSITE_URL
+        value: "https://denxvil.github.io/NexusAi"
 
-# Note: Optimizations for Render deployment:
-# 1. Backend-only deployment (frontend systems permanently removed)
-# 2. CORS configured for open API access
-# 3. Health check endpoint for monitoring
-# 4. Environment variables optimized for production
-# 5. Build process optimized for TypeScript compilation
-# 6. Rate limiting configured for API usage
-# 7. All sensitive data configured as secure environment variables
+# Render Deployment Optimizations Applied:
+# 1. Memory management with NODE_OPTIONS for 512MB free tier limit
+# 2. Production dependency pruning to reduce deployment size
+# 3. Enhanced AI model configuration for better intelligence
+# 4. Increased timeout for quality AI responses
+# 5. Connection pooling ready for MongoDB Atlas
+# 6. Health check endpoint for automatic restart on failures
+# 7. Optimized build process with caching
+# 8. Environment-specific configurations
+# 9. Security-first with all secrets as sync: false
+# 10. Primary AI provider set to Perplexity for real-time internet data

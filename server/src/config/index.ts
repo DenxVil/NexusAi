@@ -36,9 +36,9 @@ export const config = {
   allowedFileTypes: process.env.ALLOWED_FILE_TYPES?.split(',') || ['image/jpeg', 'image/png', 'image/gif'],
 
   // AI Service Configuration
-  defaultModel: process.env.DEFAULT_AI_MODEL || 'gemini',
+  defaultModel: process.env.DEFAULT_AI_MODEL || 'perplexity', // Perplexity as primary for internet-connected intelligence
   maxTokensPerRequest: parseInt(process.env.MAX_TOKENS_PER_REQUEST || '2048'),
-  requestTimeoutMs: parseInt(process.env.REQUEST_TIMEOUT_MS || '30000'),
+  requestTimeoutMs: parseInt(process.env.REQUEST_TIMEOUT_MS || '45000'), // Increased to 45s for better AI responses
 
   // Website Configuration
   websiteUrl: process.env.WEBSITE_URL || 'https://denxvil.github.io/NexusAi',
