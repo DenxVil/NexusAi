@@ -149,9 +149,6 @@ app.get('/health', (req: Request, res: Response) => {
   });
 });
 
-// Add cache management middleware
-app.use(cacheManager.getCacheHeadersMiddleware());
-
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/chats', chatRoutes);
