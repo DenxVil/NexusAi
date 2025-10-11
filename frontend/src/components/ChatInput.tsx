@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Paperclip, Mic, Square } from 'lucide-react';
-import { useChatContext } from '../context/ChatContext';
+import { useChatContext } from '../hooks/useChatContext';
 
 const ChatInput: React.FC = () => {
   const [input, setInput] = useState('');

@@ -1,16 +1,7 @@
-import React, { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import React, { useState, useCallback, useMemo, type ReactNode } from 'react';
 import type { Message, ChatContextType } from '../types';
 import { ChatService } from '../services/chatService';
-
-const ChatContext = createContext<ChatContextType | undefined>(undefined);
-
-export const useChatContext = () => {
-  const context = useContext(ChatContext);
-  if (!context) {
-    throw new Error('useChatContext must be used within a ChatProvider');
-  }
-  return context;
-};
+import { ChatContext } from './ChatContextDefinition';
 
 interface ChatProviderProps {
   children: ReactNode;
@@ -19,7 +10,7 @@ interface ChatProviderProps {
 export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const chatService = new ChatService();
+  const chatService = useMemo(() => new ChatService(), []);
 
   const sendMessage = useCallback(async (content: string) => {
     if (!content.trim() || isLoading) return;

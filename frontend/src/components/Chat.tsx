@@ -2,7 +2,7 @@ import React from 'react';
 import MessageList from './MessageList';
 import ChatInput from './ChatInput';
 import TelegramFloat from './TelegramFloat';
-import { useChatContext } from '../context/ChatContext';
+import { useChatContext } from '../hooks/useChatContext';
 
 const Chat: React.FC = () => {
   const { messages } = useChatContext();
