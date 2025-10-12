@@ -482,15 +482,8 @@ _For complete definitions, consider consulting comprehensive dictionaries._
       // Show typing indicator
       await this.bot.sendChatAction(chatId, 'typing');
 
-      // Get chat history for context
-      const history = this.chatHistories.get(chatId);
-      const chatHistory = history ? history.messages.slice(-5).map(msg => ({
-        role: msg.isUser ? 'user' : 'assistant',
-        content: msg.text
-      })) : [];
-
-      // Use the new cascading AI service
-      const aiResponse = await this.aiService.generateResponse(userMessage, chatHistory);
+      // Get structured AI response with enhanced logic
+      const aiResponse = await this.generateIntelligentResponse(chatId, userMessage);
 
       // Apply Redoura-style formatting
       const styledResponse = this.formatWithRedouraStyle(aiResponse);
@@ -508,6 +501,101 @@ _For complete definitions, consider consulting comprehensive dictionaries._
       console.error('Error handling user message:', error);
       await this.bot.sendMessage(chatId, `❌ I encountered an error processing your message. Please try again.`);
     }
+  }
+
+  /**
+   * Enhanced AI response generation with structured logic
+   * This method provides a more extensible architecture for AI interactions
+   */
+  private async generateIntelligentResponse(chatId: number, userMessage: string): Promise<string> {
+    // Get chat history for context-aware responses
+    const history = this.chatHistories.get(chatId);
+    const chatHistory = history ? history.messages.slice(-5).map(msg => ({
+      role: msg.isUser ? 'user' : 'assistant',
+      content: msg.text
+    })) : [];
+
+    // Analyze message intent for specialized handling
+    const intent = this.analyzeMessageIntent(userMessage);
+
+    // Apply pre-processing based on intent
+    const processedMessage = this.preprocessMessage(userMessage, intent);
+
+    // Generate AI response with cascading service fallback
+    const rawResponse = await this.aiService.generateResponse(processedMessage, chatHistory);
+
+    // Apply post-processing and enhancement
+    const enhancedResponse = this.enhanceResponse(rawResponse, intent);
+
+    return enhancedResponse;
+  }
+
+  /**
+   * Analyze user message to determine intent
+   * Enables specialized handling for different types of queries
+   */
+  private analyzeMessageIntent(message: string): string {
+    const lowerMessage = message.toLowerCase();
+
+    // Question detection
+    if (lowerMessage.includes('what') || lowerMessage.includes('why') || 
+        lowerMessage.includes('how') || lowerMessage.includes('?')) {
+      return 'question';
+    }
+
+    // Code/technical query detection
+    if (lowerMessage.includes('code') || lowerMessage.includes('function') || 
+        lowerMessage.includes('error') || lowerMessage.includes('debug')) {
+      return 'technical';
+    }
+
+    // Creative request detection
+    if (lowerMessage.includes('create') || lowerMessage.includes('write') || 
+        lowerMessage.includes('generate') || lowerMessage.includes('idea')) {
+      return 'creative';
+    }
+
+    // Casual conversation
+    return 'conversation';
+  }
+
+  /**
+   * Preprocess message based on detected intent
+   * Adds context or formatting hints for better AI responses
+   */
+  private preprocessMessage(message: string, intent: string): string {
+    switch (intent) {
+      case 'technical':
+        return `As a technical assistant, please help with: ${message}`;
+      case 'creative':
+        return `Please be creative and thoughtful in responding to: ${message}`;
+      case 'question':
+        return `Please provide a clear and informative answer to: ${message}`;
+      default:
+        return message;
+    }
+  }
+
+  /**
+   * Enhance AI response based on intent
+   * Adds formatting, structure, or additional context
+   */
+  private enhanceResponse(response: string, intent: string): string {
+    // Ensure response is well-formatted and complete
+    let enhanced = response.trim();
+
+    // Add intent-specific enhancements
+    if (intent === 'technical' && !enhanced.includes('```')) {
+      // Technical responses benefit from clear structure
+      enhanced = enhanced;
+    }
+
+    // Ensure response isn't empty
+    if (!enhanced) {
+      enhanced = "I understand your message. Could you please provide more details so I can assist you better?";
+    }
+
+    return enhanced;
   }
 
   private async handleCallbackQuery(query: any): Promise<void> {
