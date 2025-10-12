@@ -4,38 +4,26 @@
 import TelegramBot, { Message, InlineKeyboardMarkup } from 'node-telegram-bot-api';
 import { AIService } from './aiService';
 import config from '../config';
+import { TelegramUser, ITelegramUser } from '../models/TelegramUser';
+import { TelegramChat, ITelegramChat } from '../models/TelegramChat';
 
 const token = config.telegramBotToken;
 const adminUID = config.telegramAdminUid;
 
-interface UserData {
-  id: number;
-  username?: string;
-  firstName?: string;
-  lastName?: string;
-  messageCount: number;
-  tokenCount: number;
-  joinDate: Date;
-  lastActive: Date;
-  isBlocked: boolean;
-}
+// Command handler type definition
+type CommandHandler = (msg: Message, match?: RegExpExecArray | null) => Promise<void>;
 
-interface ChatHistory {
-  userId: number;
-  messages: Array<{
-    id: string;
-    text: string;
-    isUser: boolean;
-    timestamp: Date;
-  }>;
+interface CommandDefinition {
+  pattern: RegExp;
+  handler: CommandHandler;
+  description: string;
 }
 
 export class TelegramBotService {
   private bot: TelegramBot | null = null;
   private aiService: AIService;
   private activeUsers: Set<number> = new Set();
-  private users: Map<number, UserData> = new Map();
-  private chatHistories: Map<number, ChatHistory> = new Map();
+  private commands: Map<string, CommandDefinition> = new Map();
 
   // Usage limits
   private readonly MAX_MESSAGES_PER_DAY = 50;
@@ -75,42 +63,138 @@ export class TelegramBotService {
     }
 
     this.bot = new TelegramBot(token, { polling: true });
+    this.registerCommands();
     this.initializeListeners();
-    this.loadUserData();
   }
 
+  /**
+   * Register all available commands in the command map
+   */
+  private registerCommands(): void {
+    // Essential commands
+    this.commands.set('/start', {
+      pattern: /\/start/,
+      handler: this.handleStart.bind(this),
+      description: 'Welcome & introduction'
+    });
+    
+    this.commands.set('/help', {
+      pattern: /\/help/,
+      handler: this.handleHelp.bind(this),
+      description: 'Show help message'
+    });
+    
+    this.commands.set('/info', {
+      pattern: /\/info/,
+      handler: this.handleInfo.bind(this),
+      description: 'About Nexus AI'
+    });
+
+    // Feature commands
+    this.commands.set('/imagine', {
+      pattern: /\/imagine (.+)/,
+      handler: this.handleImagine.bind(this),
+      description: 'Generate AI images'
+    });
+    
+    this.commands.set('/8ball', {
+      pattern: /\/8ball (.+)/,
+      handler: this.handleMagic8Ball.bind(this),
+      description: 'Magic 8-ball predictions'
+    });
+    
+    this.commands.set('/weather', {
+      pattern: /\/weather (.+)/,
+      handler: this.handleWeather.bind(this),
+      description: 'Get weather forecast'
+    });
+    
+    this.commands.set('/calculate', {
+      pattern: /\/calculate (.+)/,
+      handler: this.handleCalculate.bind(this),
+      description: 'Math calculations'
+    });
+    
+    this.commands.set('/define', {
+      pattern: /\/define (.+)/,
+      handler: this.handleDefine.bind(this),
+      description: 'Dictionary definitions'
+    });
+
+    // Admin commands
+    if (adminUID !== 0) {
+      this.commands.set('/admin_stats', {
+        pattern: /\/admin_stats/,
+        handler: this.handleAdminStats.bind(this),
+        description: 'Admin statistics'
+      });
+      
+      this.commands.set('/admin_broadcast', {
+        pattern: /\/admin_broadcast (.+)/,
+        handler: this.handleAdminBroadcast.bind(this),
+        description: 'Broadcast message to all users'
+      });
+    }
+  }
+
+  /**
+   * Initialize bot listeners using the command map
+   */
   private initializeListeners(): void {
     if (!this.bot) return;
 
-    // Essential commands only - clean and simple interface
-    this.bot.onText(/\/start/, (msg) => this.handleStart(msg));
-    this.bot.onText(/\/help/, (msg) => this.handleHelp(msg));
-    this.bot.onText(/\/info/, (msg) => this.handleInfo(msg));
-
-    // Basic features
-    this.bot.onText(/\/imagine (.+)/, (msg, match) => this.handleImagine(msg, match));
-    this.bot.onText(/\/8ball (.+)/, (msg, match) => this.handleMagic8Ball(msg, match));
-    this.bot.onText(/\/weather (.+)/, (msg, match) => this.handleWeather(msg, match));
-    this.bot.onText(/\/calculate (.+)/, (msg, match) => this.handleCalculate(msg, match));
-    this.bot.onText(/\/define (.+)/, (msg, match) => this.handleDefine(msg, match));
-
-    // Admin commands (if needed)
-    if (adminUID !== 0) {
-      this.bot.onText(/\/admin_stats/, (msg) => this.handleAdminStats(msg));
-      this.bot.onText(/\/admin_broadcast (.+)/, (msg, match) => this.handleAdminBroadcast(msg, match));
-    }
+    // Register all commands from the command map
+    this.commands.forEach((cmd, cmdName) => {
+      this.bot!.onText(cmd.pattern, async (msg, match) => {
+        try {
+          await cmd.handler(msg, match ?? null);
+        } catch (error) {
+          console.error(`Error handling command ${cmdName}:`, error);
+          await this.sendErrorMessage(msg.chat.id, 'An error occurred while processing your command.');
+        }
+      });
+    });
 
     // Handle regular messages
-    this.bot.on('message', (msg) => this.handleUserMessage(msg));
+    this.bot.on('message', async (msg) => {
+      try {
+        await this.handleUserMessage(msg);
+      } catch (error) {
+        console.error('Error handling user message:', error);
+        await this.sendErrorMessage(msg.chat.id, 'An error occurred while processing your message.');
+      }
+    });
 
     // Handle callback queries for inline keyboards
-    this.bot.on('callback_query', (query) => this.handleCallbackQuery(query));
+    this.bot.on('callback_query', async (query) => {
+      try {
+        await this.handleCallbackQuery(query);
+      } catch (error) {
+        console.error('Error handling callback query:', error);
+        if (this.bot && query.id) {
+          await this.bot.answerCallbackQuery(query.id, { text: 'Sorry, something went wrong!' });
+        }
+      }
+    });
 
     // Error handling
     this.bot.on('polling_error', (error) => console.error(`Polling error: ${error.message}`));
     this.bot.on('webhook_error', (error) => console.error(`Webhook error: ${error.message}`));
 
     console.log('🤖 Nexus AI Telegram bot initialized with clean, simple interface');
+  }
+
+  /**
+   * Send a user-friendly error message
+   */
+  private async sendErrorMessage(chatId: number, message: string): Promise<void> {
+    try {
+      if (this.bot) {
+        await this.bot.sendMessage(chatId, `❌ ${message}\n\nPlease try again or use /help for assistance.`);
+      }
+    } catch (error) {
+      console.error('Error sending error message:', error);
+    }
   }
 
   private async handleStart(msg: Message): Promise<void> {
@@ -121,10 +205,11 @@ export class TelegramBotService {
     
     if (!user) return;
 
-    // Initialize user data
-    this.initializeUser(user.id, user);
-    
-    const welcomeMessage = `
+    try {
+      // Initialize user data in database
+      await this.initializeUser(user.id, user);
+      
+      const welcomeMessage = `
 🌟 *Welcome to Nexus AI!* 🌟
 
 Your advanced AI assistant created by ◉Ɗєиνιℓ
@@ -141,25 +226,25 @@ ${config.websiteUrl}
 💬 Simply send me any message to start chatting!
     `;
 
-    const keyboard: InlineKeyboardMarkup = {
-      inline_keyboard: [
-        [
-          { text: '🌐 Visit Website', url: config.websiteUrl }
-        ],
-        [
-          { text: '💬 Start Chatting', callback_data: 'start_chat' },
-          { text: '❓ Help', callback_data: 'show_help' }
+      const keyboard: InlineKeyboardMarkup = {
+        inline_keyboard: [
+          [
+            { text: '🌐 Visit Website', url: config.websiteUrl }
+          ],
+          [
+            { text: '💬 Start Chatting', callback_data: 'start_chat' },
+            { text: '❓ Help', callback_data: 'show_help' }
+          ]
         ]
-      ]
-    };
+      };
 
-    try {
       await this.bot.sendMessage(chatId, welcomeMessage, {
         parse_mode: 'Markdown',
         reply_markup: keyboard
       });
     } catch (error) {
-      console.error('Error sending welcome message:', error);
+      console.error('Error in handleStart:', error);
+      await this.sendErrorMessage(chatId, 'Failed to initialize. Please try again.');
     }
   }
 
@@ -168,7 +253,8 @@ ${config.websiteUrl}
     
     const chatId = msg.chat.id;
 
-    const helpMessage = `
+    try {
+      const helpMessage = `
 🆘 *Nexus AI Commands* 🆘
 
 *🤖 Basic Commands:*
@@ -194,25 +280,25 @@ ${config.websiteUrl}
 *Created with love 🩶 by ◉Ɗєиνιℓ*
     `;
 
-    const keyboard: InlineKeyboardMarkup = {
-      inline_keyboard: [
-        [
-          { text: '🌐 Visit Website', url: config.websiteUrl }
-        ],
-        [
-          { text: '💬 Start Chatting', callback_data: 'start_chat' },
-          { text: '🎨 Generate Image', callback_data: 'generate_image' }
+      const keyboard: InlineKeyboardMarkup = {
+        inline_keyboard: [
+          [
+            { text: '🌐 Visit Website', url: config.websiteUrl }
+          ],
+          [
+            { text: '💬 Start Chatting', callback_data: 'start_chat' },
+            { text: '🎨 Generate Image', callback_data: 'generate_image' }
+          ]
         ]
-      ]
-    };
+      };
 
-    try {
       await this.bot.sendMessage(chatId, helpMessage, {
         parse_mode: 'Markdown',
         reply_markup: keyboard
       });
     } catch (error) {
-      console.error('Error sending help message:', error);
+      console.error('Error in handleHelp:', error);
+      await this.sendErrorMessage(chatId, 'Failed to send help message.');
     }
   }
 
@@ -220,10 +306,12 @@ ${config.websiteUrl}
     if (!this.bot) return;
     
     const chatId = msg.chat.id;
-    const totalUsers = this.users.size;
-    const activeUsers = this.activeUsers.size;
 
-    const infoMessage = `
+    try {
+      const totalUsers = await TelegramUser.countDocuments();
+      const activeUsers = this.activeUsers.size;
+
+      const infoMessage = `
 🔮 *About Nexus AI* 🔮
 
 *🤖 Advanced AI Assistant*
@@ -257,40 +345,40 @@ Use /help for commands or visit our website for support.
 _Nexus AI - Where intelligence meets simplicity_
     `;
 
-    const keyboard: InlineKeyboardMarkup = {
-      inline_keyboard: [
-        [
-          { text: '🌐 Visit Website', url: config.websiteUrl }
-        ],
-        [
-          { text: '📋 Commands', callback_data: 'show_help' },
-          { text: '💬 Start Chat', callback_data: 'start_chat' }
+      const keyboard: InlineKeyboardMarkup = {
+        inline_keyboard: [
+          [
+            { text: '🌐 Visit Website', url: config.websiteUrl }
+          ],
+          [
+            { text: '📋 Commands', callback_data: 'show_help' },
+            { text: '💬 Start Chat', callback_data: 'start_chat' }
+          ]
         ]
-      ]
-    };
+      };
 
-    try {
       await this.bot.sendMessage(chatId, infoMessage, {
         parse_mode: 'Markdown',
         reply_markup: keyboard
       });
     } catch (error) {
-      console.error('Error sending info message:', error);
+      console.error('Error in handleInfo:', error);
+      await this.sendErrorMessage(chatId, 'Failed to retrieve information.');
     }
   }
 
-  private async handleImagine(msg: Message, match: RegExpExecArray | null): Promise<void> {
+  private async handleImagine(msg: Message, match?: RegExpExecArray | null): Promise<void> {
     if (!this.bot || !match) return;
     
     const chatId = msg.chat.id;
-    const prompt = match[1].trim();
+    const prompt = match[1]?.trim();
     
-    if (!prompt) {
-      await this.bot.sendMessage(chatId, '🎨 Please provide a description for the image you want to generate.\n\nExample: /imagine a beautiful sunset over mountains');
-      return;
-    }
-
     try {
+      if (!prompt) {
+        await this.bot.sendMessage(chatId, '🎨 Please provide a description for the image you want to generate.\n\nExample: /imagine a beautiful sunset over mountains');
+        return;
+      }
+
       await this.bot.sendChatAction(chatId, 'upload_photo');
       await this.bot.sendMessage(chatId, `🎨 *Creating image...* 
 "${prompt}"
@@ -307,23 +395,29 @@ This might take a moment...`, { parse_mode: 'Markdown' });
         parse_mode: 'Markdown'
       });
 
-      this.updateUserUsage(chatId, 0, 100);
+      await this.updateUserUsage(chatId, 0, 100);
       
     } catch (error) {
-      console.error('Error generating image:', error);
-      await this.bot.sendMessage(chatId, '❌ Sorry, I encountered an error while generating the image. Please try again later.');
+      console.error('Error in handleImagine:', error);
+      await this.sendErrorMessage(chatId, 'Failed to generate image. Please try again later.');
     }
   }
 
-  private async handleMagic8Ball(msg: Message, match: RegExpExecArray | null): Promise<void> {
+  private async handleMagic8Ball(msg: Message, match?: RegExpExecArray | null): Promise<void> {
     if (!this.bot || !match) return;
     
     const chatId = msg.chat.id;
-    const question = match[1].trim();
+    const question = match[1]?.trim();
     
-    const response = this.magic8BallResponses[Math.floor(Math.random() * this.magic8BallResponses.length)];
-    
-    const replyMessage = `🎱 *Magic 8-Ball* 🎱
+    try {
+      if (!question) {
+        await this.bot.sendMessage(chatId, '🎱 Please ask a question.\n\nExample: /8ball Will I have a good day?');
+        return;
+      }
+
+      const response = this.magic8BallResponses[Math.floor(Math.random() * this.magic8BallResponses.length)];
+      
+      const replyMessage = `🎱 *Magic 8-Ball* 🎱
 
 **Your Question:** "${question}"
 
@@ -332,20 +426,25 @@ ${response}
 
 _Ask another question anytime!_ ✨`;
 
-    try {
       await this.bot.sendMessage(chatId, replyMessage, { parse_mode: 'Markdown' });
     } catch (error) {
-      console.error('Error with magic 8-ball:', error);
+      console.error('Error in handleMagic8Ball:', error);
+      await this.sendErrorMessage(chatId, 'Failed to consult the Magic 8-Ball.');
     }
   }
 
-  private async handleWeather(msg: Message, match: RegExpExecArray | null): Promise<void> {
+  private async handleWeather(msg: Message, match?: RegExpExecArray | null): Promise<void> {
     if (!this.bot || !match) return;
     
     const chatId = msg.chat.id;
-    const city = match[1].trim();
+    const city = match[1]?.trim();
     
     try {
+      if (!city) {
+        await this.bot.sendMessage(chatId, '🌤️ Please provide a city name.\n\nExample: /weather London');
+        return;
+      }
+
       await this.bot.sendChatAction(chatId, 'typing');
       
       // Simulate weather API call
@@ -375,20 +474,31 @@ _This is a simulated forecast. For real weather data, integration with weather A
       await this.bot.sendMessage(chatId, weatherMessage, { parse_mode: 'Markdown' });
       
     } catch (error) {
-      console.error('Error getting weather:', error);
-      await this.bot.sendMessage(chatId, '❌ Sorry, I couldn\'t get weather information right now. Please try again later.');
+      console.error('Error in handleWeather:', error);
+      await this.sendErrorMessage(chatId, 'Failed to get weather information.');
     }
   }
 
-  private async handleCalculate(msg: Message, match: RegExpExecArray | null): Promise<void> {
+  private async handleCalculate(msg: Message, match?: RegExpExecArray | null): Promise<void> {
     if (!this.bot || !match) return;
     
     const chatId = msg.chat.id;
-    const expression = match[1].trim();
+    const expression = match[1]?.trim();
     
     try {
+      if (!expression) {
+        await this.bot.sendMessage(chatId, '🧮 Please provide a mathematical expression.\n\nExample: /calculate 2 + 2 * 5');
+        return;
+      }
+
       // Simple math evaluation (secure implementation would use a proper math parser)
       const sanitized = expression.replace(/[^0-9+\-*/().\s]/g, '');
+      
+      if (!sanitized) {
+        await this.bot.sendMessage(chatId, '❌ Invalid expression. Please use only numbers and operators (+, -, *, /).');
+        return;
+      }
+
       const result = eval(sanitized);
       
       const calculationMessage = `
@@ -407,18 +517,23 @@ _For complex calculations, consider using specialized math tools._
       await this.bot.sendMessage(chatId, calculationMessage, { parse_mode: 'Markdown' });
       
     } catch (error) {
-      console.error('Error calculating:', error);
-      await this.bot.sendMessage(chatId, '❌ Sorry, I couldn\'t calculate that expression. Please check your input and try again.');
+      console.error('Error in handleCalculate:', error);
+      await this.sendErrorMessage(chatId, 'Failed to calculate the expression. Please check your input.');
     }
   }
 
-  private async handleDefine(msg: Message, match: RegExpExecArray | null): Promise<void> {
+  private async handleDefine(msg: Message, match?: RegExpExecArray | null): Promise<void> {
     if (!this.bot || !match) return;
     
     const chatId = msg.chat.id;
-    const word = match[1].trim();
+    const word = match[1]?.trim();
     
     try {
+      if (!word) {
+        await this.bot.sendMessage(chatId, '📖 Please provide a word to define.\n\nExample: /define intelligence');
+        return;
+      }
+
       await this.bot.sendChatAction(chatId, 'typing');
       
       // Simulate dictionary lookup
@@ -455,8 +570,8 @@ _For complete definitions, consider consulting comprehensive dictionaries._
       await this.bot.sendMessage(chatId, definitionMessage, { parse_mode: 'Markdown' });
       
     } catch (error) {
-      console.error('Error defining word:', error);
-      await this.bot.sendMessage(chatId, '❌ Sorry, I couldn\'t find a definition for that word. Please try again.');
+      console.error('Error in handleDefine:', error);
+      await this.sendErrorMessage(chatId, 'Failed to find definition.');
     }
   }
 
@@ -469,16 +584,17 @@ _For complete definitions, consider consulting comprehensive dictionaries._
     
     if (!user) return;
 
-    // Simple usage check
-    if (!this.checkUsageLimits(user.id)) {
-      await this.bot.sendMessage(chatId, '⚠️ You\'ve reached your daily usage limit. Please try again tomorrow.');
-      return;
-    }
-
-    this.activeUsers.add(chatId);
-    this.initializeUser(user.id, user);
-
     try {
+      // Simple usage check
+      const canProceed = await this.checkUsageLimits(user.id);
+      if (!canProceed) {
+        await this.bot.sendMessage(chatId, '⚠️ You\'ve reached your daily usage limit. Please try again tomorrow.');
+        return;
+      }
+
+      this.activeUsers.add(chatId);
+      await this.initializeUser(user.id, user);
+
       // Show typing indicator
       await this.bot.sendChatAction(chatId, 'typing');
 
@@ -494,12 +610,12 @@ _For complete definitions, consider consulting comprehensive dictionaries._
       });
 
       // Update usage and save to history
-      this.updateUserUsage(chatId, 1, 50);
-      this.saveChatMessage(chatId, userMessage, aiResponse);
+      await this.updateUserUsage(chatId, 1, 50);
+      await this.saveChatMessage(chatId, userMessage, aiResponse);
 
     } catch (error) {
-      console.error('Error handling user message:', error);
-      await this.bot.sendMessage(chatId, `❌ I encountered an error processing your message. Please try again.`);
+      console.error('Error in handleUserMessage:', error);
+      await this.sendErrorMessage(chatId, 'An error occurred while processing your message.');
     }
   }
 
@@ -508,26 +624,31 @@ _For complete definitions, consider consulting comprehensive dictionaries._
    * This method provides a more extensible architecture for AI interactions
    */
   private async generateIntelligentResponse(chatId: number, userMessage: string): Promise<string> {
-    // Get chat history for context-aware responses
-    const history = this.chatHistories.get(chatId);
-    const chatHistory = history ? history.messages.slice(-5).map(msg => ({
-      role: msg.isUser ? 'user' : 'assistant',
-      content: msg.text
-    })) : [];
+    try {
+      // Get chat history from database for context-aware responses
+      const chatDoc = await TelegramChat.findOne({ telegramUserId: chatId });
+      const chatHistory = chatDoc ? chatDoc.messages.slice(-5).map(msg => ({
+        role: msg.isUser ? 'user' as const : 'assistant' as const,
+        content: msg.text
+      })) : [];
 
-    // Analyze message intent for specialized handling
-    const intent = this.analyzeMessageIntent(userMessage);
+      // Analyze message intent for specialized handling
+      const intent = this.analyzeMessageIntent(userMessage);
 
-    // Apply pre-processing based on intent
-    const processedMessage = this.preprocessMessage(userMessage, intent);
+      // Apply pre-processing based on intent
+      const processedMessage = this.preprocessMessage(userMessage, intent);
 
-    // Generate AI response with cascading service fallback
-    const rawResponse = await this.aiService.generateResponse(processedMessage, chatHistory);
+      // Generate AI response with cascading service fallback
+      const rawResponse = await this.aiService.generateResponse(processedMessage, chatHistory);
 
-    // Apply post-processing and enhancement
-    const enhancedResponse = this.enhanceResponse(rawResponse, intent);
+      // Apply post-processing and enhancement
+      const enhancedResponse = this.enhanceResponse(rawResponse, intent);
 
-    return enhancedResponse;
+      return enhancedResponse;
+    } catch (error) {
+      console.error('Error in generateIntelligentResponse:', error);
+      return "I'm having trouble generating a response right now. Please try again.";
+    }
   }
 
   /**
@@ -624,8 +745,10 @@ _For complete definitions, consider consulting comprehensive dictionaries._
 
       await this.bot.answerCallbackQuery(query.id);
     } catch (error) {
-      console.error('Error handling callback query:', error);
-      await this.bot.answerCallbackQuery(query.id, { text: 'Sorry, something went wrong!' });
+      console.error('Error in handleCallbackQuery:', error);
+      if (this.bot && query.id) {
+        await this.bot.answerCallbackQuery(query.id, { text: 'Sorry, something went wrong!' });
+      }
     }
   }
 
@@ -635,15 +758,17 @@ _For complete definitions, consider consulting comprehensive dictionaries._
     
     const chatId = msg.chat.id;
     
-    const totalMessages = Array.from(this.users.values()).reduce((sum, user) => sum + user.messageCount, 0);
-    const totalTokens = Array.from(this.users.values()).reduce((sum, user) => sum + user.tokenCount, 0);
-    const avgMessagesPerUser = this.users.size > 0 ? Math.round(totalMessages / this.users.size) : 0;
-    
-    const adminMessage = `
+    try {
+      const allUsers = await TelegramUser.find();
+      const totalMessages = allUsers.reduce((sum, user) => sum + user.messageCount, 0);
+      const totalTokens = allUsers.reduce((sum, user) => sum + user.tokenCount, 0);
+      const avgMessagesPerUser = allUsers.length > 0 ? Math.round(totalMessages / allUsers.length) : 0;
+      
+      const adminMessage = `
 📊 *Admin: Nexus AI Statistics* 📊
 
 **Users:**
-👥 Total Users: ${this.users.size}
+👥 Total Users: ${allUsers.length}
 🟢 Active Users: ${this.activeUsers.size}
 
 **Usage:**
@@ -659,116 +784,154 @@ _For complete definitions, consider consulting comprehensive dictionaries._
 **Created with love 🩶 by ◉Ɗєиνιℓ**
     `;
 
-    try {
       await this.bot.sendMessage(chatId, adminMessage, { parse_mode: 'Markdown' });
     } catch (error) {
-      console.error('Error sending admin stats:', error);
+      console.error('Error in handleAdminStats:', error);
+      await this.sendErrorMessage(chatId, 'Failed to retrieve statistics.');
     }
   }
 
-  private async handleAdminBroadcast(msg: Message, match: RegExpExecArray | null): Promise<void> {
+  private async handleAdminBroadcast(msg: Message, match?: RegExpExecArray | null): Promise<void> {
     if (!this.bot || !this.isAdmin(msg.from?.id) || !match) return;
     
     const chatId = msg.chat.id;
-    const broadcastMessage = match[1].trim();
+    const broadcastMessage = match[1]?.trim();
     
-    await this.bot.sendMessage(chatId, `📢 *Broadcasting message to ${this.users.size} users...*`, { parse_mode: 'Markdown' });
-    
-    let successCount = 0;
-    let failCount = 0;
-
-    for (const userId of this.users.keys()) {
-      try {
-        await this.bot.sendMessage(userId, `📢 *Admin Broadcast*\n\n${broadcastMessage}\n\n_This message was sent to all Nexus AI users._`, { parse_mode: 'Markdown' });
-        successCount++;
-        await new Promise(resolve => setTimeout(resolve, 100)); // Rate limiting
-      } catch (error) {
-        failCount++;
+    try {
+      if (!broadcastMessage) {
+        await this.bot.sendMessage(chatId, '❌ Please provide a broadcast message.');
+        return;
       }
-    }
 
-    await this.bot.sendMessage(chatId, `✅ Broadcast complete!\n\n📊 **Results:**\n• ✅ Successful: ${successCount}\n• ❌ Failed: ${failCount}`, { parse_mode: 'Markdown' });
+      const allUsers = await TelegramUser.find();
+      await this.bot.sendMessage(chatId, `📢 *Broadcasting message to ${allUsers.length} users...*`, { parse_mode: 'Markdown' });
+      
+      let successCount = 0;
+      let failCount = 0;
+
+      for (const user of allUsers) {
+        try {
+          await this.bot.sendMessage(user.telegramId, `📢 *Admin Broadcast*\n\n${broadcastMessage}\n\n_This message was sent to all Nexus AI users._`, { parse_mode: 'Markdown' });
+          successCount++;
+          await new Promise(resolve => setTimeout(resolve, 100)); // Rate limiting
+        } catch (error) {
+          failCount++;
+          console.error(`Failed to send broadcast to user ${user.telegramId}:`, error);
+        }
+      }
+
+      await this.bot.sendMessage(chatId, `✅ Broadcast complete!\n\n📊 **Results:**\n• ✅ Successful: ${successCount}\n• ❌ Failed: ${failCount}`, { parse_mode: 'Markdown' });
+    } catch (error) {
+      console.error('Error in handleAdminBroadcast:', error);
+      await this.sendErrorMessage(chatId, 'Failed to broadcast message.');
+    }
   }
 
   // Helper methods
-  private initializeUser(userId: number, user: any): void {
-    if (!this.users.has(userId)) {
-      this.users.set(userId, {
-        id: userId,
-        username: user.username,
-        firstName: user.first_name,
-        lastName: user.last_name,
-        messageCount: 0,
-        tokenCount: 0,
-        joinDate: new Date(),
-        lastActive: new Date(),
-        isBlocked: false
-      });
-    } else {
-      const userData = this.users.get(userId)!;
-      userData.lastActive = new Date();
-      userData.username = user.username;
-      userData.firstName = user.first_name;
-      userData.lastName = user.last_name;
+  private async initializeUser(userId: number, user: any): Promise<void> {
+    try {
+      const existingUser = await TelegramUser.findOne({ telegramId: userId });
+      
+      if (!existingUser) {
+        await TelegramUser.create({
+          telegramId: userId,
+          username: user.username,
+          firstName: user.first_name,
+          lastName: user.last_name,
+          messageCount: 0,
+          tokenCount: 0,
+          joinDate: new Date(),
+          lastActive: new Date(),
+          isBlocked: false,
+          dailyMessageCount: 0,
+          dailyTokenCount: 0,
+          lastResetDate: new Date()
+        });
+      } else {
+        existingUser.lastActive = new Date();
+        existingUser.username = user.username;
+        existingUser.firstName = user.first_name;
+        existingUser.lastName = user.last_name;
+        await existingUser.save();
+      }
+    } catch (error) {
+      console.error('Error initializing user:', error);
     }
   }
 
-  private updateUserUsage(userId: number, messages: number, tokens: number): void {
-    const user = this.users.get(userId);
-    if (user) {
-      user.messageCount += messages;
-      user.tokenCount += tokens;
-      user.lastActive = new Date();
+  private async updateUserUsage(userId: number, messages: number, tokens: number): Promise<void> {
+    try {
+      const user = await TelegramUser.findOne({ telegramId: userId });
+      if (user) {
+        user.messageCount += messages;
+        user.tokenCount += tokens;
+        user.dailyMessageCount += messages;
+        user.dailyTokenCount += tokens;
+        user.lastActive = new Date();
+        await user.save();
+      }
+    } catch (error) {
+      console.error('Error updating user usage:', error);
     }
   }
 
-  private checkUsageLimits(userId: number): boolean {
-    const user = this.users.get(userId);
-    if (!user) return true;
+  private async checkUsageLimits(userId: number): Promise<boolean> {
+    try {
+      const user = await TelegramUser.findOne({ telegramId: userId });
+      if (!user) return true;
 
-    // Reset daily counters if it's a new day
-    const today = new Date().toDateString();
-    const lastActiveDay = user.lastActive.toDateString();
-    if (today !== lastActiveDay) {
-      user.messageCount = 0;
-      user.tokenCount = 0;
+      // Reset daily counters if it's a new day
+      const today = new Date().toDateString();
+      const lastResetDay = user.lastResetDate.toDateString();
+      if (today !== lastResetDay) {
+        user.dailyMessageCount = 0;
+        user.dailyTokenCount = 0;
+        user.lastResetDate = new Date();
+        await user.save();
+      }
+
+      return user.dailyMessageCount < this.MAX_MESSAGES_PER_DAY && 
+             user.dailyTokenCount < this.MAX_TOKENS_PER_DAY;
+    } catch (error) {
+      console.error('Error checking usage limits:', error);
+      return true; // Allow on error to avoid blocking users
     }
-
-    return user.messageCount < this.MAX_MESSAGES_PER_DAY && 
-           user.tokenCount < this.MAX_TOKENS_PER_DAY;
   }
 
   private isAdmin(userId?: number): boolean {
     return userId === adminUID && adminUID !== 0;
   }
 
-  private saveChatMessage(userId: number, userMsg: string, botMsg: string): void {
-    if (!this.chatHistories.has(userId)) {
-      this.chatHistories.set(userId, {
-        userId,
-        messages: []
-      });
-    }
-
-    const history = this.chatHistories.get(userId)!;
-    history.messages.push(
-      {
-        id: Date.now().toString(),
-        text: userMsg,
-        isUser: true,
-        timestamp: new Date()
-      },
-      {
-        id: (Date.now() + 1).toString(),
-        text: botMsg,
-        isUser: false,
-        timestamp: new Date()
+  private async saveChatMessage(userId: number, userMsg: string, botMsg: string): Promise<void> {
+    try {
+      let chatDoc = await TelegramChat.findOne({ telegramUserId: userId });
+      
+      if (!chatDoc) {
+        chatDoc = await TelegramChat.create({
+          telegramUserId: userId,
+          messages: [],
+          lastActivity: new Date()
+        });
       }
-    );
 
-    // Keep only last 50 messages
-    if (history.messages.length > 50) {
-      history.messages = history.messages.slice(-50);
+      chatDoc.messages.push(
+        {
+          id: Date.now().toString(),
+          text: userMsg,
+          isUser: true,
+          timestamp: new Date()
+        },
+        {
+          id: (Date.now() + 1).toString(),
+          text: botMsg,
+          isUser: false,
+          timestamp: new Date()
+        }
+      );
+
+      await chatDoc.save();
+    } catch (error) {
+      console.error('Error saving chat message:', error);
     }
   }
 
@@ -785,11 +948,6 @@ _For complete definitions, consider consulting comprehensive dictionaries._
     return `${Math.round(used.rss / 1024 / 1024)} MB`;
   }
 
-  private loadUserData(): void {
-    // In a real implementation, this would load from database
-    console.log('User data loaded from storage');
-  }
-
   public isActive(): boolean {
     return this.bot !== null;
   }
@@ -798,8 +956,13 @@ _For complete definitions, consider consulting comprehensive dictionaries._
     return this.activeUsers.size;
   }
 
-  public getTotalUsers(): number {
-    return this.users.size;
+  public async getTotalUsers(): Promise<number> {
+    try {
+      return await TelegramUser.countDocuments();
+    } catch (error) {
+      console.error('Error getting total users:', error);
+      return 0;
+    }
   }
 }
 
