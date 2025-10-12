@@ -29,11 +29,16 @@ jobs:
           npm run build --if-present
           npm run test --if-present
 
+      - name: Prune dev dependencies and package for deployment
+        run: |
+          npm prune --production
+          zip -r deployment-package.zip .
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
-          name: node-app
-          path: .
+          name: node-app-package
+          path: deployment-package.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -46,7 +51,7 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: node-app
+          name: node-app-package
       
       - name: Login to Azure
         uses: azure/login@v2
@@ -61,5 +66,4 @@ jobs:
         with:
           app-name: 'Ainexus'
           slot-name: 'Production'
-          package: .
-          
+          package: deployment-package.zip
